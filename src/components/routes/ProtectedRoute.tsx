@@ -2,7 +2,7 @@ import { LoaderCircle } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect, useRef } from 'react';
 
 import { useSession } from '@/config/auth-client.js';
 
@@ -11,9 +11,22 @@ interface ProtectedRouteProps extends PropsWithChildren {
 }
 
 function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProps) {
-  const { data: session, isPending, isRefetching, error } = useSession();
+  const { data: session, isPending, error } = useSession();
+  const hasShownToast = useRef(false);
 
-  if (isPending && !isRefetching) {
+  useEffect(() => {
+    if ((error || !session) && !isPending && !hasShownToast.current) {
+      if (error) {
+        console.error('Error de autenticación:', error);
+        toast.error('Error al verificar la sesión');
+      } else {
+        toast.info('Debes iniciar sesión para acceder');
+      }
+      hasShownToast.current = true;
+    }
+  }, [error, session, isPending]);
+
+  if (isPending) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -25,12 +38,6 @@ function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProp
   }
 
   if (error || !session) {
-    if (error) {
-      console.error('Error de autenticación:', error);
-      toast.error('Error al verificar la sesión');
-    } else {
-      toast.info('Debes iniciar sesión para acceder');
-    }
     return <Navigate to={redirectTo} replace />;
   }
 

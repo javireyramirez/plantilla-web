@@ -2,7 +2,7 @@ import { LoaderCircle } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect, useRef } from 'react';
 
 import { useSession } from '@/config/auth-client.js';
 
@@ -11,18 +11,26 @@ interface GuestRouteProps extends PropsWithChildren {
 }
 
 function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
-  const { data: session, isPending, isRefetching, error } = useSession();
+  const { data: session, isPending, error } = useSession();
+  const toastShown = useRef(false);
+
+  useEffect(() => {
+    if (session && !toastShown.current) {
+      toast.info('Sesión iniciada correctamente');
+      toastShown.current = true;
+    }
+  }, [session]);
 
   if (error) {
     console.error('Error verificando sesión:', error);
     return <>{children}</>;
   }
 
-  if (isPending && !isRefetching) {
+  if (isPending) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <LoaderCircle className="h-8 w-8 animate-spin text-primary" aria-label="Cargando" />
+          <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">Verificando sesión...</p>
         </div>
       </div>
@@ -30,7 +38,6 @@ function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
   }
 
   if (session) {
-    toast.info('Sesión iniciada correctamente');
     return <Navigate to={redirectTo} replace />;
   }
 
