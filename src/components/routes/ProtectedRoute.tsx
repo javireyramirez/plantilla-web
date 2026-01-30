@@ -1,0 +1,40 @@
+import { LoaderCircle } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+import { PropsWithChildren } from 'react';
+
+import { useSession } from '@/config/auth-client.js';
+
+interface ProtectedRouteProps extends PropsWithChildren {
+  redirectTo?: string;
+}
+
+function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProps) {
+  const { data: session, isPending, isRefetching, error } = useSession();
+
+  if (isPending && !isRefetching) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <LoaderCircle className="h-8 w-8 animate-spin text-primary" aria-label="Cargando" />
+          <p className="text-sm text-muted-foreground">Verificando autenticación...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !session) {
+    if (error) {
+      console.error('Error de autenticación:', error);
+      toast.error('Error al verificar la sesión');
+    } else {
+      toast.info('Debes iniciar sesión para acceder');
+    }
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  return <>{children}</>;
+}
+
+export default ProtectedRoute;
