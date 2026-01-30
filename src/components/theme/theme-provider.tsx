@@ -48,19 +48,15 @@ export function ThemeProvider({
 
     applyTheme();
 
-    // Escuchar cambios en la preferencia del sistema
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-      // Función que se ejecuta cuando cambia la preferencia del sistema
       const handleChange = () => {
         applyTheme();
       };
 
-      // Añadir el listener
       mediaQuery.addEventListener('change', handleChange);
 
-      // Limpiar el listener cuando el componente se desmonte o el tema cambie
       return () => {
         mediaQuery.removeEventListener('change', handleChange);
       };
