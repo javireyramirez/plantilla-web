@@ -11,7 +11,7 @@ interface GuestRouteProps extends PropsWithChildren {
 }
 
 function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
-  const { data: session, isPending, error } = useSession();
+  const { data: session, isPending, error, isRefetching } = useSession();
   const toastShown = useRef(false);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
     return <>{children}</>;
   }
 
-  if (isPending) {
+  if (isPending && !isRefetching) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
