@@ -11,7 +11,7 @@ interface ProtectedRouteProps extends PropsWithChildren {
 }
 
 function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProps) {
-  const { data: session, isPending, error } = useSession();
+  const { data: session, isPending, error, isRefetching } = useSession();
   const hasShownToast = useRef(false);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProp
     }
   }, [error, session, isPending]);
 
-  if (isPending) {
+  if (isPending && !isRefetching) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
