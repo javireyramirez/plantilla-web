@@ -113,8 +113,8 @@ class AuthService {
   async outhGoogle() {
     const { data: user, error } = await authClient.signIn.social({
       provider: 'google',
-      callbackURL: import.meta.env.VITE_FRONTEND_URL + '/home',
-      errorCallbackURL: import.meta.env.VITE_FRONTEND_URL + '/error',
+      callbackURL: `${window.location.origin}/home`,
+      errorCallbackURL: `${window.location.origin}/error`,
     });
 
     if (error) {
