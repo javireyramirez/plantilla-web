@@ -1,8 +1,7 @@
 import { LoaderCircle } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { Navigate, useLocation } from 'react-router-dom';
 
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import { PropsWithChildren } from 'react';
 
 import { useSession } from '@/config/auth-client.js';
 
@@ -12,21 +11,16 @@ interface GuestRouteProps extends PropsWithChildren {
 
 function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
   const { data: session, isPending, error, isRefetching } = useSession();
-  const toastShown = useRef(false);
-
-  useEffect(() => {
-    if (session && !toastShown.current) {
-      toast.info('Sesión iniciada correctamente');
-      toastShown.current = true;
-    }
-  }, [session]);
+  const location = useLocation();
 
   if (error) {
     console.error('Error verificando sesión:', error);
     return <>{children}</>;
   }
 
-  if (isPending && !isRefetching) {
+  // Mostrar loader durante CUALQUIER estado de carga (inicial o refetch)
+  // O si el session es undefined (aún no se ha intentado cargar)
+  if (isPending || isRefetching || (session === undefined && !error)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -38,10 +32,13 @@ function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
   }
 
   if (session) {
-    return <Navigate to={redirectTo} replace />;
+    // Redirigir a la ruta original si existe (ej. usuario recargó /pagina1 sin sesión)
+    const destination = location.state?.from || redirectTo;
+    return <Navigate to={destination} replace />;
   }
 
   return <>{children}</>;
 }
 
 export default GuestRoute;
+

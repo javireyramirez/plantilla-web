@@ -1,9 +1,9 @@
 import { LoaderCircle } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { Navigate, useLocation } from 'react-router-dom';
 
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import { PropsWithChildren } from 'react';
 
+import { isSigningOut } from '@/lib/auth-flags.js';
 import { useSession } from '@/config/auth-client.js';
 
 interface ProtectedRouteProps extends PropsWithChildren {
@@ -12,21 +12,11 @@ interface ProtectedRouteProps extends PropsWithChildren {
 
 function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProps) {
   const { data: session, isPending, error, isRefetching } = useSession();
-  const hasShownToast = useRef(false);
+  const location = useLocation();
 
-  useEffect(() => {
-    if ((error || !session) && !isPending && !hasShownToast.current) {
-      if (error) {
-        console.error('Error de autenticación:', error);
-        toast.error('Error al verificar la sesión');
-      } else {
-        toast.info('Debes iniciar sesión para acceder');
-      }
-      hasShownToast.current = true;
-    }
-  }, [error, session, isPending]);
-
-  if (isPending && !isRefetching) {
+  // Mostrar loader durante CUALQUIER estado de carga (inicial o refetch)
+  // O si el session es undefined (aún no se ha intentado cargar)
+  if (isPending || isRefetching || (session === undefined && !error)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -38,10 +28,18 @@ function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProp
   }
 
   if (error || !session) {
-    return <Navigate to={redirectTo} replace />;
+    // Durante sign-out voluntario: redirigir inmediatamente sin pasar 'reason'
+    // para evitar el toast de "no autorizado".
+    if (isSigningOut()) {
+      return <Navigate to={redirectTo} replace />;
+    }
+    const reason = error ? 'error' : 'unauthorized';
+    // Pasar la ruta actual para que GuestRoute redirija aquí tras el login
+    return <Navigate to={redirectTo} replace state={{ reason, from: location.pathname }} />;
   }
 
   return <>{children}</>;
 }
 
 export default ProtectedRoute;
+

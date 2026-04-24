@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LoaderCircle } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { useQueryClient } from '@tanstack/react-query';
+import { clearSigningOut } from '@/lib/auth-flags.js';
+
 
 import logo from '@/assets/logo.png';
 import FormFieldWrapper from '@/components/auth/FormFieldWrapper.js';
@@ -31,9 +31,21 @@ import { SignInValues } from '@/schemas/auth.schema.js';
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const location = useLocation();
   const signInMutation = useSignIn();
-  const queryClient = useQueryClient();
+
+  // Muestra el toast apropiado cuando ProtectedRoute redirige aquí
+  useEffect(() => {
+    // Limpiamos el flag de sign-out al llegar a la pantalla de login
+    clearSigningOut();
+
+    const reason = location.state?.reason;
+    if (reason === 'unauthorized') {
+      toast.info('Debes iniciar sesión para acceder', { id: 'unauthorized-toast' });
+    } else if (reason === 'error') {
+      toast.error('Error al verificar la sesión', { id: 'error-auth-toast' });
+    }
+  }, [location.state]);
 
   const form = useForm<SignInValues>({
     resolver: zodResolver(SignInSchema),
@@ -47,15 +59,12 @@ export default function SignIn() {
 
   const onSubmit = (data: SignInValues) => {
     signInMutation.mutate(data, {
-      onSuccess: async () => {
+      onSuccess: () => {
         toast.success('Sesión iniciada correctamente');
-
-        await queryClient.invalidateQueries({ queryKey: ['session'] });
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        navigate('/home');
+        // No navegamos manualmente: GuestRoute detecta la sesión y redirige a /home
       },
       onError: (error) => {
-        toast.error(error?.message || 'Credenciales incorrectas');
+        toast.error(error?.message || 'Credenciales incorrectas', { id: 'auth-error' });
         form.resetField('password');
       },
     });

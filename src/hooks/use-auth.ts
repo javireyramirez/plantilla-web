@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { markSigningOut } from '@/lib/auth-flags.js';
 import authService from '@/services/auth.service.js';
 
 export function useSignIn() {
@@ -118,6 +119,7 @@ export function useSignOut() {
     mutationFn: () => authService.signOut(),
 
     onSuccess: () => {
+      markSigningOut();
       queryClient.clear();
       navigate('/signin', { replace: true });
       console.log('Sesión cerrada');
