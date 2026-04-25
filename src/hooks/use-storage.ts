@@ -10,21 +10,42 @@ export const useUploadFile = () => {
       entityType,
       entityId,
       file,
+      files,
     }: {
       entityType: string;
       entityId: string;
-      file: File;
+      file?: File;
+      files?: File[];
     }) => {
-      const { uploadUrl, documentId } = await storageService.uploadUrl(entityType, entityId, {
-        fileName: file.name,
-        mimeType: file.type,
-        size: file.size,
-        isPublic: false,
+      // 1. Normalizamos la entrada a un array para procesarlos todos igual
+      const filesToProcess = files || (file ? [file] : []);
+
+      if (filesToProcess.length === 0) {
+        throw new Error('No se han proporcionado archivos');
+      }
+
+      // 2. Mapeamos cada archivo a su promesa de subida completa (los 3 pasos)
+      const uploadPromises = filesToProcess.map(async (currentFile) => {
+        // Paso A: Pedir la URL
+        const { uploadUrl, documentId } = await storageService.uploadUrl(entityType, entityId, {
+          fileName: currentFile.name,
+          mimeType: currentFile.type,
+          size: currentFile.size,
+          isPublic: false,
+        });
+
+        // Paso B: Subir al bucket
+        await storageService.uploadBucket(uploadUrl, currentFile);
+
+        // Paso C: Confirmar documento
+        return await storageService.confirmDocument(entityType, entityId, documentId);
       });
-      await storageService.uploadBucket(uploadUrl, file);
-      return await storageService.confirmDocument(entityType, entityId, documentId);
+
+      // 3. Ejecutamos todas las subidas en paralelo
+      return await Promise.all(uploadPromises);
     },
     onSuccess: (_, { entityType, entityId }) => {
+      // Invalida la caché una sola vez cuando terminen TODOS los archivos
       queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] });
     },
   });
