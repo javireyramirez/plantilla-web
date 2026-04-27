@@ -1,8 +1,16 @@
 import { ChevronsUpDown, LoaderCircle, LogOut, User } from 'lucide-react';
+import { Check, Languages } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { LanguageSwitcher } from '@/components/language/LanguageSwitcher';
 import { ModeToggle } from '@/components/theme/mode-toggle.js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
+import {
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,8 +28,14 @@ import {
 } from '@/components/ui/sidebar.js';
 import { useSession } from '@/config/auth-client.js';
 import { useSignOut } from '@/hooks/use-auth.js';
+import { SUPPORTED_LANGUAGES } from '@/utils/language';
+import { getLanguageLabel } from '@/utils/language';
 
 export default function NavUser() {
+  const { i18n, t } = useTranslation();
+
+  const currentLang = i18n.language.split('-')[0];
+
   const { isMobile } = useSidebar();
   const { mutate: signOut, isPending } = useSignOut();
   const { data: session } = useSession();
@@ -31,7 +45,7 @@ export default function NavUser() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <LoaderCircle className="h-8 w-8 animate-spin text-primary" aria-label="Cargando" />
-          <p className="text-sm text-muted-foreground">Verificando sesión...</p>
+          <p className="text-sm text-muted-foreground">{t('nav.verifyingSession')}</p>
         </div>
       </div>
     );
@@ -106,21 +120,40 @@ export default function NavUser() {
               <DropdownMenuItem asChild>
                 <Link to="/profile">
                   <User className="mr-2 h-4 w-4" />
-                  Perfil
+                  {t('nav.profile')}
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Languages className="mr-2 h-4 w-4" />
+                {getLanguageLabel(currentLang)}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang}
+                    onClick={() => i18n.changeLanguage(lang)}
+                    className="flex justify-between"
+                  >
+                    {getLanguageLabel(lang)}
+                    {currentLang === lang && <Check className="h-4 w-4" />}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()} disabled={isPending}>
               {isPending ? (
                 <>
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  Cerrando sesión...
+                  {t('nav.closingSession')}
                 </>
               ) : (
                 <>
                   <LogOut className="mr-2 h-4 w-4" />
-                  Cerrar Sesión
+                  {t('nav.closeSession')}
                 </>
               )}
             </DropdownMenuItem>

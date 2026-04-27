@@ -1,3 +1,5 @@
+import { Outlet } from 'react-router-dom';
+
 import logo from '@/assets/logo.png';
 import { Separator } from '@/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
@@ -5,7 +7,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import NavUser from './NavUser.js';
 import AppSidebar from './Sidebar.js';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function PrivateLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -25,7 +27,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <div className="p-6">{children}</div>
+        <main className="p-6">
+          {' '}
+          <Outlet />{' '}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

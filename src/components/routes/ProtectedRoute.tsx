@@ -1,16 +1,16 @@
 import { LoaderCircle } from 'lucide-react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { PropsWithChildren } from 'react';
 
-import { isSigningOut } from '@/lib/auth-flags.js';
 import { useSession } from '@/config/auth-client.js';
+import { isSigningOut } from '@/lib/auth-flags.js';
 
 interface ProtectedRouteProps extends PropsWithChildren {
   redirectTo?: string;
 }
 
-function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProps) {
+function ProtectedRoute({ redirectTo = '/signin' }: ProtectedRouteProps) {
   const { data: session, isPending, error, isRefetching } = useSession();
   const location = useLocation();
 
@@ -38,8 +38,7 @@ function ProtectedRoute({ children, redirectTo = '/signin' }: ProtectedRouteProp
     return <Navigate to={redirectTo} replace state={{ reason, from: location.pathname }} />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 }
 
 export default ProtectedRoute;
-

@@ -1,5 +1,5 @@
 import { LoaderCircle } from 'lucide-react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { PropsWithChildren } from 'react';
 
@@ -9,17 +9,15 @@ interface GuestRouteProps extends PropsWithChildren {
   redirectTo?: string;
 }
 
-function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
+function GuestRoute({ redirectTo = '/home' }: GuestRouteProps) {
   const { data: session, isPending, error, isRefetching } = useSession();
   const location = useLocation();
 
   if (error) {
     console.error('Error verificando sesión:', error);
-    return <>{children}</>;
+    return <Outlet />;
   }
 
-  // Mostrar loader durante CUALQUIER estado de carga (inicial o refetch)
-  // O si el session es undefined (aún no se ha intentado cargar)
   if (isPending || isRefetching || (session === undefined && !error)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -32,13 +30,11 @@ function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
   }
 
   if (session) {
-    // Redirigir a la ruta original si existe (ej. usuario recargó /pagina1 sin sesión)
     const destination = location.state?.from || redirectTo;
     return <Navigate to={destination} replace />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 }
 
 export default GuestRoute;
-
