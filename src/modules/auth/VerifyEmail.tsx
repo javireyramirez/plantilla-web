@@ -1,4 +1,5 @@
 import { CheckCircle, LoaderCircle, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -13,6 +14,8 @@ import { useVerifyEmail } from '@/hooks/use-auth.js';
 type Status = 'loading' | 'success' | 'error';
 
 export default function VerifyEmail() {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<Status>('loading');
@@ -42,11 +45,12 @@ export default function VerifyEmail() {
 
   useEffect(() => {
     if (status !== 'success') {
+      toast.error(t('auth.toastErrorVerifyEmail'), { id: 'unauthorized-toast' });
       return;
     }
 
     if (countdown <= 0) {
-      toast.success('Email verificado correctamente');
+      toast.success(t('auth.toastSuccessVerifyEmail'), { id: 'verify-toast' });
       navigate('/home');
       return;
     }
@@ -78,15 +82,15 @@ export default function VerifyEmail() {
 
             <div className="flex flex-col items-center gap-2">
               <XCircle className="size-10 text-destructive" />
-              <CardTitle className="text-center">Error en la verificación</CardTitle>
+              <CardTitle className="text-center">{t('auth.verifyEmailTitleError')}</CardTitle>
             </div>
 
             <CardDescription className="text-center">
-              El enlace es inválido, ha expirado o ya ha sido utilizado.
+              {t('auth.verifyEmailDescriptionError')}
             </CardDescription>
 
             <Button className="w-full mt-2" onClick={() => navigate('/login')}>
-              Volver a inicio de sesión
+              {t('auth.verifyEmailGoToLogin')}{' '}
             </Button>
           </CardHeader>
         </Card>
@@ -105,15 +109,15 @@ export default function VerifyEmail() {
 
           <div className="flex flex-col items-center gap-2">
             <CheckCircle className="size-10 text-success" />
-            <CardTitle className="text-center">Tu cuenta ha sido confirmada con éxito.</CardTitle>
+            <CardTitle className="text-center">t('auth.verifyEmailTitleSuccess')</CardTitle>
           </div>
 
           <CardDescription className="text-center">
-            Redirigiendo al dashboard en {countdown} segundo{countdown !== 1 ? 's' : ''}...
+            {t('redirecting_message', { count: countdown })}{' '}
           </CardDescription>
 
           <Button className="w-full mt-2" onClick={() => navigate('/home')}>
-            Ir ahora
+            {t('auth.verifyEmailGoNow')}{' '}
           </Button>
         </CardHeader>
       </Card>

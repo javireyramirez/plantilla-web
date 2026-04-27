@@ -2,15 +2,70 @@
   "auth": {
     "orContinueWith": "O continúa con",
     "signInWithGoogle": "Iniciar sesión con Google",
-    "signInWithApple": "Iniciar sesión con Apple"
+    "signInWithApple": "Iniciar sesión con Apple",
+    "signInDescription": "Aquí se hacen cosas genéricas",
+    "email": "Email",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "rememberMe": "Recordarme",
+    "signin": "Iniciar Sesión",
+    "signing": "Iniciando...",
+    "notRegister": "¿Aún no tienes cuenta?",
+    "name": "Nombre",
+    "repeatPassword": "Repetir contraseña",
+    "accept": "Aceptar los",
+    "terms": "términos y condiciones",
+    "create": "Crear Cuenta",
+    "yetRegister": "¿Ya tienes cuenta?",
+    "recoverPassword": "Recuperar Contraseña",
+    "toastUnauthorized": "Debes iniciar sesión para acceder",
+    "toastSessionError": "Error al verificar la sesión",
+    "toastSessionExpired": "Tu sesión ha expirado, por favor entra de nuevo",
+
+    "recoverInstructions": "Introduce tu dirección de email y te enviaremos un correo con los pasos a seguir",
+    "send": "Enviar",
+    "sending": "Enviando...",
+    "toastSuccessForgot": "Si el email existe, recibirás un correo con instrucciones para restablecer tu contraseña",
+    "toastErrorForgot": "Error en el envío del email",
+    "toastSuccessSignIn": "Sesión iniciada correctamente",
+    "toastErrorSignIN": "Credenciales incorrectas",
+    "toastSuccessSignUp": "Cuenta creada correctamente",
+    "toastErrorSignUp": "Error al crear la cuenta",
+
+    "resetPasswordTitle": "Cambiar Contraseña",
+    "newPassword": "Nueva Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "changing": "Cambiando...",
+    "changePassword": "Cambiar Contraseña",
+    "toastSuccessReset": "Contraseña cambiada correctamente",
+    "toastErrorReset": "Fallo al cambiar la contraseña",
+    "unauthorizedReset": "Acceso no autorizado. El enlace de recuperación es necesario",
+
+    "verifyEmailTitleError": "Error en la verificación",
+    "verifyEmailDescriptionError": "El enlace es inválido, ha expirado o ya ha sido utilizado",
+    "verifyEmailGoToLogin": "Volver a inicio de sesión",
+    "verifyEmailTitleSuccess": "Tu cuenta ha sido confirmada con éxito.",
+    "redirecting_message_one": "Redirigiendo al dashboard en {{count}} segundo...",
+    "redirecting_message_other": "Redirigiendo al dashboard en {{count}} segundos...",
+    "verifyEmailGoNow": "Ir ahora",
+    "toastSuccessVerifyEmail": "Email verificado correctamente",
+    "toastErrorVerifyEmail": "Error al verificar el email"
   },
   "nav": {
     "verifyingSession": "Verificando sesión...",
     "profile": "Perfil",
     "closeSession": "Cerrar Sesión",
-    "closingSession": "Cerrando sesión..."
+    "closingSession": "Cerrando sesión...",
+    "loadingAria": "Cargando"
   },
   "theme": {
     "mode": "Modo oscuro"
+  },
+  "sidebar": {
+    "group1": "Ventas",
+    "nav": {
+      "page1": "Inicio",
+      "page2": "Página 1"
+    }
   }
 }

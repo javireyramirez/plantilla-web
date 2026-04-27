@@ -1,4 +1,5 @@
 import { LoaderCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { PropsWithChildren } from 'react';
@@ -12,6 +13,7 @@ interface GuestRouteProps extends PropsWithChildren {
 function GuestRoute({ redirectTo = '/home' }: GuestRouteProps) {
   const { data: session, isPending, error, isRefetching } = useSession();
   const location = useLocation();
+  const { t } = useTranslation();
 
   if (error) {
     console.error('Error verificando sesión:', error);
@@ -23,7 +25,7 @@ function GuestRoute({ redirectTo = '/home' }: GuestRouteProps) {
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Verificando sesión...</p>
+          <p className="text-sm text-muted-foreground">{t('nav.verifyingSession')}</p>
         </div>
       </div>
     );

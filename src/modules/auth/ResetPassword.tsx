@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LoaderCircle } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -22,11 +23,12 @@ import {
 import { FieldLabel } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
 import { useResetPassword } from '@/hooks/use-auth.js';
-
-import { ResetPasswordSchema } from '@/schemas/auth.schema.js'
-import { ResetPasswordSchemaValues } from '@/schemas/auth.schema.js'
+import { ResetPasswordSchema } from '@/schemas/auth.schema.js';
+import { ResetPasswordSchemaValues } from '@/schemas/auth.schema.js';
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
+
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const [showPassword, setShowPassword] = useState({
@@ -47,7 +49,7 @@ export default function ResetPassword() {
 
   useEffect(() => {
     if (!token) {
-      toast.error('Acceso no autorizado. El enlace de recuperación es necesario.');
+      toast.error(t('auth.unauthorizedReset'), { id: 'unauthorized-toast' });
       navigate('/signin', { replace: true });
     } else {
       setIsValidating(false);
@@ -76,12 +78,12 @@ export default function ResetPassword() {
       { newPassword: data.newPassword, token: token },
       {
         onSuccess: () => {
-          toast.success('Contraseña cambiada correctamente');
+          toast.success(t('auth.toastSuccessReset'));
           navigate('/signin');
         },
 
         onError: (error) => {
-          toast.error(error?.message || 'Fallo al cambiar la contraseña');
+          toast.error(error?.message || t('auth.toastErrorReset'));
         },
       }
     );
@@ -98,9 +100,8 @@ export default function ResetPassword() {
               <AvatarImage src={logo} />
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
-            Aplicación Genérica
           </CardTitle>
-          <CardDescription>Cambiar Contraseña</CardDescription>
+          <CardDescription>{t('auth.changePassword')}</CardDescription>
         </CardHeader>
         <form id="form-signin" autoComplete="off" onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="flex flex-col gap-4">
@@ -109,7 +110,7 @@ export default function ResetPassword() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <FormFieldWrapper fieldState={fieldState}>
-                  <FieldLabel htmlFor="newPassword">Contraseña</FieldLabel>
+                  <FieldLabel htmlFor="newPassword">{t('auth.newPassword')}</FieldLabel>
                   <div className="relative">
                     <Input
                       {...field}
@@ -147,7 +148,7 @@ export default function ResetPassword() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <FormFieldWrapper fieldState={fieldState}>
-                  <FieldLabel htmlFor="confirmPassword">Repetir Contraseña</FieldLabel>
+                  <FieldLabel htmlFor="confirmPassword">{t('auth.confirmPassword')}</FieldLabel>
                   <div className="relative">
                     <Input
                       {...field}
@@ -186,10 +187,10 @@ export default function ResetPassword() {
               {isSubmitting ? (
                 <>
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  Cambiando...
+                  t('auth.changing')
                 </>
               ) : (
-                'Cambiar Contraseña'
+                t('auth.changePassword')
               )}
             </Button>
           </CardFooter>

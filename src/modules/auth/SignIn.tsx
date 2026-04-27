@@ -1,13 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LoaderCircle } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useEffect, useRef, useState } from 'react';
-
-import { clearSigningOut } from '@/lib/auth-flags.js';
-
+import { useEffect, useState } from 'react';
 
 import logo from '@/assets/logo.png';
 import FormFieldWrapper from '@/components/auth/FormFieldWrapper.js';
@@ -26,26 +24,31 @@ import { Checkbox } from '@/components/ui/checkbox.js';
 import { FieldError, FieldLabel } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
 import { useSignIn } from '@/hooks/use-auth.js';
+import { clearSigningOut } from '@/lib/auth-flags.js';
 import { SignInSchema } from '@/schemas/auth.schema.js';
 import { SignInValues } from '@/schemas/auth.schema.js';
 
 export default function SignIn() {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
   const signInMutation = useSignIn();
 
-  // Muestra el toast apropiado cuando ProtectedRoute redirige aquí
   useEffect(() => {
-    // Limpiamos el flag de sign-out al llegar a la pantalla de login
     clearSigningOut();
 
     const reason = location.state?.reason;
-    if (reason === 'unauthorized') {
-      toast.info('Debes iniciar sesión para acceder', { id: 'unauthorized-toast' });
-    } else if (reason === 'error') {
-      toast.error('Error al verificar la sesión', { id: 'error-auth-toast' });
+
+    if (reason) {
+      if (reason === 'unauthorized') {
+        toast.info(t('auth.toastUnauthorized'), { id: 'unauthorized-toast' });
+      } else if (reason === 'error') {
+        toast.error(t('auth.toastSessionError'), { id: 'error-auth-toast' });
+      }
+
+      window.history.replaceState({}, document.title);
     }
-  }, [location.state]);
+  }, [location.state, t]);
 
   const form = useForm<SignInValues>({
     resolver: zodResolver(SignInSchema),
@@ -60,11 +63,11 @@ export default function SignIn() {
   const onSubmit = (data: SignInValues) => {
     signInMutation.mutate(data, {
       onSuccess: () => {
-        toast.success('Sesión iniciada correctamente');
-        // No navegamos manualmente: GuestRoute detecta la sesión y redirige a /home
+        toast.success(t('auth.toastSuccessSignIn'), { id: 'auth-success' });
+        // No navegamos manualmente: GuestRoute detecta la sesión y redirige a
       },
       onError: (error) => {
-        toast.error(error?.message || 'Credenciales incorrectas', { id: 'auth-error' });
+        toast.error(error?.message || t('auth.toastErrorSignIN'), { id: 'auth-error' });
         form.resetField('password');
       },
     });
@@ -81,9 +84,8 @@ export default function SignIn() {
               <AvatarImage src={logo} alt="Logo de la aplicación" />
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
-            Aplicación Genérica
           </CardTitle>
-          <CardDescription>Aquí se hacen cosas genéricas</CardDescription>
+          <CardDescription>{t('auth.signInDescription')}</CardDescription>
         </CardHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -95,7 +97,7 @@ export default function SignIn() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <FormFieldWrapper fieldState={fieldState}>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <FieldLabel htmlFor="email">{t('auth.email')}</FieldLabel>
                     <Input
                       {...field}
                       id="email"
@@ -113,13 +115,13 @@ export default function SignIn() {
               {/* Campo de Contraseña */}
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="password">Contraseña</FieldLabel>
+                  <FieldLabel htmlFor="password">{t('auth.password')}</FieldLabel>
                   <Link
                     to="/forgot-password"
                     className="text-sm text-primary hover:underline"
                     tabIndex={isSubmitting ? -1 : 0}
                   >
-                    ¿Olvidaste tu contraseña?
+                    {t('auth.forgotPassword')}
                   </Link>
                 </div>
                 <div className="relative">
@@ -173,7 +175,7 @@ export default function SignIn() {
                         disabled={isSubmitting}
                       />
                       <label htmlFor="rememberMe" className="text-sm font-medium cursor-pointer">
-                        Recordarme
+                        {t('auth.rememberMe')}
                       </label>
                     </div>
                     {fieldState.invalid && <FieldError>{fieldState.error?.message}</FieldError>}
@@ -189,10 +191,10 @@ export default function SignIn() {
               {isSubmitting ? (
                 <>
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  Iniciando...
+                  {t('auth.signing')}
                 </>
               ) : (
-                'Iniciar Sesión'
+                t('auth.signin')
               )}
             </Button>
 
@@ -206,7 +208,7 @@ export default function SignIn() {
               asChild
             >
               <Link to="/signup" tabIndex={isSubmitting ? -1 : 0}>
-                ¿Aún no tienes cuenta?
+                {t('auth.notRegister')}
               </Link>
             </Button>
           </CardFooter>
