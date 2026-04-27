@@ -1,0 +1,16 @@
+{
+  "auth": {
+    "orContinueWith": "O continúa con",
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "signInWithApple": "Iniciar sesión con Apple"
+  },
+  "nav": {
+    "verifyingSession": "Verificando sesión...",
+    "profile": "Perfil",
+    "closeSession": "Cerrar Sesión",
+    "closingSession": "Cerrando sesión..."
+  },
+  "theme": {
+    "mode": "Modo oscuro"
+  }
+}

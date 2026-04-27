@@ -1,4 +1,5 @@
 import { LoaderCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import appleLogo from '@/assets/apple.svg';
@@ -12,6 +13,8 @@ interface OauthButtonProps {
 }
 
 export default function OauthButton({ isSubmitting }: OauthButtonProps) {
+  const { t } = useTranslation();
+
   const { mutate: outhGoogleMutation, isPending: isPendingGoogle } = useOuthGoogle();
 
   return (
@@ -21,7 +24,9 @@ export default function OauthButton({ isSubmitting }: OauthButtonProps) {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-background px-2 text-muted-foreground">O continúa con</span>
+          <span className="bg-background px-2 text-muted-foreground">
+            {t('auth.orContinueWith')}
+          </span>
         </div>
       </div>
 
@@ -33,7 +38,7 @@ export default function OauthButton({ isSubmitting }: OauthButtonProps) {
           className="rounded-full size-12 hover:bg-muted transition-all duration-200"
           onClick={() => outhGoogleMutation()}
           disabled={isSubmitting || isPendingGoogle}
-          aria-label="Iniciar sesión con Google"
+          aria-label={t('auth.signInWithGoogle')}
         >
           {isPendingGoogle ? (
             <>
@@ -53,7 +58,7 @@ export default function OauthButton({ isSubmitting }: OauthButtonProps) {
           className="rounded-full size-12 hover:bg-muted transition-all duration-200"
           onClick={() => toast.info('Apple')}
           disabled={isSubmitting}
-          aria-label="Iniciar sesión con Apple"
+          aria-label={t('auth.signInWithApple')}
         >
           <Avatar className="size-10 border shadow-sm">
             <AvatarImage src={appleLogo} className="p-2" alt="Apple" />

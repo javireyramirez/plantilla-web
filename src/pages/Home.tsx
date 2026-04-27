@@ -1,7 +1,3 @@
-export default function Home() {
-  return (
-    <div className="flex justify-center">
-      Página genérica de aplicación genérica que es responsive en teléfonos
-    </div>
-  );
-}
+import Home from '@/modules/home/home';
+
+export default Home;

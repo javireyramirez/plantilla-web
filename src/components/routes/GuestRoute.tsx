@@ -1,8 +1,7 @@
 import { LoaderCircle } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-import { PropsWithChildren, useEffect, useRef } from 'react';
+import { PropsWithChildren } from 'react';
 
 import { useSession } from '@/config/auth-client.js';
 
@@ -10,23 +9,16 @@ interface GuestRouteProps extends PropsWithChildren {
   redirectTo?: string;
 }
 
-function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
+function GuestRoute({ redirectTo = '/home' }: GuestRouteProps) {
   const { data: session, isPending, error, isRefetching } = useSession();
-  const toastShown = useRef(false);
-
-  useEffect(() => {
-    if (session && !toastShown.current) {
-      toast.info('Sesión iniciada correctamente');
-      toastShown.current = true;
-    }
-  }, [session]);
+  const location = useLocation();
 
   if (error) {
     console.error('Error verificando sesión:', error);
-    return <>{children}</>;
+    return <Outlet />;
   }
 
-  if (isPending && !isRefetching) {
+  if (isPending || isRefetching || (session === undefined && !error)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -38,10 +30,11 @@ function GuestRoute({ children, redirectTo = '/home' }: GuestRouteProps) {
   }
 
   if (session) {
-    return <Navigate to={redirectTo} replace />;
+    const destination = location.state?.from || redirectTo;
+    return <Navigate to={destination} replace />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 }
 
 export default GuestRoute;
