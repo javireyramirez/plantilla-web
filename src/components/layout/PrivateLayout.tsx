@@ -18,7 +18,6 @@ export default function PrivateLayout() {
             <Separator orientation="vertical" className="h-4" />
             <div className="flex items-center gap-2">
               <img src={logo} alt="logo" className="size-8 object-contain" />
-              <span className="font-medium">Empresa Genérica</span>
             </div>
           </div>
 

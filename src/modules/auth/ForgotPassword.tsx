@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoaderCircle } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -19,11 +20,12 @@ import {
 import { FieldLabel } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
 import { useRequestPasswordReset } from '@/hooks/use-auth.js';
-
 import { ForgotPasswordSchema } from '@/schemas/auth.schema.js';
 import { ForgotPasswordValues } from '@/schemas/auth.schema.js';
 
 export default function ForgotPassword() {
+  const { t } = useTranslation();
+
   const useRequestPasswordResetMutation = useRequestPasswordReset();
 
   const form = useForm<ForgotPasswordValues>({
@@ -36,13 +38,11 @@ export default function ForgotPassword() {
   const onSubmit = (data: ForgotPasswordValues) => {
     useRequestPasswordResetMutation.mutate(data, {
       onSuccess: () => {
-        toast.success(
-          'Si el email existe, recibirás un correo con instrucciones para restablecer tu contraseña'
-        );
+        toast.success(t('auth.toastSuccessForgot'));
       },
 
       onError: (error) => {
-        toast.error(error?.message || 'Error en el envío del email');
+        toast.error(error?.message || t('auth.toastErrorForgot'));
       },
     });
   };
@@ -58,22 +58,19 @@ export default function ForgotPassword() {
               <AvatarImage src={logo} />
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
-            Aplicación Genérica
           </CardTitle>
-          <CardDescription>Recuperar Contraseña</CardDescription>
+          <CardDescription>{t('auth.recoverPassword')}</CardDescription>
         </CardHeader>
         <form id="form-signin" onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
             <div className="flex flex-col gap-4">
-              <p className="text-sm text-muted-foreground mb-2">
-                Introduce tu dirección de email y te enviaremos un correo con los pasos a seguir.
-              </p>
+              <p className="text-sm text-muted-foreground mb-2">{t('auth.recoverInstructions')} </p>
               <Controller
                 name="email"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <FormFieldWrapper fieldState={fieldState}>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <FieldLabel htmlFor="email">{t('auth.email')}</FieldLabel>
                     <Input
                       {...field}
                       id="email"
@@ -95,10 +92,10 @@ export default function ForgotPassword() {
               {isSubmitting ? (
                 <>
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  Enviando...
+                  {t('auth.send')}{' '}
                 </>
               ) : (
-                'Enviar'
+                t('auth.send')
               )}
             </Button>
 
@@ -108,7 +105,7 @@ export default function ForgotPassword() {
               asChild
             >
               <Link to="/signin" tabIndex={isSubmitting ? -1 : 0}>
-                ¿Ya tienes cuenta?
+                {t('auth.yetRegister')}
               </Link>
             </Button>
           </CardFooter>

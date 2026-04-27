@@ -29,6 +29,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-query-devtools": "^5.91.2",
+    "@tanstack/react-table": "^8.21.3",
     "axios": "^1.13.3",
     "better-auth": "^1.4.17",
     "class-variance-authority": "^0.7.1",

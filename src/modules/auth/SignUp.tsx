@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LoaderCircle } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -24,11 +25,12 @@ import { Checkbox } from '@/components/ui/checkbox.js';
 import { FieldError, FieldLabel } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
 import { useSignUp } from '@/hooks/use-auth.js';
-
-import { SignUpSchema } from '@/schemas/auth.schema.js'
-import { SignUpValues } from '@/schemas/auth.schema.js'
+import { SignUpSchema } from '@/schemas/auth.schema.js';
+import { SignUpValues } from '@/schemas/auth.schema.js';
 
 export default function SignUp() {
+  const { t } = useTranslation();
+
   const [showPassword, setShowPassword] = useState({
     password: false,
     confirmPassword: false,
@@ -56,12 +58,12 @@ export default function SignUp() {
   const onSubmit = (data: SignUpValues) => {
     useSignUpMutation.mutate(data, {
       onSuccess: () => {
-        toast.success('Cuenta creada correctamente');
+        toast.success(t('auth.toastSuccessSignUp'), { id: 'auth-success' });
         navigate('/home');
       },
 
       onError: (error) => {
-        toast.error(error?.message || 'Credenciales incorrectas');
+        toast.error(error?.message || t('auth.toastErrorSignUp'), { id: 'auth-error' });
       },
     });
   };
@@ -77,9 +79,8 @@ export default function SignUp() {
               <AvatarImage src={logo} />
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
-            Aplicación Genérica
           </CardTitle>
-          <CardDescription>Aquí se hacen cosas genéricas</CardDescription>
+          <CardDescription>{t('auth.signInDescription')}</CardDescription>
         </CardHeader>
         <form id="form-signin" onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent>
@@ -90,7 +91,7 @@ export default function SignUp() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <FormFieldWrapper fieldState={fieldState}>
-                    <FieldLabel htmlFor="name">Nombre</FieldLabel>
+                    <FieldLabel htmlFor="name">{t('auth.name')}</FieldLabel>
                     <Input
                       {...field}
                       id="name"
@@ -108,7 +109,7 @@ export default function SignUp() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <FormFieldWrapper fieldState={fieldState}>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <FieldLabel htmlFor="email">{t('auth.email')}</FieldLabel>
                     <Input
                       {...field}
                       id="email"
@@ -130,7 +131,7 @@ export default function SignUp() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <FormFieldWrapper fieldState={fieldState}>
-                      <FieldLabel htmlFor="password">Contraseña</FieldLabel>
+                      <FieldLabel htmlFor="password">{t('auth.password')}</FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}
@@ -171,7 +172,7 @@ export default function SignUp() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <FormFieldWrapper fieldState={fieldState}>
-                      <FieldLabel htmlFor="confirmPassword">Repetir Contraseña</FieldLabel>
+                      <FieldLabel htmlFor="confirmPassword">{t('auth.repeatPassword')}</FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}
@@ -220,13 +221,13 @@ export default function SignUp() {
                         disabled={isSubmitting}
                       />
                       <label htmlFor="acceptedTerms" className="text-sm font-medium">
-                        Aceptar los{' '}
+                        {t('auth.accept')}{' '}
                         <Button
                           type="button"
                           variant="link"
                           className="h-auto p-0 text-link hover:text-link-hover hover:underline transition-colors"
                         >
-                          términos y condiciones
+                          {t('auth.terms')}
                         </Button>
                         *
                       </label>
@@ -243,10 +244,10 @@ export default function SignUp() {
               {isSubmitting ? (
                 <>
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  Iniciando...
+                  {t('auth.signing')}
                 </>
               ) : (
-                'Crear Cuenta'
+                t('auth.create')
               )}
             </Button>
 
@@ -260,7 +261,7 @@ export default function SignUp() {
               asChild
             >
               <Link to="/signin" tabIndex={isSubmitting ? -1 : 0}>
-                ¿Ya tienes cuenta?
+                {t('auth.yetRegister')}
               </Link>
             </Button>
           </CardFooter>
