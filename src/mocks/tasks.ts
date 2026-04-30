@@ -94,7 +94,7 @@ export const tasks: Task[] = [
     priority: 'low',
     createdAt: '2024-04-29T10:50:00Z',
   },
-    {
+  {
     id: 'TASK-011',
     title: 'Review PR for data table',
     status: 'done',

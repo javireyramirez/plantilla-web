@@ -1,7 +1,8 @@
 // src/components/data-table/data-table-row-actions.tsx
-import { MoreHorizontal, Edit, Copy, Trash } from 'lucide-react';
-import { type Row } from '@tanstack/react-table';
+import { Copy, Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { type Row } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,19 +18,14 @@ interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
-export function DataTableRowActions<TData>({
-  row,
-}: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
   // @ts-ignore - Assuming TData has an id field for the example
   const id = row.original.id;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-        >
+        <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
           <MoreHorizontal className="h-4 w-4" />
           <span className="sr-only">Open menu</span>
         </Button>

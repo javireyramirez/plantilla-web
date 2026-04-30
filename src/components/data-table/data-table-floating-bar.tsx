@@ -1,20 +1,20 @@
 // src/components/data-table/data-table-floating-bar.tsx
-import * as React from 'react';
-import { type Table } from '@tanstack/react-table';
 import { Download, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 
+import * as React from 'react';
+
+import { type Table } from '@tanstack/react-table';
+
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { Kbd } from '@/components/ui/kbd';
+import { Separator } from '@/components/ui/separator';
 
 export interface DataTableFloatingBarProps<TData> {
   table: Table<TData>;
 }
 
-export function DataTableFloatingBar<TData>({
-  table,
-}: DataTableFloatingBarProps<TData>) {
+export function DataTableFloatingBar<TData>({ table }: DataTableFloatingBarProps<TData>) {
   const rows = table.getFilteredSelectedRowModel().rows;
 
   const onClearSelection = React.useCallback(() => {
@@ -64,18 +64,11 @@ export function DataTableFloatingBar<TData>({
         </div>
         <Separator orientation="vertical" className="h-8" />
         <div className="flex items-center gap-2 px-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-2"
-            onClick={onClearSelection}
-          >
+          <Button variant="ghost" size="sm" className="h-8 px-2" onClick={onClearSelection}>
             <X className="mr-2 h-4 w-4" />
             Clear
           </Button>
-          <Kbd className="text-[10px] uppercase">
-            Esc
-          </Kbd>
+          <Kbd className="text-[10px] uppercase">Esc</Kbd>
         </div>
       </div>
     </div>

@@ -1,26 +1,36 @@
 // src/components/data-table/example/tasks-table.tsx
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  CheckCircle2,
+  Circle,
+  HelpCircle,
+  XCircle,
+} from 'lucide-react';
+
 import * as React from 'react';
+
 import {
   type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  type SortingState,
-  type ColumnFiltersState,
-  type VisibilityState,
 } from '@tanstack/react-table';
-import { CheckCircle2, Circle, HelpCircle, XCircle, ArrowDown, ArrowRight, ArrowUp } from 'lucide-react';
 
 import { DataTable } from '@/components/data-table/data-table';
-import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
-import { DataTableRowActions } from '@/components/data-table/data-table-row-actions';
 import { DataTableFloatingBar } from '@/components/data-table/data-table-floating-bar';
-import { tasks, type Task } from '@/mocks/tasks';
+import { DataTableRowActions } from '@/components/data-table/data-table-row-actions';
+import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { type Task, tasks } from '@/mocks/tasks';
 
 export function TasksTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -34,7 +44,10 @@ export function TasksTable() {
         id: 'select',
         header: ({ table }) => (
           <Checkbox
-            checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Select all"
             className="translate-y-[2px]"
@@ -53,25 +66,19 @@ export function TasksTable() {
       },
       {
         accessorKey: 'id',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label="Task" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label="Task" />,
         cell: ({ row }) => <div className="w-[80px] font-mono">{row.getValue('id')}</div>,
         enableSorting: false,
         enableHiding: false,
       },
       {
         accessorKey: 'title',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label="Title" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label="Title" />,
         cell: ({ row }) => {
           return (
             <div className="flex space-x-2">
               <Badge variant="outline">{row.original.label}</Badge>
-              <span className="max-w-[500px] truncate font-medium">
-                {row.getValue('title')}
-              </span>
+              <span className="max-w-[500px] truncate font-medium">{row.getValue('title')}</span>
             </div>
           );
         },
@@ -82,17 +89,16 @@ export function TasksTable() {
       },
       {
         accessorKey: 'status',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label="Status" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label="Status" />,
         cell: ({ row }) => {
           const status = row.getValue('status') as string;
-          const Icon = {
-            todo: Circle,
-            'in-progress': HelpCircle,
-            done: CheckCircle2,
-            canceled: XCircle,
-          }[status] || Circle;
+          const Icon =
+            {
+              todo: Circle,
+              'in-progress': HelpCircle,
+              done: CheckCircle2,
+              canceled: XCircle,
+            }[status] || Circle;
 
           return (
             <div className="flex w-[100px] items-center">
@@ -117,16 +123,15 @@ export function TasksTable() {
       },
       {
         accessorKey: 'priority',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label="Priority" />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label="Priority" />,
         cell: ({ row }) => {
           const priority = row.getValue('priority') as string;
-          const Icon = {
-            low: ArrowDown,
-            medium: ArrowRight,
-            high: ArrowUp,
-          }[priority] || ArrowRight;
+          const Icon =
+            {
+              low: ArrowDown,
+              medium: ArrowRight,
+              high: ArrowUp,
+            }[priority] || ArrowRight;
 
           return (
             <div className="flex items-center">
@@ -177,10 +182,7 @@ export function TasksTable() {
   });
 
   return (
-    <DataTable
-      table={table}
-      actionBar={<DataTableFloatingBar table={table} />}
-    >
+    <DataTable table={table} actionBar={<DataTableFloatingBar table={table} />}>
       <DataTableToolbar table={table} />
     </DataTable>
   );
