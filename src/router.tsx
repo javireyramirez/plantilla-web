@@ -12,6 +12,7 @@ import ResetPassword from '@/pages/ResetPassword';
 import SignIn from '@/pages/SignIn';
 import SignUp from '@/pages/SignUp';
 import VerifyEmail from '@/pages/VerifyEmail';
+import DataTableExample from '@/pages/DataTableExample';
 
 export default function Router() {
   return (
@@ -37,6 +38,7 @@ export default function Router() {
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/pagina1" element={<Home />} />
+          <Route path="/table-example" element={<DataTableExample />} />
         </Route>
       </Route>
 

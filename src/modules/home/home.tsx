@@ -1,7 +1,5 @@
 import { FileUploadButton } from '@/components/storage/FileUploadButton';
 import { FileUploadZone } from '@/components/storage/FileUploadZone';
-import { DataTable } from '@/components/table/DataTable';
-import { columns } from '@/components/table/colums';
 
 export default function Home() {
   const data = [
@@ -23,9 +21,7 @@ export default function Home() {
         entityId="b13ce02f-5bae-424f-80ad-74f47bec5ba1"
         multiple={true}
       />
-      <div className="container mx-auto py-10">
-        <DataTable columns={columns} data={data} searchKey="nombre" />
-      </div>
+
     </div>
   );
 }
