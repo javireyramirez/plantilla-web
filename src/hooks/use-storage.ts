@@ -51,9 +51,27 @@ export const useUploadFile = () => {
   });
 };
 
-export const useGetDocuments = (entityType: string, entityId: string, isTrash: boolean) => {
+export const useGetDocuments = (
+  entityType: string,
+  entityId: string,
+  isTrash: boolean = false,
+  page: number,
+  limit: number,
+  fileName: string,
+  contentType: string
+) => {
   return useQuery({
-    queryKey: ['documents', entityType, entityId, isTrash],
-    queryFn: () => storageService.getDocuments(entityType, entityId, isTrash),
+    queryKey: ['documents', entityType, entityId, { isTrash, page, limit, fileName, contentType }],
+    queryFn: () =>
+      storageService.getDocuments(
+        entityType,
+        entityId,
+        isTrash,
+        page,
+        limit,
+        fileName,
+        contentType
+      ),
+    placeholderData: (previousData) => previousData,
   });
 };

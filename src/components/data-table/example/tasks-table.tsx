@@ -5,7 +5,10 @@ import {
   ArrowUp,
   CheckCircle2,
   Circle,
+  Filter,
   HelpCircle,
+  ListFilter,
+  Sliders,
   XCircle,
 } from 'lucide-react';
 
@@ -24,15 +27,24 @@ import {
 } from '@tanstack/react-table';
 
 import { DataTable } from '@/components/data-table/data-table';
+import { DataTableAdvancedToolbar } from '@/components/data-table/data-table-advanced-toolbar';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
+import { DataTableFilterList } from '@/components/data-table/data-table-filter-list';
+import { DataTableFilterMenu } from '@/components/data-table/data-table-filter-menu';
 import { DataTableFloatingBar } from '@/components/data-table/data-table-floating-bar';
 import { DataTableRowActions } from '@/components/data-table/data-table-row-actions';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { type Task, tasks } from '@/mocks/tasks';
 
+type FilterMode = 'toolbar' | 'command' | 'advanced';
+
 export function TasksTable() {
+  const isMobile = useIsMobile();
+  const [filterMode, setFilterMode] = React.useState<FilterMode>('toolbar');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -42,6 +54,7 @@ export function TasksTable() {
     () => [
       {
         id: 'select',
+        maxSize: 40,
         header: ({ table }) => (
           <Checkbox
             checked={
@@ -50,7 +63,7 @@ export function TasksTable() {
             }
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Select all"
-            className="translate-y-[2px]"
+            className="translate-y-0.5"
           />
         ),
         cell: ({ row }) => (
@@ -58,7 +71,7 @@ export function TasksTable() {
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label="Select row"
-            className="translate-y-[2px]"
+            className="translate-y-0.5"
           />
         ),
         enableSorting: false,
@@ -66,19 +79,21 @@ export function TasksTable() {
       },
       {
         accessorKey: 'id',
+        enableColumnFilter: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Task" />,
-        cell: ({ row }) => <div className="w-[80px] font-mono">{row.getValue('id')}</div>,
+        cell: ({ row }) => <div className="w-20 font-mono">{row.getValue('id')}</div>,
         enableSorting: false,
         enableHiding: false,
       },
       {
         accessorKey: 'title',
+        enableColumnFilter: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Title" />,
         cell: ({ row }) => {
           return (
             <div className="flex space-x-2">
               <Badge variant="outline">{row.original.label}</Badge>
-              <span className="max-w-[500px] truncate font-medium">{row.getValue('title')}</span>
+              <span className="max-w-125 truncate font-medium">{row.getValue('title')}</span>
             </div>
           );
         },
@@ -89,6 +104,7 @@ export function TasksTable() {
       },
       {
         accessorKey: 'status',
+        enableColumnFilter: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Status" />,
         cell: ({ row }) => {
           const status = row.getValue('status') as string;
@@ -101,7 +117,7 @@ export function TasksTable() {
             }[status] || Circle;
 
           return (
-            <div className="flex w-[100px] items-center">
+            <div className="flex w-25 items-center">
               <Icon className="mr-2 h-4 w-4 text-muted-foreground" />
               <span className="capitalize">{status.replace('-', ' ')}</span>
             </div>
@@ -123,6 +139,7 @@ export function TasksTable() {
       },
       {
         accessorKey: 'priority',
+        enableColumnFilter: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Priority" />,
         cell: ({ row }) => {
           const priority = row.getValue('priority') as string;
@@ -181,9 +198,40 @@ export function TasksTable() {
     getSortedRowModel: getSortedRowModel(),
   });
 
+  const filterModeToggle = (
+    <ToggleGroup
+      type="single"
+      value={filterMode}
+      onValueChange={(value) => value && setFilterMode(value as FilterMode)}
+    >
+      <ToggleGroupItem value="toolbar" aria-label="Toolbar filters">
+        <Filter className="h-4 w-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem value="command" aria-label="Command filters">
+        <ListFilter className="h-4 w-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem value="advanced" aria-label="Advanced filters">
+        <Sliders className="h-4 w-4" />
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
+  console.log(filterMode);
+
   return (
     <DataTable table={table} actionBar={<DataTableFloatingBar table={table} />}>
-      <DataTableToolbar table={table} />
+      {filterMode === 'toolbar' && (
+        <DataTableToolbar table={table}>{filterModeToggle}</DataTableToolbar>
+      )}
+      {filterMode === 'command' && (
+        <DataTableFilterMenu table={table}>{filterModeToggle}</DataTableFilterMenu>
+      )}
+      {filterMode === 'advanced' && (
+        <DataTableAdvancedToolbar table={table}>
+          <DataTableFilterList table={table} />
+          {filterModeToggle}
+        </DataTableAdvancedToolbar>
+      )}
+      {filterModeToggle}
     </DataTable>
   );
 }

@@ -5,14 +5,15 @@ import PrivateLayout from '@/components/layout/PrivateLayout';
 import PublicLayout from '@/components/layout/PublicLayout';
 import GuestRoute from '@/components/routes/GuestRoute';
 import ProtectedRoute from '@/components/routes/ProtectedRoute';
+import DataTableExample from '@/pages/DataTableExample';
 import ForgotPassword from '@/pages/ForgotPassword';
 import Home from '@/pages/Home';
+import DocumentsTable from '@/pages/Pagina1';
 import Profile from '@/pages/Profile';
 import ResetPassword from '@/pages/ResetPassword';
 import SignIn from '@/pages/SignIn';
 import SignUp from '@/pages/SignUp';
 import VerifyEmail from '@/pages/VerifyEmail';
-import DataTableExample from '@/pages/DataTableExample';
 
 export default function Router() {
   return (
@@ -37,7 +38,12 @@ export default function Router() {
         <Route element={<PrivateLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/pagina1" element={<Home />} />
+          <Route
+            path="/pagina1"
+            element={
+              <DocumentsTable entityType="hola" entityId="b13ce02f-5bae-424f-80ad-74f47bec5ba1" />
+            }
+          />
           <Route path="/table-example" element={<DataTableExample />} />
         </Route>
       </Route>

@@ -1,3 +1,4 @@
+import { NuqsAdapter } from 'nuqs/adapters/react';
 import ReactDOM from 'react-dom/client';
 
 import React from 'react';
@@ -13,7 +14,10 @@ import { queryClient } from './config/react-query.js';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <NuqsAdapter>
+        <App />
+      </NuqsAdapter>
+
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>
