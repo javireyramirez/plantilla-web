@@ -28,17 +28,18 @@ import {
 } from '@tanstack/react-table';
 
 import { DataTable } from '@/components/data-table/data-table';
-import { DataTableAdvancedToolbar } from '@/components/data-table/data-table-advanced-toolbar';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
-import { DataTableFilterList } from '@/components/data-table/data-table-filter-list';
-import { DataTableFilterMenu } from '@/components/data-table/data-table-filter-menu';
 import { DataTableFloatingBar } from '@/components/data-table/data-table-floating-bar';
-import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
+import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
+import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-desktop';
+import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useGetDocuments } from '@/hooks/use-storage';
+import { cn } from '@/lib/utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,9 +47,9 @@ export interface Document {
   id: string;
   fileName: string;
   contentType: string;
-  size: number; // bytes
+  size: number;
   url: string;
-  createdAt: string; // ISO date string
+  createdAt: string;
   updatedAt: string;
   isTrash: boolean;
 }
@@ -108,16 +109,21 @@ interface DocumentsTableProps {
 }
 
 export function DocumentsTable({ entityType, entityId, isTrash = false }: DocumentsTableProps) {
+  // IsMobile
+  const isMobile = useIsMobile();
   // ── Local filter/UI state ──────────────────────────────────────────────────
   const [filterMode, setFilterMode] = React.useState<FilterMode>('toolbar');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [sort] = sorting; // Tomamos el primer criterio de ordenación
+  const sortBy = sort ? sort.id : 'createdAt';
+  const sortOrder = sort ? (sort.desc ? 'desc' : 'asc') : 'desc';
 
   // ── Server-side pagination + filter state ─────────────────────────────────
   const [page, setPage] = React.useState(1);
-  const [limit] = React.useState(20);
+  const [limit, setLimit] = React.useState(10);
   const [fileNameFilter, setFileNameFilter] = React.useState('');
   const [contentTypeFilter, setContentTypeFilter] = React.useState('');
 
@@ -143,7 +149,9 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
     page,
     limit,
     fileNameFilter,
-    contentTypeFilter
+    contentTypeFilter,
+    sortBy,
+    sortOrder
   );
 
   // Adapt to whatever shape your API returns; adjust as needed:
@@ -184,6 +192,7 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
       {
         accessorKey: 'fileName',
         enableColumnFilter: true,
+        enableSorting: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Nombre" />,
         cell: ({ row }) => {
           const contentType = row.getValue('contentType') as string;
@@ -205,6 +214,7 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
       {
         accessorKey: 'contentType',
         enableColumnFilter: true,
+        enableSorting: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Tipo" />,
         cell: ({ row }) => {
           const ct = row.getValue('contentType') as string;
@@ -228,6 +238,7 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
       // File size
       {
         accessorKey: 'size',
+        enableSorting: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Tamaño" />,
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums">
@@ -239,6 +250,7 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
       // Upload date
       {
         accessorKey: 'createdAt',
+        enableSorting: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Fecha" />,
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
@@ -289,11 +301,10 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
   const table = useReactTable({
     data: documents,
     columns,
-    // Server handles pagination, filtering and sorting
     manualPagination: true,
     manualFiltering: true,
     manualSorting: true,
-    pageCount: data?.meta?.totalPages ?? Math.ceil(totalCount / limit),
+    pageCount: data?.meta?.totalPages ?? 1,
     state: {
       sorting,
       columnFilters,
@@ -301,15 +312,24 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
       rowSelection,
       pagination: { pageIndex: page - 1, pageSize: limit },
     },
+    onSortingChange: (updater) => {
+      setSorting(updater);
+      setPage(1);
+    },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: (updater) => {
       const next =
         typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize: limit }) : updater;
-      setPage(next.pageIndex + 1);
+
+      if (next.pageSize !== limit) {
+        setPage(1);
+      } else {
+        setPage(next.pageIndex + 1);
+      }
+      setLimit(next.pageSize);
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -335,21 +355,30 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
     </ToggleGroup>
   );
 
+  // --- LÓGICA DEL SKELETON ---
+  if (isLoading) {
+    return (
+      <DataTableSkeleton
+        columnCount={columns.length}
+        rowCount={limit}
+        filterCount={filterMode === 'toolbar' ? 2 : 0}
+        withPagination={true}
+      />
+    );
+  }
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <DataTable table={table} actionBar={<DataTableFloatingBar table={table} />}>
-      {filterMode === 'toolbar' && (
-        <DataTableToolbar table={table}>{filterModeToggle}</DataTableToolbar>
+    <div
+      className={cn(
+        'transition-opacity duration-200',
+        isFetching && !isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'
       )}
-      {filterMode === 'command' && (
-        <DataTableFilterMenu table={table}>{filterModeToggle}</DataTableFilterMenu>
-      )}
-      {filterMode === 'advanced' && (
-        <DataTableAdvancedToolbar table={table}>
-          <DataTableFilterList table={table} />
-          {filterModeToggle}
-        </DataTableAdvancedToolbar>
-      )}
-    </DataTable>
+    >
+      {' '}
+      <DataTable table={table} actionBar={<DataTableFloatingBar table={table} />}>
+        {isMobile ? <DataTableToolbarMobile table={table} /> : <DataTableToolbar table={table} />}
+      </DataTable>
+    </div>
   );
 }

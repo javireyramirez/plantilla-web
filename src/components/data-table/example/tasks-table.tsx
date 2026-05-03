@@ -33,7 +33,7 @@ import { DataTableFilterList } from '@/components/data-table/data-table-filter-l
 import { DataTableFilterMenu } from '@/components/data-table/data-table-filter-menu';
 import { DataTableFloatingBar } from '@/components/data-table/data-table-floating-bar';
 import { DataTableRowActions } from '@/components/data-table/data-table-row-actions';
-import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
+import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-desktop';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';

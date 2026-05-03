@@ -5,70 +5,20 @@ import * as React from 'react';
 import type { Column, Table } from '@tanstack/react-table';
 
 import { DataTableDateFilter } from '@/components/data-table/data-table-date-filter';
+import { DataTableDebouncedInput } from '@/components/data-table/data-table-debounced-input';
 import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter';
 import { DataTableSliderFilter } from '@/components/data-table/data-table-slider-filter';
-import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
-interface DataTableToolbarProps<TData> extends React.ComponentProps<'div'> {
-  table: Table<TData>;
-}
-
-export function DataTableToolbar<TData>({
-  table,
-  children,
-  className,
-  ...props
-}: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
-
-  const columns = React.useMemo(
-    () => table.getAllColumns().filter((column) => column.getCanFilter()),
-    [table]
-  );
-
-  const onReset = React.useCallback(() => {
-    table.resetColumnFilters();
-  }, [table]);
-
-  return (
-    <div
-      role="toolbar"
-      aria-orientation="horizontal"
-      className={cn('flex w-full items-start justify-between gap-2 p-1', className)}
-      {...props}
-    >
-      <div className="flex flex-1 flex-wrap items-center gap-2">
-        {columns.map((column) => (
-          <DataTableToolbarFilter key={column.id} column={column} />
-        ))}
-        {isFiltered && (
-          <Button
-            aria-label="Reset filters"
-            variant="outline"
-            size="sm"
-            className="border-dashed"
-            onClick={onReset}
-          >
-            <X />
-            Reset
-          </Button>
-        )}
-      </div>
-      <div className="flex items-center gap-2">
-        {children}
-        <DataTableViewOptions table={table} align="end" />
-      </div>
-    </div>
-  );
-}
 interface DataTableToolbarFilterProps<TData> {
   column: Column<TData>;
+  className?: string;
 }
 
-function DataTableToolbarFilter<TData>({ column }: DataTableToolbarFilterProps<TData>) {
+export function DataTableToolbarFilter<TData>({
+  column,
+  className,
+}: DataTableToolbarFilterProps<TData>) {
   {
     const columnMeta = column.columnDef.meta;
 
@@ -78,24 +28,24 @@ function DataTableToolbarFilter<TData>({ column }: DataTableToolbarFilterProps<T
       switch (columnMeta.variant) {
         case 'text':
           return (
-            <Input
+            <DataTableDebouncedInput
               placeholder={columnMeta.placeholder ?? columnMeta.label}
               value={(column.getFilterValue() as string) ?? ''}
-              onChange={(event) => column.setFilterValue(event.target.value)}
-              className="h-8 w-40 lg:w-56"
+              onChange={(value) => column.setFilterValue(value)}
+              className={cn('h-8 w-40 lg:w-56', className)}
             />
           );
 
         case 'number':
           return (
             <div className="relative">
-              <Input
+              <DataTableDebouncedInput
                 type="number"
                 inputMode="numeric"
                 placeholder={columnMeta.placeholder ?? columnMeta.label}
                 value={(column.getFilterValue() as string) ?? ''}
-                onChange={(event) => column.setFilterValue(event.target.value)}
-                className={cn('h-8 w-[120px]', columnMeta.unit && 'pr-8')}
+                onChange={(value) => column.setFilterValue(value)}
+                className={cn('h-8 w-40 lg:w-56', className)}
               />
               {columnMeta.unit && (
                 <span className="absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-accent px-2 text-muted-foreground text-sm">
@@ -106,7 +56,13 @@ function DataTableToolbarFilter<TData>({ column }: DataTableToolbarFilterProps<T
           );
 
         case 'range':
-          return <DataTableSliderFilter column={column} title={columnMeta.label ?? column.id} />;
+          return (
+            <DataTableSliderFilter
+              column={column}
+              title={columnMeta.label ?? column.id}
+              className={className}
+            />
+          );
 
         case 'date':
         case 'dateRange':
@@ -115,6 +71,7 @@ function DataTableToolbarFilter<TData>({ column }: DataTableToolbarFilterProps<T
               column={column}
               title={columnMeta.label ?? column.id}
               multiple={columnMeta.variant === 'dateRange'}
+              className={className}
             />
           );
 
@@ -126,6 +83,7 @@ function DataTableToolbarFilter<TData>({ column }: DataTableToolbarFilterProps<T
               title={columnMeta.label ?? column.id}
               options={columnMeta.options ?? []}
               multiple={columnMeta.variant === 'multiSelect'}
+              className={className}
             />
           );
 

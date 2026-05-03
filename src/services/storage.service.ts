@@ -62,7 +62,9 @@ class StorageService {
     page: number,
     limit: number,
     fileName: string,
-    contentType: string
+    contentType: string,
+    sortBy: string,
+    sortOrder: string
   ) => {
     const response = await instance.get(`/storage/${entityType}/${entityId}/documents`, {
       params: {
@@ -71,6 +73,8 @@ class StorageService {
         limit,
         ...(fileName && { fileName }),
         ...(contentType && { contentType }),
+        sortBy,
+        sortOrder,
       },
     });
     return response.data;

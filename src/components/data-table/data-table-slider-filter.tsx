@@ -43,9 +43,14 @@ function parseValuesAsNumbers(value: unknown): RangeValue | undefined {
 interface DataTableSliderFilterProps<TData> {
   column: Column<TData, unknown>;
   title?: string;
+  className?: string;
 }
 
-export function DataTableSliderFilter<TData>({ column, title }: DataTableSliderFilterProps<TData>) {
+export function DataTableSliderFilter<TData>({
+  column,
+  title,
+  className,
+}: DataTableSliderFilterProps<TData>) {
   const id = React.useId();
 
   const columnFilterValue = parseValuesAsNumbers(column.getFilterValue());
@@ -131,7 +136,11 @@ export function DataTableSliderFilter<TData>({ column, title }: DataTableSliderF
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="border-dashed font-normal">
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn('border-dashed font-normal h-8', className)}
+        >
           {columnFilterValue ? (
             <div
               role="button"

@@ -58,10 +58,17 @@ export const useGetDocuments = (
   page: number,
   limit: number,
   fileName: string,
-  contentType: string
+  contentType: string,
+  sortBy: string,
+  sortOrder: string
 ) => {
   return useQuery({
-    queryKey: ['documents', entityType, entityId, { isTrash, page, limit, fileName, contentType }],
+    queryKey: [
+      'documents',
+      entityType,
+      entityId,
+      { isTrash, page, limit, fileName, contentType, sortBy, sortOrder },
+    ],
     queryFn: () =>
       storageService.getDocuments(
         entityType,
@@ -70,7 +77,9 @@ export const useGetDocuments = (
         page,
         limit,
         fileName,
-        contentType
+        contentType,
+        sortBy,
+        sortOrder
       ),
     placeholderData: (previousData) => previousData,
   });
