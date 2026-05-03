@@ -28,8 +28,8 @@ import {
 } from '@/components/ui/sidebar.js';
 import { useSession } from '@/config/auth-client.js';
 import { useSignOut } from '@/hooks/use-auth.js';
-import { SUPPORTED_LANGUAGES } from '@/utils/language';
-import { getLanguageLabel } from '@/utils/language';
+import { SUPPORTED_LANGUAGES } from '@/lib/language';
+import { getLanguageLabel } from '@/lib/language';
 
 export default function NavUser() {
   const { i18n, t } = useTranslation();

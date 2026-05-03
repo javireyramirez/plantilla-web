@@ -10,8 +10,8 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { SUPPORTED_LANGUAGES } from '@/utils/language';
-import { getLanguageLabel } from '@/utils/language';
+import { SUPPORTED_LANGUAGES } from '@/lib/language';
+import { getLanguageLabel } from '@/lib/language';
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
