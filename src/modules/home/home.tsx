@@ -1,6 +1,3 @@
-'use client'; // Importante si usas Next.js App Router
-import { useEffect, useState } from 'react';
-
 import { FileUploadButton } from '@/components/storage/FileUploadButton';
 import { FileUploadZone } from '@/components/storage/FileUploadZone';
 
