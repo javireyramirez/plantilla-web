@@ -25,6 +25,7 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   title?: string;
   options: Option[];
   multiple?: boolean;
+  className?: string;
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
@@ -32,6 +33,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   title,
   options,
   multiple,
+  className,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const [open, setOpen] = React.useState(false);
 
@@ -70,7 +72,11 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="border-dashed font-normal">
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn('border-dashed font-normal h-8', className)}
+        >
           {selectedValues?.size > 0 ? (
             <div
               role="button"

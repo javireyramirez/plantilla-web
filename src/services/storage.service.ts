@@ -55,10 +55,26 @@ class StorageService {
     return response.data;
   };
 
-  getDocuments = async (entityType: string, entityId: string, isTrash: boolean) => {
+  getDocuments = async (
+    entityType: string,
+    entityId: string,
+    isTrash: boolean = false,
+    page: number,
+    limit: number,
+    fileName: string,
+    contentType: string,
+    sortBy: string,
+    sortOrder: string
+  ) => {
     const response = await instance.get(`/storage/${entityType}/${entityId}/documents`, {
       params: {
         isTrash,
+        page,
+        limit,
+        ...(fileName && { fileName }),
+        ...(contentType && { contentType }),
+        sortBy,
+        sortOrder,
       },
     });
     return response.data;

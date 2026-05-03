@@ -10,6 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { formatDate } from '@/lib/format';
+import { cn } from '@/lib/utils';
 
 type DateSelection = Date[] | DateRange;
 
@@ -49,12 +50,14 @@ interface DataTableDateFilterProps<TData> {
   column: Column<TData, unknown>;
   title?: string;
   multiple?: boolean;
+  className?: string;
 }
 
 export function DataTableDateFilter<TData>({
   column,
   title,
   multiple,
+  className,
 }: DataTableDateFilterProps<TData>) {
   const columnFilterValue = column.getFilterValue();
 
@@ -163,7 +166,11 @@ export function DataTableDateFilter<TData>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="border-dashed font-normal">
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn('border-dashed font-normal h-8 justify-start', className)}
+        >
           {hasValue ? (
             <div
               role="button"
