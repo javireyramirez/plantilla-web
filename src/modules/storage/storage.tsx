@@ -1,17 +1,20 @@
 // src/components/data-table/example/documents-table.tsx
 import {
-  CheckCircle2,
+  Archive,
+  CalendarIcon,
   Download,
   ExternalLink,
   File,
   FileArchive,
   FileImage,
+  FileJson,
+  FileSpreadsheet,
   FileText,
   FileVideo,
   Filter,
   ListFilter,
+  Presentation,
   Sliders,
-  Trash2,
 } from 'lucide-react';
 
 import * as React from 'react';
@@ -40,6 +43,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useGetDocuments } from '@/hooks/use-storage';
 import { cn } from '@/lib/utils';
+import { GetDocumentsQuery } from '@/schemas/storage.schema';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,14 +60,71 @@ export interface Document {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const CONTENT_TYPE_OPTIONS = [
-  { label: 'PDF', value: 'application/pdf', icon: FileText },
-  { label: 'Image', value: 'image', icon: FileImage },
-  { label: 'Video', value: 'video', icon: FileVideo },
-  { label: 'ZIP', value: 'application/zip', icon: FileArchive },
-  { label: 'Other', value: 'other', icon: File },
+export const CONTENT_TYPE_OPTIONS = [
+  {
+    label: 'Documentos',
+    value: 'document',
+    icon: FileText,
+    mimeTypes: [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.oasis.opendocument.text',
+      'text/plain',
+      'text/markdown',
+      'application/rtf',
+    ],
+  },
+  {
+    label: 'Hojas de Cálculo',
+    value: 'spreadsheet',
+    icon: FileSpreadsheet,
+    mimeTypes: [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.oasis.opendocument.spreadsheet',
+      'text/csv',
+      'text/tab-separated-values',
+    ],
+  },
+  {
+    label: 'Presentaciones',
+    value: 'presentation',
+    icon: Presentation,
+    mimeTypes: [
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/vnd.oasis.opendocument.presentation',
+    ],
+  },
+  {
+    label: 'Imágenes',
+    value: 'image',
+    icon: FileImage,
+    mimeTypes: [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/svg+xml',
+      'image/avif',
+      'image/tiff',
+      'image/bmp',
+    ],
+  },
+  {
+    label: 'Datos',
+    value: 'data',
+    icon: FileJson,
+    mimeTypes: ['application/json', 'application/xml', 'text/xml'],
+  },
+  {
+    label: 'Archivos',
+    value: 'archive',
+    icon: Archive,
+    mimeTypes: ['application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed'],
+  },
 ];
-
 function getContentTypeIcon(contentType: string) {
   if (contentType === 'application/pdf') return FileText;
   if (contentType.startsWith('image/')) return FileImage;
@@ -109,59 +170,70 @@ interface DocumentsTableProps {
 }
 
 export function DocumentsTable({ entityType, entityId, isTrash = false }: DocumentsTableProps) {
-  // IsMobile
   const isMobile = useIsMobile();
+
   // ── Local filter/UI state ──────────────────────────────────────────────────
   const [filterMode, setFilterMode] = React.useState<FilterMode>('toolbar');
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [sort] = sorting; // Tomamos el primer criterio de ordenación
-  const sortBy = sort ? sort.id : 'createdAt';
-  const sortOrder = sort ? (sort.desc ? 'desc' : 'asc') : 'desc';
 
-  // ── Server-side pagination + filter state ─────────────────────────────────
+  // ── Pagination state ───────────────────────────────────────────────────────
   const [page, setPage] = React.useState(1);
   const [limit, setLimit] = React.useState(10);
-  const [fileNameFilter, setFileNameFilter] = React.useState('');
-  const [contentTypeFilter, setContentTypeFilter] = React.useState('');
 
-  // Sync column filters → server-side params
-  React.useEffect(() => {
-    const fileNameCol = columnFilters.find((f) => f.id === 'fileName');
-    setFileNameFilter(typeof fileNameCol?.value === 'string' ? fileNameCol.value : '');
+  // ── Derivar parámetros para la API a partir del estado de la tabla ─────────
+  const [sort] = sorting;
 
-    const contentTypeCol = columnFilters.find((f) => f.id === 'contentType');
-    const ctValue = contentTypeCol?.value;
-    // Pass all selected values joined by comma, or empty string
-    setContentTypeFilter(Array.isArray(ctValue) ? ctValue.join(',') : ((ctValue as string) ?? ''));
+  const sortBy = (sort ? sort.id : 'createdAt') as GetDocumentsQuery['sortBy'];
+  const sortOrder = sort ? (sort.desc ? 'desc' : 'asc') : 'desc';
 
-    // Reset to page 1 when filters change
-    setPage(1);
-  }, [columnFilters]);
+  // Extraemos los filtros activos directamente de columnFilters
+  const fileNameCol = columnFilters.find((f) => f.id === 'fileName');
+  const fileName = typeof fileNameCol?.value === 'string' ? fileNameCol.value : undefined;
+
+  const contentTypeCol = columnFilters.find((f) => f.id === 'contentType');
+  const contentTypes =
+    Array.isArray(contentTypeCol?.value) && contentTypeCol.value.length > 0
+      ? contentTypeCol.value.flatMap((selectedValue: string) => {
+          const option = CONTENT_TYPE_OPTIONS.find((opt) => opt.value === selectedValue);
+          return option ? option.mimeTypes : [];
+        })
+      : undefined;
+
+  const sizeCol = columnFilters.find((f) => f.id === 'size');
+  const [sizeMin, sizeMax] = Array.isArray(sizeCol?.value) ? sizeCol.value : [undefined, undefined];
+
+  const createdAtCol = columnFilters.find((f) => f.id === 'createdAt');
+  const [createdFrom, createdTo] = Array.isArray(createdAtCol?.value)
+    ? createdAtCol.value
+    : [undefined, undefined];
 
   // ── Data fetching ──────────────────────────────────────────────────────────
-  const { data, isLoading, isFetching } = useGetDocuments(
-    entityType,
-    entityId,
+  // Pasamos un único objeto que coincida con el GetDocumentsQuery de Zod
+  const { data, isLoading, isFetching } = useGetDocuments(entityType, entityId, {
     isTrash,
     page,
     limit,
-    fileNameFilter,
-    contentTypeFilter,
     sortBy,
-    sortOrder
-  );
+    sortOrder,
+    ...(fileName && { fileName }),
+    ...(contentTypes && { contentTypes }),
+    sizeMin: sizeMin ? sizeMin * 1024 * 1024 : undefined,
+    sizeMax: sizeMax ? sizeMax * 1024 * 1024 : undefined,
+    createdFrom: createdFrom ? createdFrom : undefined,
+    createdTo: createdTo ? createdTo : undefined,
+  });
 
-  // Adapt to whatever shape your API returns; adjust as needed:
   const documents: Document[] = data?.documents ?? [];
   const totalCount: number = data?.meta?.total ?? documents.length;
+  const totalPages: number = data?.meta?.totalPages ?? 1;
 
   // ── Columns ───────────────────────────────────────────────────────────────
+  // (Sin cambios significativos, se mantiene igual)
   const columns = React.useMemo<ColumnDef<Document>[]>(
     () => [
-      // Checkbox
       {
         id: 'select',
         maxSize: 40,
@@ -187,8 +259,6 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
         enableSorting: false,
         enableHiding: false,
       },
-
-      // File name
       {
         accessorKey: 'fileName',
         enableColumnFilter: true,
@@ -209,8 +279,6 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
           variant: 'text',
         },
       },
-
-      // Content type
       {
         accessorKey: 'contentType',
         enableColumnFilter: true,
@@ -226,7 +294,10 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
         },
         filterFn: (row, id, value) => {
           const ct = row.getValue(id) as string;
-          return (value as string[]).some((v) => ct.startsWith(v) || ct === v);
+          return (value as string[]).some(
+            (v) =>
+              CONTENT_TYPE_OPTIONS.find((opt) => opt.value === v)?.mimeTypes.includes(ct) ?? false
+          );
         },
         meta: {
           label: 'Tipo',
@@ -234,10 +305,9 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
           options: CONTENT_TYPE_OPTIONS,
         },
       },
-
-      // File size
       {
         accessorKey: 'size',
+        enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Tamaño" />,
         cell: ({ row }) => (
@@ -245,11 +315,18 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
             {formatBytes(row.getValue('size'))}
           </span>
         ),
-      },
+        filterFn: 'inNumberRange',
 
-      // Upload date
+        meta: {
+          label: 'Tamaño',
+          variant: 'range',
+          range: [0, 25],
+          unit: 'MB',
+        },
+      },
       {
         accessorKey: 'createdAt',
+        enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => <DataTableColumnHeader column={column} label="Fecha" />,
         cell: ({ row }) => (
@@ -257,9 +334,12 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
             {formatDate(row.getValue('createdAt'))}
           </span>
         ),
+        meta: {
+          label: 'Creación',
+          variant: 'dateRange',
+          icon: CalendarIcon,
+        },
       },
-
-      // Actions
       {
         id: 'actions',
         cell: ({ row }) => {
@@ -304,7 +384,7 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
     manualPagination: true,
     manualFiltering: true,
     manualSorting: true,
-    pageCount: data?.meta?.totalPages ?? 1,
+    pageCount: totalPages,
     state: {
       sorting,
       columnFilters,
@@ -312,14 +392,25 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
       rowSelection,
       pagination: { pageIndex: page - 1, pageSize: limit },
     },
+    enableRowSelection: true,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+
+    // Controladores de eventos de la tabla
+    onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: setColumnVisibility,
+
     onSortingChange: (updater) => {
       setSorting(updater);
-      setPage(1);
+      setPage(1); // Siempre resetear a la primera página al cambiar el orden
     },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
+
+    onColumnFiltersChange: (updater) => {
+      setColumnFilters(updater);
+      setPage(1); // Reemplaza al useEffect anterior. Al filtrar, volvemos a la pág 1.
+    },
+
     onPaginationChange: (updater) => {
       const next =
         typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize: limit }) : updater;
@@ -331,9 +422,6 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
       }
       setLimit(next.pageSize);
     },
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   // ── Filter mode toggle widget ──────────────────────────────────────────────
@@ -375,7 +463,6 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
         isFetching && !isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'
       )}
     >
-      {' '}
       <DataTable table={table} actionBar={<DataTableFloatingBar table={table} />}>
         {isMobile ? <DataTableToolbarMobile table={table} /> : <DataTableToolbar table={table} />}
       </DataTable>

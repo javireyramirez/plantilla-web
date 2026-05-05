@@ -1,5 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { GetDocumentsQuery } from '@/schemas/storage.schema';
 import storageService from '@/services/storage.service';
 
 export const useUploadFile = () => {
@@ -51,36 +52,14 @@ export const useUploadFile = () => {
   });
 };
 
-export const useGetDocuments = (
-  entityType: string,
-  entityId: string,
-  isTrash: boolean = false,
-  page: number,
-  limit: number,
-  fileName: string,
-  contentType: string,
-  sortBy: string,
-  sortOrder: string
-) => {
+export const useGetDocuments = (entityType: string, entityId: string, query: GetDocumentsQuery) => {
   return useQuery({
-    queryKey: [
-      'documents',
-      entityType,
-      entityId,
-      { isTrash, page, limit, fileName, contentType, sortBy, sortOrder },
-    ],
-    queryFn: () =>
-      storageService.getDocuments(
-        entityType,
-        entityId,
-        isTrash,
-        page,
-        limit,
-        fileName,
-        contentType,
-        sortBy,
-        sortOrder
-      ),
-    placeholderData: (previousData) => previousData,
+    queryKey: ['documents', entityType, entityId, query],
+
+    queryFn: () => storageService.getDocuments(entityType, entityId, query),
+
+    placeholderData: keepPreviousData,
+
+    staleTime: 1000 * 60 * 5,
   });
 };
