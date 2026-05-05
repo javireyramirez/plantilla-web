@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import instance from '@/config/api';
-import { RequestUploadParams } from '@/schemas/storage.schema';
+import { GetDocumentsQuery, RequestUploadParams } from '@/schemas/storage.schema';
 
 class StorageService {
   uploadUrl = async (entityType: string, entityId: string, data: RequestUploadParams) => {
@@ -55,28 +55,18 @@ class StorageService {
     return response.data;
   };
 
-  getDocuments = async (
-    entityType: string,
-    entityId: string,
-    isTrash: boolean = false,
-    page: number,
-    limit: number,
-    fileName: string,
-    contentType: string,
-    sortBy: string,
-    sortOrder: string
-  ) => {
+  getDocuments = async (entityType: string, entityId: string, query: GetDocumentsQuery) => {
+    const { page, limit, isTrash, ...filters } = query;
+
     const response = await instance.get(`/storage/${entityType}/${entityId}/documents`, {
       params: {
-        isTrash,
         page,
         limit,
-        ...(fileName && { fileName }),
-        ...(contentType && { contentType }),
-        sortBy,
-        sortOrder,
+        isTrash,
+        ...filters,
       },
     });
+
     return response.data;
   };
 }
