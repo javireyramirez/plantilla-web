@@ -15,7 +15,9 @@ import {
   ListFilter,
   Presentation,
   Sliders,
+  Trash2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import * as React from 'react';
 
@@ -463,7 +465,47 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
         isFetching && !isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'
       )}
     >
-      <DataTable table={table} actionBar={<DataTableFloatingBar table={table} />}>
+      <DataTable
+        table={table}
+        actionBar={
+          <DataTableFloatingBar
+            table={table}
+            actions={[
+              {
+                label: 'Delete',
+                icon: <Trash2 className="h-4 w-4" />,
+                variant: 'destructive',
+                onClick: (rows) => toast.error(`${rows.length} tareas eliminadas`),
+              },
+              {
+                label: 'Download',
+                icon: <Download className="h-4 w-4" />,
+                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
+              },
+              {
+                label: 'Download1',
+                icon: <Download className="h-4 w-4" />,
+                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
+              },
+              {
+                label: 'Download2',
+                icon: <Download className="h-4 w-4" />,
+                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
+              },
+              {
+                label: 'Download3',
+                icon: <Download className="h-4 w-4" />,
+                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
+              },
+              {
+                label: 'Download4',
+                icon: <Download className="h-4 w-4" />,
+                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
+              },
+            ]}
+          />
+        }
+      >
         {isMobile ? <DataTableToolbarMobile table={table} /> : <DataTableToolbar table={table} />}
       </DataTable>
     </div>
