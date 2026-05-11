@@ -16,7 +16,7 @@ function ProtectedRoute({ redirectTo = '/signin' }: ProtectedRouteProps) {
   const { data: session, isPending, error, isRefetching } = useSession();
   const location = useLocation();
 
-  if (isPending || isRefetching || (session === undefined && !error)) {
+  if (isPending || (session === undefined && !error)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">

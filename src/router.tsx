@@ -5,7 +5,6 @@ import PrivateLayout from '@/components/layout/PrivateLayout';
 import PublicLayout from '@/components/layout/PublicLayout';
 import GuestRoute from '@/components/routes/GuestRoute';
 import ProtectedRoute from '@/components/routes/ProtectedRoute';
-import DataTableExample from '@/pages/DataTableExample';
 import ForgotPassword from '@/pages/ForgotPassword';
 import Home from '@/pages/Home';
 import DocumentsTable from '@/pages/Pagina1';
@@ -44,7 +43,6 @@ export default function Router() {
               <DocumentsTable entityType="hola" entityId="b13ce02f-5bae-424f-80ad-74f47bec5ba1" />
             }
           />
-          <Route path="/table-example" element={<DataTableExample />} />
         </Route>
       </Route>
 

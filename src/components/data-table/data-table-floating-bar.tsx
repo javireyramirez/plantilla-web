@@ -20,6 +20,7 @@ export interface FloatingBarAction<TData> {
   icon: React.ReactNode;
   onClick: (rows: Row<TData>[]) => void;
   variant?: 'ghost' | 'destructive';
+  disabled?: boolean;
 }
 
 export interface DataTableFloatingBarProps<TData> {
@@ -70,6 +71,7 @@ export function DataTableFloatingBar<TData>({ table, actions }: DataTableFloatin
               className={isMobile ? 'h-8 w-8 p-0' : 'h-8'}
               onClick={() => action.onClick(rows)}
               title={action.label}
+              disabled={action.disabled}
             >
               {action.icon}
               {!isMobile && <span className="ml-2">{action.label}</span>}
