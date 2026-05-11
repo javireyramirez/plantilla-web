@@ -5,8 +5,6 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { GetDocumentsQuery } from '@/schemas/storage.schema';
 import storageService from '@/services/storage.service';
 
-// O tu librería de notificaciones
-
 // ==========================================
 // 1. CONSULTAS Y LECTURA
 // ==========================================
@@ -25,6 +23,23 @@ export const useGetDocumentDetail = (entityType: string, entityId: string, docum
     queryKey: ['document', documentId],
     queryFn: () => storageService.getDocumentDetail(entityType, entityId, documentId),
     enabled: !!documentId,
+  });
+};
+
+export const useDownloadUrl = () => {
+  return useMutation({
+    mutationFn: ({
+      entityType,
+      entityId,
+      documentId,
+    }: {
+      entityType: string;
+      entityId: string;
+      documentId: string;
+    }) => storageService.downloadUrl(entityType, entityId, documentId),
+    onSuccess: (data) => {
+      window.open(data.downloadUrl, '_blank');
+    },
   });
 };
 
@@ -161,9 +176,15 @@ export const useBulkDeleteDocuments = () => {
       entityId: string;
       documentIds: string[];
     }) => storageService.bulkDelete(entityType, entityId, documentIds),
-    onSuccess: (_, { entityType, entityId }) => {
+    onSuccess: (_, { entityType, entityId, documentIds }) => {
       queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] });
-      toast.success('Documentos movidos a la papelera');
+      const count = documentIds.length;
+      const message =
+        count === 1
+          ? '1 documento movido a la papelera'
+          : `${count} documentos movidos a la papelera`;
+
+      toast.success(message);
     },
   });
 };
@@ -188,6 +209,82 @@ export const useBulkRestoreDocuments = () => {
   });
 };
 
+export const useBulkDownloadUrls = () => {
+  return useMutation({
+    mutationFn: ({
+      entityType,
+      entityId,
+      documentIds,
+    }: {
+      entityType: string;
+      entityId: string;
+      documentIds: string[];
+    }) => storageService.bulkDownload(entityType, entityId, documentIds),
+    onSuccess: async (data) => {
+      const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      for (const [index, { downloadUrl, fileName }] of data.entries()) {
+        if (index > 0) await sleep(300);
+
+        try {
+          // Fetch the file and create a local blob URL
+          // This prevents the browser from intercepting PDFs and opening them inline
+          const response = await fetch(downloadUrl);
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = fileName;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          // Revoke the blob URL after a short delay to free memory
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+        } catch {
+          console.error(`Error downloading ${fileName}`);
+        }
+      }
+
+      toast.success(`${data.length} documentos procesados`);
+    },
+  });
+};
+
+export const useBulkDownloadZip = () => {
+  return useMutation({
+    mutationFn: ({
+      entityType,
+      entityId,
+      documentIds,
+    }: {
+      entityType: string;
+      entityId: string;
+      documentIds: string[];
+    }) => storageService.bulkDownloadZip(entityType, entityId, documentIds),
+    onSuccess: (blob) => {
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/zip' }));
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `documentos_${Date.now()}.zip`);
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+
+      toast.success('Descarga iniciada con éxito');
+    },
+    onError: (error) => {
+      console.error('Error al descargar ZIP:', error);
+      toast.error('No se pudo generar el archivo ZIP');
+    },
+  });
+};
 // ==========================================
 // 5. MANTENIMIENTO Y ELIMINACIÓN FÍSICA
 // ==========================================

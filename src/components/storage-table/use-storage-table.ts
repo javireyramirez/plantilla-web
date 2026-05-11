@@ -3,6 +3,7 @@ import * as React from 'react';
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  Row,
   type SortingState,
   type VisibilityState,
   getCoreRowModel,
@@ -14,7 +15,13 @@ import {
 import { Document, DocumentsTableProps } from '@/components/storage-table/storage-table-types';
 import { CONTENT_TYPE_OPTIONS } from '@/components/storage-table/storage-table-utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useGetDocuments } from '@/hooks/use-storage';
+import {
+  useBulkDeleteDocuments,
+  useBulkDownloadUrls,
+  useBulkDownloadZip,
+  useDownloadUrl,
+  useGetDocuments,
+} from '@/hooks/use-storage';
 import { GetDocumentsQuery } from '@/schemas/storage.schema';
 
 export function useStorageTable({
@@ -77,6 +84,7 @@ export function useStorageTable({
 
   const documents: Document[] = data?.documents ?? [];
   const totalPages: number = data?.meta?.totalPages ?? 1;
+  const totalRows: number = data?.meta?.total;
 
   const table = useReactTable({
     data: documents,
@@ -124,14 +132,47 @@ export function useStorageTable({
   });
 
   //Funcion de borrado y descarga
+  const { mutate: mutateDelete, isPending: isPendingDelete } = useBulkDeleteDocuments();
+
+  const handleDelete = (rows: Row<Document>[]) => {
+    mutateDelete(
+      { entityType, entityId, documentIds: rows.map((item) => item.original.id) },
+      { onSuccess: () => setRowSelection([]) }
+    );
+  };
+
+  const { mutate: mutateDownloadUrl } = useDownloadUrl();
+
+  const handleDownloadUrl = (documentId: string) => {
+    mutateDownloadUrl({ entityType, entityId, documentId });
+  };
+
+  const { mutateAsync: downloadUrls, isPending: isPendingDownloadUrls } = useBulkDownloadUrls();
+  const { mutateAsync: downloadZip, isPending: isPendingDownloadZip } = useBulkDownloadZip();
+
+  const handleBulkDownload = async (rows: Row<Document>[]) => {
+    const documentIds = rows.map((r) => r.original.id);
+
+    if (documentIds.length <= 5) {
+      await downloadUrls({ entityType, entityId, documentIds });
+    } else {
+      await downloadZip({ entityType, entityId, documentIds });
+    }
+  };
 
   return {
     table,
+    totalRows,
 
     isLoading,
     isFetching,
     isMobile,
 
     limit,
+
+    handleDownloadUrl,
+    handleDelete,
+    handleBulkDownload,
+    isPendingActions: isPendingDelete || isPendingDownloadUrls || isPendingDownloadZip,
   };
 }

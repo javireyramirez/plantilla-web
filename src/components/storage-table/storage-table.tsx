@@ -63,7 +63,12 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
           return (
             <div className="flex items-center gap-2 min-w-0">
               <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <span className="truncate font-medium max-w-xs">{row.getValue('fileName')}</span>
+              <button
+                className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                onClick={() => handleDownloadUrl(row.original.id)}
+              >
+                {row.getValue('fileName')}
+              </button>
             </div>
           );
         },
@@ -170,7 +175,18 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
     []
   );
 
-  const { table, isLoading, isFetching, isMobile, limit } = useStorageTable({
+  const {
+    table,
+    totalRows,
+    isLoading,
+    isFetching,
+    isMobile,
+    limit,
+    handleDownloadUrl,
+    handleDelete,
+    handleBulkDownload,
+    isPendingActions,
+  } = useStorageTable({
     entityType,
     entityId,
     isTrash,
@@ -199,6 +215,7 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
     >
       <DataTable
         table={table}
+        totalCount={totalRows}
         actionBar={
           <DataTableFloatingBar
             table={table}
@@ -207,32 +224,14 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
                 label: 'Delete',
                 icon: <Trash2 className="h-4 w-4" />,
                 variant: 'destructive',
-                onClick: (rows) => toast.error(`${rows.length} tareas eliminadas`),
+                disabled: isPendingActions,
+                onClick: (rows) => handleDelete(rows),
               },
               {
                 label: 'Download',
                 icon: <Download className="h-4 w-4" />,
-                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
-              },
-              {
-                label: 'Download1',
-                icon: <Download className="h-4 w-4" />,
-                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
-              },
-              {
-                label: 'Download2',
-                icon: <Download className="h-4 w-4" />,
-                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
-              },
-              {
-                label: 'Download3',
-                icon: <Download className="h-4 w-4" />,
-                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
-              },
-              {
-                label: 'Download4',
-                icon: <Download className="h-4 w-4" />,
-                onClick: (rows) => toast.success(`Descargando ${rows.length} tareas...`),
+                onClick: (rows) => handleBulkDownload(rows),
+                disabled: isPendingActions,
               },
             ]}
           />

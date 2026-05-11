@@ -112,6 +112,24 @@ class StorageService {
     return response.data;
   };
 
+  bulkDownload = async (entityType: string, entityId: string, documentIds: string[]) => {
+    const response = await instance.post(`/storage/${entityType}/${entityId}/bulk-download`, {
+      documentIds,
+    });
+    return response.data;
+  };
+
+  bulkDownloadZip = async (entityType: string, entityId: string, documentIds: string[]) => {
+    const response = await instance.post(
+      `/storage/${entityType}/${entityId}/bulk-download-zip`,
+      { documentIds },
+      {
+        responseType: 'blob',
+      }
+    );
+    return response.data;
+  };
+
   // ==========================================
   // 5. MANTENIMIENTO Y ELIMINACIÓN FÍSICA
   // ==========================================
