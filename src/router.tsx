@@ -40,7 +40,10 @@ export default function Router() {
           <Route
             path="/pagina1"
             element={
-              <DocumentsTable entityType="hola" entityId="b13ce02f-5bae-424f-80ad-74f47bec5ba1" />
+              <DocumentsTable
+                entityType="companies"
+                entityId="019e8513-5fba-7b2c-a424-01425e6ea9b7"
+              />
             }
           />
         </Route>

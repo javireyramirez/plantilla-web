@@ -138,39 +138,6 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
           icon: CalendarIcon,
         },
       },
-      {
-        id: 'actions',
-        cell: ({ row }) => {
-          const doc = row.original;
-          return (
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                title="Abrir"
-                onClick={() => window.open(doc.url, '_blank')}
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                title="Descargar"
-                onClick={() => {
-                  const a = document.createElement('a');
-                  a.href = doc.url;
-                  a.download = doc.fileName;
-                  a.click();
-                }}
-              >
-                <Download className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          );
-        },
-      },
     ],
     []
   );
@@ -216,6 +183,10 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
       <DataTable
         table={table}
         totalCount={totalRows}
+        mobileConfig={{
+          primaryColumn: 'fileName',
+          stackedColumns: ['size', 'createdAt'],
+        }}
         actionBar={
           <DataTableFloatingBar
             table={table}

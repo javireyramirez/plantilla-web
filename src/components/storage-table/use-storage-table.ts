@@ -40,7 +40,12 @@ export function useStorageTable({
 
   // ── Paginación y filtros ───────────────────────────────────────────────────
   const [page, setPage] = React.useState(1);
-  const [limit, setLimit] = React.useState(10);
+  function getInitialLimit() {
+    if (typeof window === 'undefined') return 10;
+    return window.innerWidth < 768 ? 5 : 10;
+  }
+
+  const [limit, setLimit] = React.useState(getInitialLimit);
 
   const [sort] = sorting;
 

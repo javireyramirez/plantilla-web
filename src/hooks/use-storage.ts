@@ -1,5 +1,3 @@
-import { toast } from 'sonner';
-
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { GetDocumentsQuery } from '@/schemas/storage.schema';
@@ -89,7 +87,6 @@ export const useUploadFile = () => {
     },
     onSuccess: (_, { entityType, entityId }) => {
       queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] });
-      toast.success('Archivos subidos correctamente');
     },
   });
 };
@@ -134,7 +131,6 @@ export const useDeleteSoftDocument = () => {
     }) => storageService.deleteSoftDocument(entityType, entityId, documentId),
     onSuccess: (_, { entityType, entityId }) => {
       queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] });
-      toast.success('Documento movido a la papelera');
     },
   });
 };
@@ -154,7 +150,6 @@ export const useRestoreDocument = () => {
     }) => storageService.restoreDocument(entityType, entityId, documentId),
     onSuccess: (_, { entityType, entityId }) => {
       queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] });
-      toast.success('Documento restaurado');
     },
   });
 };
@@ -183,8 +178,6 @@ export const useBulkDeleteDocuments = () => {
         count === 1
           ? '1 documento movido a la papelera'
           : `${count} documentos movidos a la papelera`;
-
-      toast.success(message);
     },
   });
 };
@@ -204,7 +197,6 @@ export const useBulkRestoreDocuments = () => {
     }) => storageService.bulkRestore(entityType, entityId, documentIds),
     onSuccess: (_, { entityType, entityId }) => {
       queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] });
-      toast.success('Documentos restaurados');
     },
   });
 };
@@ -247,8 +239,6 @@ export const useBulkDownloadUrls = () => {
           console.error(`Error downloading ${fileName}`);
         }
       }
-
-      toast.success(`${data.length} documentos procesados`);
     },
   });
 };
@@ -276,12 +266,9 @@ export const useBulkDownloadZip = () => {
       document.body.removeChild(link);
 
       window.URL.revokeObjectURL(url);
-
-      toast.success('Descarga iniciada con éxito');
     },
     onError: (error) => {
       console.error('Error al descargar ZIP:', error);
-      toast.error('No se pudo generar el archivo ZIP');
     },
   });
 };
@@ -297,7 +284,6 @@ export const useEmptyTrash = () => {
       storageService.emptyTrash(entityType, entityId),
     onSuccess: (_, { entityType, entityId }) => {
       queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] });
-      toast.success('Papelera vaciada');
     },
   });
 };
@@ -317,7 +303,6 @@ export const useDeletePermanentDocument = () => {
     }) => storageService.deletePermanent(entityType, entityId, documentId),
     onSuccess: (_, { entityType, entityId }) => {
       queryClient.invalidateQueries({ queryKey: ['documents', entityType, entityId] });
-      toast.success('Documento eliminado permanentemente');
     },
   });
 };
