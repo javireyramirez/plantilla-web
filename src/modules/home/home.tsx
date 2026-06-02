@@ -9,15 +9,15 @@ export default function Home() {
       <h1 className="text-xl font-bold">Gestión de Archivos</h1>
 
       <FileUploadZone
-        entityType="hola"
-        entityId="b13ce02f-5bae-424f-80ad-74f47bec5ba1"
+        entityType="companies"
+        entityId="019e8513-5fba-7b2c-a424-01425e6ea9b7"
         autoUpload={true}
         multiple={true}
       />
 
       <FileUploadButton
-        entityType="hola"
-        entityId="b13ce02f-5bae-424f-80ad-74f47bec5ba1"
+        entityType="companies"
+        entityId="019e8513-5fba-7b2c-a424-01425e6ea9b7"
         multiple={true}
       />
     </div>

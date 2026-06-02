@@ -1,4 +1,4 @@
-import { CalendarIcon, Download, ExternalLink, Trash2 } from 'lucide-react';
+import { CalendarIcon, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import * as React from 'react';
@@ -11,21 +11,16 @@ import { DataTableFloatingBar } from '@/components/data-table/data-table-floatin
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-desktop';
 import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
-import { Document, DocumentsTableProps } from '@/components/storage-table/storage-table-types';
-import {
-  CONTENT_TYPE_OPTIONS,
-  getContentTypeIcon,
-  getContentTypeLabel,
-} from '@/components/storage-table/storage-table-utils';
-import { useStorageTable } from '@/components/storage-table/use-storage-table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { formatBytes, formatDate } from '@/lib/format';
+import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { Company } from '@/modules/companies/companies.schema';
 
-export function DocumentsTable({ entityType, entityId, isTrash = false }: DocumentsTableProps) {
-  const columns = React.useMemo<ColumnDef<Document>[]>(
+import { SECTOR_OPTIONS } from '../companies.types';
+import useCompanies from '../use-companies';
+
+export function CompaniesTable() {
+  const columns = React.useMemo<ColumnDef<Company>[]>(
     () => [
       {
         id: 'select',
@@ -53,73 +48,74 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
         enableHiding: false,
       },
       {
-        accessorKey: 'fileName',
+        accessorKey: 'name',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Nombre" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label="Compañía" />,
         cell: ({ row }) => {
-          const contentType = row.getValue('contentType') as string;
-          const Icon = getContentTypeIcon(contentType);
           return (
             <div className="flex items-center gap-2 min-w-0">
-              <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
               <button
                 className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
-                onClick={() => handleDownloadUrl(row.original.id)}
+                onClick={() => console.log(row.original.id)}
               >
-                {row.getValue('fileName')}
+                {row.getValue('name')}
               </button>
             </div>
           );
         },
         meta: {
-          label: 'Nombre de archivo',
+          label: 'Compañía',
           variant: 'text',
         },
       },
       {
-        accessorKey: 'contentType',
+        accessorKey: 'nif',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Tipo" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label="CIF" />,
         cell: ({ row }) => {
-          const ct = row.getValue('contentType') as string;
           return (
-            <Badge variant="secondary" className="font-mono text-xs">
-              {getContentTypeLabel(ct)}
-            </Badge>
+            <div className="flex items-center gap-2 min-w-0">
+              <button
+                className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                onClick={() => console.log(row.original.id)}
+              >
+                {row.getValue('nif')}
+              </button>
+            </div>
+          );
+        },
+        meta: {
+          label: 'CIF',
+          variant: 'text',
+        },
+      },
+      {
+        accessorKey: 'sector',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => <DataTableColumnHeader column={column} label="Sector" />,
+        cell: ({ row }) => {
+          const sectorValue = row.getValue('sector');
+          const sectorOpt = SECTOR_OPTIONS.find((opt) => opt.value === sectorValue);
+
+          return (
+            <div className="flex items-center gap-2 min-w-0">
+              {sectorOpt ? sectorOpt.label : 'Sin sector'}
+            </div>
           );
         },
         filterFn: (row, id, value) => {
           const ct = row.getValue(id) as string;
           return (value as string[]).some(
-            (v) =>
-              CONTENT_TYPE_OPTIONS.find((opt) => opt.value === v)?.mimeTypes.includes(ct) ?? false
+            (v) => SECTOR_OPTIONS.find((opt) => opt.value === v) ?? false
           );
         },
         meta: {
-          label: 'Tipo',
+          label: 'Sector',
           variant: 'multiSelect',
-          options: CONTENT_TYPE_OPTIONS,
-        },
-      },
-      {
-        accessorKey: 'size',
-        enableColumnFilter: true,
-        enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Tamaño" />,
-        cell: ({ row }) => (
-          <span className="text-muted-foreground tabular-nums">
-            {formatBytes(row.getValue('size'))}
-          </span>
-        ),
-        filterFn: 'inNumberRange',
-
-        meta: {
-          label: 'Tamaño',
-          variant: 'range',
-          range: [0, 25],
-          unit: 'MB',
+          options: SECTOR_OPTIONS,
         },
       },
       {
@@ -149,16 +145,9 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
     isFetching,
     isMobile,
     limit,
-    handleDownloadUrl,
     handleDelete,
-    handleBulkDownload,
     isPendingActions,
-  } = useStorageTable({
-    entityType,
-    entityId,
-    isTrash,
-    columns,
-  });
+  } = useCompanies(columns);
 
   // Skeleton
   if (isLoading) {
@@ -184,8 +173,8 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
         table={table}
         totalCount={totalRows}
         mobileConfig={{
-          primaryColumn: 'fileName',
-          stackedColumns: ['size', 'createdAt'],
+          primaryColumn: 'name',
+          stackedColumns: ['sector', 'createdAt'],
         }}
         actionBar={
           <DataTableFloatingBar
@@ -197,12 +186,6 @@ export function DocumentsTable({ entityType, entityId, isTrash = false }: Docume
                 variant: 'destructive',
                 disabled: isPendingActions,
                 onClick: (rows) => handleDelete(rows),
-              },
-              {
-                label: 'Download',
-                icon: <Download className="h-4 w-4" />,
-                onClick: (rows) => handleBulkDownload(rows),
-                disabled: isPendingActions,
               },
             ]}
           />
