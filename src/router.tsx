@@ -14,6 +14,8 @@ import SignIn from '@/pages/SignIn';
 import SignUp from '@/pages/SignUp';
 import VerifyEmail from '@/pages/VerifyEmail';
 
+import CompaniesView from './pages/Companies';
+
 export default function Router() {
   return (
     <Routes>
@@ -36,16 +38,8 @@ export default function Router() {
       <Route element={<ProtectedRoute />}>
         <Route element={<PrivateLayout />}>
           <Route path="/home" element={<Home />} />
+          <Route path="/companies" element={<CompaniesView />} />
           <Route path="/profile" element={<Profile />} />
-          <Route
-            path="/pagina1"
-            element={
-              <DocumentsTable
-                entityType="companies"
-                entityId="019e8513-5fba-7b2c-a424-01425e6ea9b7"
-              />
-            }
-          />
         </Route>
       </Route>
 

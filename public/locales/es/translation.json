@@ -65,7 +65,8 @@
     "group1": "Ventas",
     "nav": {
       "page1": "Inicio",
-      "page2": "Página 1"
+      "page2": "Página 1",
+      "companies": "Compañía"
     }
   }
 }
