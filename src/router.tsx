@@ -14,6 +14,7 @@ import SignIn from '@/pages/SignIn';
 import SignUp from '@/pages/SignUp';
 import VerifyEmail from '@/pages/VerifyEmail';
 
+import CompanyForm from './modules/companies/components/companies.form';
 import CompaniesView from './pages/Companies';
 
 export default function Router() {
@@ -39,6 +40,8 @@ export default function Router() {
         <Route element={<PrivateLayout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/companies" element={<CompaniesView />} />
+          <Route path="/companies/new" element={<CompanyForm />} />
+          <Route path="/companies/edit/:id" element={<CompanyForm />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>

@@ -68,7 +68,6 @@ export function createGenericQueries<
         mutationFn: ({ id, body }) => service.update(id, body),
         onSuccess: (data, variables) => {
           queryClient.invalidateQueries({ queryKey: [queryKey] });
-          // Optional optimization: update individual cache directly
           queryClient.setQueryData([queryKey, 'detail', variables.id], data);
         },
       });
