@@ -139,20 +139,6 @@ export default function useCompanies(columns: ColumnDef<Company>[]) {
     );
   };
 
-  const { mutate: mutateCreate, isPending: isPendingCreate } = companiesQueries.useCreate();
-
-  const handleCreate = (data: CreateCompany) => {
-    mutateCreate(data, {
-      onSuccess: () => {
-        toast.success(t('companies.table.create.success'));
-      },
-      onError: (error) => {
-        console.error('Error al crear la empresa:', error);
-        toast.error(error.message || t('companies.table.create.error'));
-      },
-    });
-  };
-
   return {
     table,
     totalRows,
@@ -165,8 +151,5 @@ export default function useCompanies(columns: ColumnDef<Company>[]) {
 
     handleDelete,
     isPendingActions: isPendingDelete,
-
-    handleCreate,
-    isPendingCreate,
   };
 }

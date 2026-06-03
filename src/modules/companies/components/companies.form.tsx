@@ -1,6 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2, Download, MoreHorizontal, Save, Trash2 } from 'lucide-react';
+import { Building2, ChevronDown, Download, MoreHorizontal, Save, Trash2 } from 'lucide-react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+
+import { useEffect, useState } from 'react';
 
 import {
   Breadcrumb,
@@ -21,25 +24,38 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useCompanyForm } from '@/modules/companies/use-companies-form';
 
 import { CreateCompany, CreateCompanyBodySchema } from '../companies.schema';
 
 export default function CompanyForm() {
-  const isMobile = useIsMobile();
+  const tabs = [
+    { value: 'detail', label: 'Detalle' },
+    { value: 'docs', label: 'Documentación' },
+    { value: 'audit', label: 'Auditoría' },
+  ];
+
+  const [activeTab, setActiveTab] = useState('detail');
+
+  const currentTab = tabs.find((tab) => tab.value === activeTab);
+
+  const { id } = useParams<{ id: string }>();
+  const { isEditing, defaultValues, isLoading, handleSubmit, isPending } = useCompanyForm(id);
 
   const form = useForm<CreateCompany>({
     resolver: zodResolver(CreateCompanyBodySchema),
     mode: 'onBlur',
-    defaultValues: { name: '', nif: '', sector: '' },
+    defaultValues: defaultValues ?? { name: '', nif: '', sector: '' },
   });
+
+  useEffect(() => {
+    if (defaultValues) form.reset(defaultValues);
+  }, [defaultValues]);
 
   const companyName = useWatch({ control: form.control, name: 'name' });
 
-  const onSubmit = (data: CreateCompany) => console.log(data);
-
   return (
-    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6">
+    <div className="space-y-6  mx-auto p-4 md:p-6">
       {/* BREADCRUMB */}
       <Breadcrumb>
         <BreadcrumbList>
@@ -51,7 +67,7 @@ export default function CompanyForm() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage className="font-medium text-foreground">
-              {companyName ? `Editar: ${companyName}` : 'Nueva compañía'}
+              {isEditing ? `${companyName}` : 'Crear nueva compañía'}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -63,17 +79,17 @@ export default function CompanyForm() {
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-            {companyName ? (
+            {isEditing ? (
               <span className="truncate">
-                Editar <span className="text-primary">{companyName}</span>
+                <span className="text-primary">{companyName}</span>
               </span>
             ) : (
               'Crear nueva compañía'
             )}
           </h1>
           <p className="text-sm text-muted-foreground hidden sm:block">
-            {companyName
-              ? 'Modifica los datos de la empresa en el sistema.'
+            {isEditing
+              ? 'Datos de la empresa en el sistema.'
               : 'Introduce los datos para registrar la empresa.'}
           </p>
         </div>
@@ -84,6 +100,7 @@ export default function CompanyForm() {
           <Button
             type="submit"
             form="company-form-id"
+            disabled={isPending}
             size="default"
             className="gap-2 shadow-sm flex-1 sm:flex-none sm:size-sm justify-center order-1 sm:order-3"
           >
@@ -93,109 +110,87 @@ export default function CompanyForm() {
 
           {/* Vista Escritorio: Botones secundarios directos */}
           <div className="hidden sm:flex items-center gap-2 order-1">
-            <Button type="button" variant="outline" size="sm" className="gap-2">
-              <Download className="h-4 w-4" />
-              Exportar
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground gap-2"
-            >
-              <Trash2 className="h-4 w-4" />
-              Eliminar
-            </Button>
+            {isEditing && (
+              <>
+                <Button type="button" variant="outline" size="sm" className="gap-2">
+                  <Download className="h-4 w-4" />
+                  Exportar
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground gap-2"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Eliminar
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Vista Móvil: Acciones secundarias en menú desplegable */}
-          <div className="sm:hidden order-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="default" className="px-3">
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Más acciones</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem className="gap-2 cursor-pointer">
-                  <Download className="h-4 w-4 text-muted-foreground" />
-                  Exportar
-                </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
-                  <Trash2 className="h-4 w-4" />
-                  Eliminar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          {isEditing && (
+            <div className="sm:hidden order-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="default" className="px-3">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Más acciones</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuItem className="gap-2 cursor-pointer">
+                    <Download className="h-4 w-4 text-muted-foreground" />
+                    Exportar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
+                    <Trash2 className="h-4 w-4" />
+                    Eliminar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
         </div>
       </div>
 
       {/* TABS DE NAVEGACIÓN RESPONSIVE */}
-      <Tabs defaultValue="detalle" className="w-full space-y-6">
-        <div className="border-b border-border w-full flex items-center justify-between">
-          {/* 1. Vista Escritorio: Todas las pestañas a tamaño fijo (sm:w-32) */}
-          <TabsList
-            className="hidden sm:flex h-auto w-max justify-start rounded-none bg-transparent p-0 space-x-6"
-            variant="line"
-          >
-            <TabsTrigger className="sm:w-32" value="detalle">
-              Detalle
+      <Tabs defaultValue="detail" className="w-full space-y-6">
+        {/* DESKTOP */}
+        <TabsList
+          variant="line"
+          className="hidden md:flex h-auto w-full justify-start gap-6 rounded-none border-b bg-transparent p-0"
+        >
+          {tabs.map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value} className="px-0">
+              {tab.label}
             </TabsTrigger>
-            <TabsTrigger className="sm:w-32" value="docs">
-              Documentación
-            </TabsTrigger>
-            <TabsTrigger className="sm:w-32" value="audit">
-              Auditoría
-            </TabsTrigger>
-          </TabsList>
+          ))}
+        </TabsList>
 
-          {/* 2. Vista Móvil: Pestaña principal + Desplegable de tres puntos */}
-          <TabsList
-            className="flex sm:hidden h-auto w-full justify-between rounded-none bg-transparent p-0"
-            variant="line"
-          >
-            <TabsTrigger className="flex-1 justify-start px-2" value="detalle">
-              Detalle
-            </TabsTrigger>
+        {/* MOBILE */}
+        <div className="border-b md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-12 px-0 text-base font-medium">
+                {currentTab?.label}
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-10 rounded-none border-b-2 border-transparent px-3 text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=open]:border-primary"
-                >
-                  <MoreHorizontal className="h-5 w-5" />
-                  <span className="sr-only">Más pestañas</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <TabsTrigger
-                    value="docs"
-                    className="w-full justify-start rounded-md px-2 py-1.5 text-sm font-normal border-none data-[state=active]:bg-muted data-[state=active]:text-foreground"
-                  >
-                    Documentación
-                  </TabsTrigger>
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="start" className="w-64">
+              {tabs.map((tab) => (
+                <DropdownMenuItem key={tab.value} onClick={() => setActiveTab(tab.value)}>
+                  {tab.label}
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <TabsTrigger
-                    value="audit"
-                    className="w-full justify-start rounded-md px-2 py-1.5 text-sm font-normal border-none data-[state=active]:bg-muted data-[state=active]:text-foreground"
-                  >
-                    Auditoría
-                  </TabsTrigger>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TabsList>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-
         {/* CONTENIDO DE LOS TABS */}
-        <TabsContent value="detalle" className="outline-none">
+        <TabsContent value="detail" className="outline-none">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             {/* Card 1: Formulario */}
             <Card className="lg:col-span-1 shadow-sm">
@@ -206,7 +201,7 @@ export default function CompanyForm() {
               <CardContent>
                 <form
                   id="company-form-id"
-                  onSubmit={form.handleSubmit(onSubmit)}
+                  onSubmit={form.handleSubmit((id) => handleSubmit(id))}
                   className="space-y-4"
                 >
                   <FieldGroup className="space-y-4">
