@@ -1,4 +1,5 @@
 import { useDropzone } from 'react-dropzone';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { useCallback, useState } from 'react';
@@ -20,6 +21,7 @@ export function useFileUploadLogic({
   multiple = false,
   autoUpload = false,
 }: FileUploadConfigProps) {
+  const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
   const { isPending: isPendingUpload, mutate: mutateUpload } = useUploadFile();
 
@@ -35,19 +37,19 @@ export function useFileUploadLogic({
         onSuccess: () => {
           toast.success(
             multiple && filesToUpload.length > 1
-              ? 'Documentos subidos con éxito'
-              : 'Documento subido con éxito'
+              ? t('storage.toast.uploadSuccessMultiple')
+              : t('storage.toast.uploadSuccessSingle')
           );
           setFiles([]);
           onSuccess?.();
         },
         onError: (error) => {
           console.log(error?.message);
-          toast.error('Error al subir el documento');
+          toast.error(t('storage.toast.uploadError'));
         },
       });
     },
-    [multiple, entityType, entityId, mutateUpload, onSuccess]
+    [multiple, entityType, entityId, mutateUpload, onSuccess, t]
   );
 
   const onDrop = useCallback(
@@ -57,6 +59,7 @@ export function useFileUploadLogic({
       if (multiple) {
         setFiles((prev) => {
           currentFiles = [...prev, ...acceptedFiles];
+          return currentFiles;
           return currentFiles;
         });
       } else {

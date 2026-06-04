@@ -1,4 +1,5 @@
 import { LoaderCircle, Upload } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 
@@ -11,11 +12,14 @@ interface FileUploadButtonProps extends Omit<FileUploadConfigProps, 'autoUpload'
 }
 
 export function FileUploadButton({
-  label = 'Subir archivo',
+  label,
   variant = 'default',
   size = 'default',
   ...props
 }: FileUploadButtonProps) {
+  const { t } = useTranslation();
+  const displayLabel = label ?? t('storage.uploadFile');
+
   const { getRootProps, getInputProps, isPendingUpload } = useFileUploadLogic({
     ...props,
     autoUpload: true, // Forzamos a true para que el botón sea inmediato
@@ -31,7 +35,7 @@ export function FileUploadButton({
         ) : (
           <Upload className="w-4 h-4 mr-2" />
         )}
-        {isPendingUpload ? 'Subiendo...' : label}
+        {isPendingUpload ? t('storage.uploading') : displayLabel}
       </Button>
     </div>
   );

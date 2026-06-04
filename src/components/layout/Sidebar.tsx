@@ -25,7 +25,6 @@ import NavUser from './NavUser.js';
 
 const salesItems = [
   { titleKey: 'sidebar.nav.page1', url: '/home', icon: Home },
-  { titleKey: 'sidebar.nav.page2', url: '/pagina1', icon: Users },
   { titleKey: 'sidebar.nav.companies', url: '/companies', icon: Building2 },
 ];
 

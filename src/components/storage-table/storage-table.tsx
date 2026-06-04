@@ -1,4 +1,5 @@
 import { CalendarIcon, Download, ExternalLink, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import * as React from 'react';
@@ -32,6 +33,8 @@ export function DocumentsTable({
   entityId,
   isTrash = false,
 }: DocumentsTableComponentProps) {
+  const { t } = useTranslation();
+
   const columns = React.useMemo<ColumnDef<Document>[]>(
     () => [
       {
@@ -44,7 +47,7 @@ export function DocumentsTable({
               (table.getIsSomePageRowsSelected() && 'indeterminate')
             }
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Seleccionar todo"
+            aria-label={t('storage.table.selectTodo')}
             className="translate-y-0.5"
           />
         ),
@@ -52,7 +55,7 @@ export function DocumentsTable({
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Seleccionar fila"
+            aria-label={t('storage.table.selectRow')}
             className="translate-y-0.5"
           />
         ),
@@ -63,7 +66,7 @@ export function DocumentsTable({
         accessorKey: 'fileName',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Nombre" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('storage.table.fileName')} />,
         cell: ({ row }) => {
           const contentType = row.getValue('contentType') as string;
           const Icon = getContentTypeIcon(contentType);
@@ -80,7 +83,7 @@ export function DocumentsTable({
           );
         },
         meta: {
-          label: 'Nombre de archivo',
+          label: t('storage.table.fileName'),
           variant: 'text',
         },
       },
@@ -88,7 +91,7 @@ export function DocumentsTable({
         accessorKey: 'contentType',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Tipo" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('storage.table.type')} />,
         cell: ({ row }) => {
           const ct = row.getValue('contentType') as string;
           return (
@@ -105,16 +108,19 @@ export function DocumentsTable({
           );
         },
         meta: {
-          label: 'Tipo',
+          label: t('storage.table.type'),
           variant: 'multiSelect',
-          options: CONTENT_TYPE_OPTIONS,
+          options: CONTENT_TYPE_OPTIONS.map((opt) => ({
+            ...opt,
+            label: t(`storage.types.${opt.value}`),
+          })),
         },
       },
       {
         accessorKey: 'size',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Tamaño" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('storage.table.size')} />,
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums">
             {formatBytes(row.getValue('size'))}
@@ -123,7 +129,7 @@ export function DocumentsTable({
         filterFn: 'inNumberRange',
 
         meta: {
-          label: 'Tamaño',
+          label: t('storage.table.size'),
           variant: 'range',
           range: [0, 25],
           unit: 'MB',
@@ -133,20 +139,20 @@ export function DocumentsTable({
         accessorKey: 'createdAt',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Fecha" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('storage.table.date')} />,
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
             {formatDate(row.getValue('createdAt'))}
           </span>
         ),
         meta: {
-          label: 'Creación',
+          label: t('storage.table.creation'),
           variant: 'dateRange',
           icon: CalendarIcon,
         },
       },
     ],
-    []
+    [t]
   );
 
   const {
@@ -199,14 +205,14 @@ export function DocumentsTable({
             table={table}
             actions={[
               {
-                label: 'Delete',
+                label: t('storage.table.delete'),
                 icon: <Trash2 className="h-4 w-4" />,
                 variant: 'destructive',
                 disabled: isPendingActions,
                 onClick: (rows) => handleDelete(rows),
               },
               {
-                label: 'Download',
+                label: t('storage.table.download'),
                 icon: <Download className="h-4 w-4" />,
                 onClick: (rows) => handleBulkDownload(rows),
                 disabled: isPendingActions,

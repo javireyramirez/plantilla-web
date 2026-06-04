@@ -68,5 +68,126 @@
       "page2": "Página 1",
       "companies": "Compañía"
     }
-  }
+  },
+  "companies": {
+    "title": "Compañías",
+    "subtitle": "Gestiona y visualiza el listado de empresas registradas.",
+    "import": "Importar",
+    "export": "Exportar",
+    "new": "Nueva compañía",
+    "moreActions": "Más acciones",
+    "createTitle": "Crear nueva compañía",
+    "editDescription": "Datos de la empresa en el sistema.",
+    "createDescription": "Introduce los datos para registrar la empresa.",
+    "save": "Guardar",
+    "saveAndClose": "Guardar y cerrar",
+    "delete": "Eliminar",
+    "detail": "Detalle",
+    "docs": "Documentación",
+    "audit": "Auditoría",
+    "auditContent": "Aquí va la auditoría...",
+    "basicData": "Datos básicos",
+    "identificationInfo": "Información principal de identificación.",
+    "name": "Compañía",
+    "namePlaceholder": "Nombre de la empresa",
+    "cifNif": "CIF / NIF",
+    "sector": "Sector",
+    "selectSector": "Selecciona un sector",
+    "additionalInfo": "Información Adicional",
+    "pendingDefine": "Sección pendiente de definir.",
+    "metricsSummary": "Métricas / Resumen",
+    "entityStats": "Datos estadísticos de la entidad.",
+    "deleteConfirmTitle": "¿Eliminar esta compañía?",
+    "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
+    "cancel": "Cancelar",
+    "sectors": {
+      "tecnologia": "Tecnología",
+      "banca": "Banca",
+      "seguros": "Seguros",
+      "none": "Sin sector"
+    },
+    "table": {
+      "delete": "Compañía(s) eliminada(s) con éxito",
+      "selectTodo": "Seleccionar todo",
+      "selectFila": "Seleccionar fila",
+      "cif": "CIF",
+      "fecha": "Fecha",
+      "creacion": "Creación"
+    },
+    "form": {
+      "update": "Compañía actualizada con éxito",
+      "create": "Compañía creada con éxito",
+      "delete": "Compañía eliminada con éxito",
+      "errors": {
+        "update": "Error al actualizar la compañía",
+        "create": "Error al crear la compañía",
+        "delete": "Error al eliminar la compañía"
+      }
+    }
+  },
+  "profile": {
+    "emailVerification": "Verificación email",
+    "emailVerified": "Email verificado",
+    "sending": "Enviando...",
+    "sentSuccessfully": "Enviado correctamente",
+    "sendVerificationLink": "Enviar link de verificación",
+    "checkInboxOrSpam": "Revisa tu bandeja de entrada o spam.",
+    "changePassword": "Cambio de contraseña",
+    "currentPassword": "Contraseña Actual",
+    "hidePassword": "Ocultar contraseña",
+    "showPassword": "Mostrar contraseña",
+    "newPassword": "Nueva Contraseña",
+    "repeatPassword": "Repetir Contraseña",
+    "revokeOtherSessions": "Eliminar sesiones en el resto de dispositivos",
+    "updating": "Actualizando...",
+    "updatePassword": "Actualizar Contraseña",
+    "toast": {
+      "passwordChanged": "Contraseña cambiada correctamente",
+      "passwordChangeFailed": "Fallo al cambiar la contraseña",
+      "noEmailFound": "No se encontró un correo asociado",
+      "verificationSent": "Email de verificación enviado",
+      "sendError": "Error al enviar"
+    }
+  },
+  "home": {
+    "title": "Inicio"
+  },
+  "storage": {
+    "uploadFile": "Subir archivo",
+    "uploading": "Subiendo...",
+    "dropzone": {
+      "dropActive": "Suelta los archivos aquí",
+      "clickDragMultiple": "Haz clic o arrastra los archivos",
+      "clickDragSingle": "Haz clic o arrastra un archivo",
+      "maxSizeInfo": "Máximo 5MB por archivo",
+      "uploadMultipleCount": "Subir {{count}} documentos",
+      "uploadSingle": "Subir documento"
+    },
+    "types": {
+      "document": "Documentos",
+      "spreadsheet": "Hojas de Cálculo",
+      "presentation": "Presentaciones",
+      "image": "Imágenes",
+      "data": "Datos",
+      "archive": "Archivos"
+    },
+    "table": {
+      "selectTodo": "Seleccionar todo",
+      "selectRow": "Seleccionar fila",
+      "fileName": "Nombre de archivo",
+      "type": "Tipo",
+      "size": "Tamaño",
+      "date": "Fecha",
+      "creation": "Creación",
+      "delete": "Eliminar",
+      "download": "Descargar"
+    },
+    "toast": {
+      "uploadSuccessMultiple": "Documentos subidos con éxito",
+      "uploadSuccessSingle": "Documento subido con éxito",
+      "uploadError": "Error al subir el documento"
+    }
+  },
+  "redirecting_message_one": "Redirigiendo al dashboard en {{count}} segundo...",
+  "redirecting_message_other": "Redirigiendo al dashboard en {{count}} segundos..."
 }

@@ -1,4 +1,4 @@
-export const SUPPORTED_LANGUAGES = ['es', 'en', 'fr', 'de'];
+export const SUPPORTED_LANGUAGES = ['es', 'en'];
 
 export function getLanguageLabel(lang: string): string {
   try {

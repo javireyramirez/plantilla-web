@@ -1,4 +1,5 @@
 import { Building2, Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,8 @@ import {
 import { CompaniesTable } from './components/companies.table';
 
 export default function CompaniesView() {
+  const { t } = useTranslation();
+
   return (
     // 🌟 flex-col y space-y-6 para separar perfectamente la cabecera de la tabla
     <div className="flex flex-col space-y-6">
@@ -20,10 +23,10 @@ export default function CompaniesView() {
         {/* Título e información de contexto (Alineado a la izquierda) */}
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            Compañías
+            {t('companies.title')}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Gestiona y visualiza el listado de empresas registradas.
+            {t('companies.subtitle')}
           </p>
         </div>
 
@@ -33,18 +36,18 @@ export default function CompaniesView() {
           <div className="hidden sm:flex items-center gap-2">
             <Button type="button" variant="outline" size="sm" className="gap-2">
               <Upload className="h-4 w-4" />
-              Importar
+              {t('companies.import')}
             </Button>
             <Button type="button" variant="outline" size="sm" className="gap-2">
               <Download className="h-4 w-4" />
-              Exportar
+              {t('companies.export')}
             </Button>
           </div>
 
           <Button asChild size="sm" className="gap-2 shadow-sm flex-1 sm:flex-none justify-center">
             <Link to="/companies/new">
               <Plus className="h-4 w-4" />
-              Nueva compañía
+              {t('companies.new')}
             </Link>
           </Button>
 
@@ -54,17 +57,17 @@ export default function CompaniesView() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="default" className="px-3">
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Más acciones</span>
+                  <span className="sr-only">{t('companies.moreActions')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44">
                 <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Upload className="h-4 w-4" />
-                  Importar
+                  {t('companies.import')}
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Download className="h-4 w-4 text-muted-foreground" />
-                  Exportar
+                  {t('companies.export')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

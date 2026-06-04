@@ -18,6 +18,10 @@
     "create": "Create Account",
     "yetRegister": "Already have an account?",
     "recoverPassword": "Recover Password",
+    "toastUnauthorized": "You must sign in to access this page",
+    "toastSessionError": "Error verifying your session",
+    "toastSessionExpired": "Your session has expired, please log in again",
+
     "recoverInstructions": "Enter your email address and we will send you an email with the steps to follow",
     "send": "Send",
     "sending": "Sending...",
@@ -27,6 +31,7 @@
     "toastErrorSignIN": "Invalid credentials",
     "toastSuccessSignUp": "Account created successfully",
     "toastErrorSignUp": "Error creating account",
+
     "resetPasswordTitle": "Change Password",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
@@ -35,6 +40,7 @@
     "toastSuccessReset": "Password changed successfully",
     "toastErrorReset": "Failed to change password",
     "unauthorizedReset": "Unauthorized access. Recovery link is required",
+
     "verifyEmailTitleError": "Verification error",
     "verifyEmailDescriptionError": "The link is invalid, has expired, or has already been used",
     "verifyEmailGoToLogin": "Back to login",
@@ -43,18 +49,145 @@
     "redirecting_message_other": "Redirecting to dashboard in {{count}} seconds...",
     "verifyEmailGoNow": "Go now",
     "toastSuccessVerifyEmail": "Email verified successfully",
-    "toastErrorVerifyEmail": "Error verifying email",
-    "toastUnauthorized": "You must sign in to access this page",
-    "toastSessionError": "Error verifying your session",
-    "toastSessionExpired": "Your session has expired, please log in again"
+    "toastErrorVerifyEmail": "Error verifying email"
   },
   "nav": {
     "verifyingSession": "Verifying session...",
     "profile": "Profile",
     "closeSession": "Sign Out",
-    "closingSession": "Signing out..."
+    "closingSession": "Signing out...",
+    "loadingAria": "Loading"
   },
   "theme": {
     "mode": "Dark mode"
-  }
+  },
+  "sidebar": {
+    "group1": "Sales",
+    "nav": {
+      "page1": "Home",
+      "page2": "Page 1",
+      "companies": "Company"
+    }
+  },
+  "companies": {
+    "title": "Companies",
+    "subtitle": "Manage and view the list of registered companies.",
+    "import": "Import",
+    "export": "Export",
+    "new": "New company",
+    "moreActions": "More actions",
+    "createTitle": "Create new company",
+    "editDescription": "Company data in the system.",
+    "createDescription": "Enter the details to register the company.",
+    "save": "Save",
+    "saveAndClose": "Save and close",
+    "delete": "Delete",
+    "detail": "Detail",
+    "docs": "Documentation",
+    "audit": "Audit",
+    "auditContent": "Audit log goes here...",
+    "basicData": "Basic data",
+    "identificationInfo": "Main identification info.",
+    "name": "Company",
+    "namePlaceholder": "Company name",
+    "cifNif": "CIF / NIF",
+    "sector": "Sector",
+    "selectSector": "Select a sector",
+    "additionalInfo": "Additional Information",
+    "pendingDefine": "Section to be defined.",
+    "metricsSummary": "Metrics / Summary",
+    "entityStats": "Statistical data of the entity.",
+    "deleteConfirmTitle": "Delete this company?",
+    "deleteConfirmDesc": "This action cannot be undone. The company will be permanently deleted from the system.",
+    "cancel": "Cancel",
+    "sectors": {
+      "tecnologia": "Technology",
+      "banca": "Banking",
+      "seguros": "Insurance",
+      "none": "No sector"
+    },
+    "table": {
+      "delete": "Company/companies successfully deleted",
+      "selectTodo": "Select all",
+      "selectFila": "Select row",
+      "cif": "CIF",
+      "fecha": "Date",
+      "creacion": "Creation"
+    },
+    "form": {
+      "update": "Company successfully updated",
+      "create": "Company successfully created",
+      "delete": "Company successfully deleted",
+      "errors": {
+        "update": "Error updating the company",
+        "create": "Error creating the company",
+        "delete": "Error deleting the company"
+      }
+    }
+  },
+  "profile": {
+    "emailVerification": "Email verification",
+    "emailVerified": "Email verified",
+    "sending": "Sending...",
+    "sentSuccessfully": "Sent successfully",
+    "sendVerificationLink": "Send verification link",
+    "checkInboxOrSpam": "Check your inbox or spam folder.",
+    "changePassword": "Change password",
+    "currentPassword": "Current Password",
+    "hidePassword": "Hide password",
+    "showPassword": "Show password",
+    "newPassword": "New Password",
+    "repeatPassword": "Repeat Password",
+    "revokeOtherSessions": "Revoke sessions on other devices",
+    "updating": "Updating...",
+    "updatePassword": "Update Password",
+    "toast": {
+      "passwordChanged": "Password changed successfully",
+      "passwordChangeFailed": "Failed to change password",
+      "noEmailFound": "No associated email found",
+      "verificationSent": "Verification email sent",
+      "sendError": "Error sending"
+    }
+  },
+  "home": {
+    "title": "Home"
+  },
+  "storage": {
+    "uploadFile": "Upload file",
+    "uploading": "Uploading...",
+    "dropzone": {
+      "dropActive": "Drop the files here",
+      "clickDragMultiple": "Click or drag files",
+      "clickDragSingle": "Click or drag a file",
+      "maxSizeInfo": "Maximum 5MB per file",
+      "uploadMultipleCount": "Upload {{count}} documents",
+      "uploadSingle": "Upload document"
+    },
+    "types": {
+      "document": "Documents",
+      "spreadsheet": "Spreadsheets",
+      "presentation": "Presentations",
+      "image": "Images",
+      "data": "Data",
+      "archive": "Archives"
+    },
+    "table": {
+      "selectTodo": "Select all",
+      "selectRow": "Select row",
+      "fileName": "File name",
+      "type": "Type",
+      "size": "Size",
+      "date": "Date",
+      "creation": "Creation",
+      "delete": "Delete",
+      "download": "Download"
+    },
+    "toast": {
+      "uploadSuccessMultiple": "Documents successfully uploaded",
+      "uploadSuccessSingle": "Document successfully uploaded",
+      "uploadError": "Error uploading document"
+    }
+  },
+  "redirecting_message_one": "Redirecting to dashboard in {{count}} second...",
+  "redirecting_message_other": "Redirecting to dashboard in {{count}} seconds..."
 }
