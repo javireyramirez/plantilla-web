@@ -1,4 +1,4 @@
-import { CompassIcon, Home, Users } from 'lucide-react';
+import { Building2, Home, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -26,7 +26,7 @@ import NavUser from './NavUser.js';
 const salesItems = [
   { titleKey: 'sidebar.nav.page1', url: '/home', icon: Home },
   { titleKey: 'sidebar.nav.page2', url: '/pagina1', icon: Users },
-  { titleKey: 'sidebar.nav.companies', url: '/companies', icon: CompassIcon },
+  { titleKey: 'sidebar.nav.companies', url: '/companies', icon: Building2 },
 ];
 
 export default function LayoutSidebar() {

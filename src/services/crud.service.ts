@@ -36,7 +36,7 @@ export abstract class CrudService<
   };
 
   update = async (id: TId, body: TUpdateBody): Promise<TItem> => {
-    const { data } = await instance.patch<TItem>(`/${this.entityName}/${id}`, body);
+    const { data } = await instance.put<TItem>(`/${this.entityName}/${id}`, body);
     return data;
   };
 
