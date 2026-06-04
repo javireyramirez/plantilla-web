@@ -1,3 +1,4 @@
+import { error } from 'better-auth/api';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -18,7 +19,7 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 
 import { companiesQueries } from './companies.query';
-import { Company, GetCompaniesQuery } from './companies.schema';
+import { Company, CreateCompany, GetCompaniesQuery } from './companies.schema';
 import { SECTOR_OPTIONS } from './companies.types';
 
 export default function useCompanies(columns: ColumnDef<Company>[]) {

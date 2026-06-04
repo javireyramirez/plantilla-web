@@ -45,7 +45,7 @@ export function createGenericQueries<
       return useQuery<TItem, Error>({
         queryKey: [queryKey, 'detail', id],
         queryFn: () => service.getById(id),
-        enabled: !!id && options?.enabled, // Enforce execution only if ID exists
+        enabled: !!id && (options?.enabled ?? true),
         ...options,
       });
     },
@@ -56,8 +56,12 @@ export function createGenericQueries<
       const queryClient = useQueryClient();
       return useMutation<TItem, Error, TCreateBody>({
         mutationFn: (body) => service.create(body),
-        onSuccess: () => {
+        onSuccess: (data: any) => {
           queryClient.invalidateQueries({ queryKey: [queryKey] });
+
+          if (data?.id) {
+            queryClient.setQueryData([queryKey, 'detail', data.id], data);
+          }
         },
       });
     },
@@ -68,7 +72,6 @@ export function createGenericQueries<
         mutationFn: ({ id, body }) => service.update(id, body),
         onSuccess: (data, variables) => {
           queryClient.invalidateQueries({ queryKey: [queryKey] });
-          // Optional optimization: update individual cache directly
           queryClient.setQueryData([queryKey, 'detail', variables.id], data);
         },
       });

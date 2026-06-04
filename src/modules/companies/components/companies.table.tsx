@@ -1,4 +1,5 @@
 import { CalendarIcon, Trash2 } from 'lucide-react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import * as React from 'react';
@@ -17,9 +18,11 @@ import { cn } from '@/lib/utils';
 import { Company } from '@/modules/companies/companies.schema';
 
 import { SECTOR_OPTIONS } from '../companies.types';
-import useCompanies from '../use-companies';
+import useCompanies from '../use-companies-table';
 
 export function CompaniesTable() {
+  const navigate = useNavigate();
+
   const columns = React.useMemo<ColumnDef<Company>[]>(
     () => [
       {
@@ -57,7 +60,7 @@ export function CompaniesTable() {
             <div className="flex items-center gap-2 min-w-0">
               <button
                 className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
-                onClick={() => console.log(row.original.id)}
+                onClick={() => navigate(`/companies/edit/${row.original.id}`)}
               >
                 {row.getValue('name')}
               </button>
