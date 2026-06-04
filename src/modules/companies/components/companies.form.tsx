@@ -1,8 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Building2, ChevronDown, Download, MoreHorizontal, Save, Trash2 } from 'lucide-react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { useEffect, useState } from 'react';
 
@@ -15,7 +14,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
   Breadcrumb,
@@ -50,17 +48,21 @@ import { CreateCompany, CreateCompanyBodySchema } from '../companies.schema';
 import { SECTOR_OPTIONS } from '../companies.types';
 
 export default function CompanyForm() {
+  // --- Configuración de Tabs ---
   const tabs = [
     { value: 'detail', label: 'Detalle' },
     { value: 'docs', label: 'Documentación' },
     { value: 'audit', label: 'Auditoría' },
   ];
 
+  // --- Estados locales ---
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [shouldCloseOnSubmit, setShouldCloseOnSubmit] = useState(false);
   const [activeTab, setActiveTab] = useState('detail');
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
 
+  // --- Hooks de datos y formulario ---
   const { id } = useParams<{ id: string }>();
   const { isEditing, defaultValues, isLoading, isFetching, handleSubmit, handleDelete, isPending } =
     useCompanyForm(id);
@@ -71,33 +73,29 @@ export default function CompanyForm() {
     defaultValues: defaultValues ?? { name: '', nif: '', sector: '' },
   });
 
+  // --- Sincronización del formulario con el backend ---
   useEffect(() => {
     if (isEditing) {
       if (!isLoading && !isFetching && defaultValues) {
         form.reset(defaultValues);
       }
     } else {
-      form.reset({
-        name: '',
-        nif: '',
-        sector: '',
-      });
+      form.reset({ name: '', nif: '', sector: '' });
     }
   }, [isEditing, defaultValues, isLoading, isFetching, form]);
 
   const companyName = useWatch({ control: form.control, name: 'name' });
 
+  // --- Estado de Carga (Skeletons) ---
   if (isLoading) {
     return (
       <div className="space-y-6 mx-auto p-4 md:p-6">
-        {/* Skeleton Breadcrumb */}
         <div className="flex items-center gap-2">
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 w-4 rounded-full" />
           <Skeleton className="h-4 w-32" />
         </div>
 
-        {/* Skeleton Action Bar */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
           <div className="space-y-2 w-full sm:w-auto">
             <div className="flex items-center gap-2">
@@ -113,14 +111,12 @@ export default function CompanyForm() {
           </div>
         </div>
 
-        {/* Skeleton Tabs Navigation */}
         <div className="border-b pb-2 flex gap-6">
           <Skeleton className="h-5 w-16" />
           <Skeleton className="h-5 w-28" />
           <Skeleton className="h-5 w-20" />
         </div>
 
-        {/* Skeleton Cards Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <Card className="lg:col-span-1 shadow-sm">
             <CardHeader className="space-y-2">
@@ -169,10 +165,10 @@ export default function CompanyForm() {
     );
   }
 
+  // --- Renderizado Principal ---
   return (
-    <div className="space-y-6  mx-auto p-4 md:p-6">
-      {/* BREADCRUMB */}
-      {/* BREADCRUMB CORREGIDO */}
+    <div className="space-y-6 mx-auto p-4 md:p-6">
+      {/* SECCIÓN: Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -189,9 +185,8 @@ export default function CompanyForm() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      {/* BARRA DE ACCIONES PRINCIPAL */}
+      {/* SECCIÓN: Barra de Acciones Adaptativa Global */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
-        {/* Bloque del Título */}
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
@@ -210,126 +205,133 @@ export default function CompanyForm() {
           </p>
         </div>
 
-        {/* Contenedor de Botones Adaptativo */}
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          {/* Botón Guardar: Prioritario e independiente */}
+        {/* Contenedor Único de Botones (Control de responsividad fluido) */}
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          {/* Acción Principal: Siempre visible */}
+          <Button
+            form="company-form-id"
+            type="submit"
+            disabled={isPending}
+            onClick={() => setShouldCloseOnSubmit(false)}
+            className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
+          >
+            <Save className="h-4 w-4" />
+            Guardar
+          </Button>
+
+          {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
           <Button
             form="company-form-id"
             type="submit"
             variant="outline"
             disabled={isPending}
             onClick={() => setShouldCloseOnSubmit(true)}
-            className="gap-2 shadow-sm flex-1 sm:flex-none justify-center order-2 sm:order-2"
+            className="hidden md:flex gap-2"
           >
             <Save className="h-4 w-4" />
             Guardar y cerrar
           </Button>
-          <Button
-            form="company-form-id"
-            disabled={isPending}
-            onClick={() => setShouldCloseOnSubmit(false)}
-            size="default"
-            className="gap-2 shadow-sm flex-1 sm:flex-none sm:size-sm justify-center order-1 sm:order-3"
-          >
-            <Save className="h-4 w-4" />
-            Guardar
-          </Button>
 
-          {/* Vista Escritorio: Botones secundarios directos */}
-          <div className="hidden sm:flex items-center gap-2 order-1">
-            {isEditing && (
-              <>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  disabled={isPending}
-                >
-                  <Download className="h-4 w-4" />
-                  Exportar
-                </Button>
-
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="border-destructive text-destructive hover:bg-destructive hover:text-white gap-2"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Eliminar
-                    </Button>
-                  </AlertDialogTrigger>
-
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>¿Eliminar esta compañía?</AlertDialogTitle>
-
-                      <AlertDialogDescription>
-                        Esta acción no se puede deshacer. La compañía será eliminada del sistema.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-
-                      <AlertDialogAction onClick={handleDelete} variant="destructive">
-                        Eliminar
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  disabled={isPending}
-                >
-                  <Link to="/companies/new" className="flex flex-row gap-2 items-center">
-                    <Download className="h-4 w-4" />
-                    Nueva compañía
-                  </Link>
-                </Button>
-              </>
-            )}
-          </div>
-
-          {/* Vista Móvil: Acciones secundarias en menú desplegable */}
           {isEditing && (
-            <div className="sm:hidden order-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="default" className="px-3">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Más acciones</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-44">
-                  <DropdownMenuItem className="gap-2 cursor-pointer">
-                    <Download className="h-4 w-4 text-muted-foreground" />
+            <>
+              {/* Exportar y Eliminar: Visibles a partir de pantallas grandes (lg) */}
+              <Button
+                type="button"
+                variant="outline"
+                className="hidden lg:flex gap-2"
+                disabled={isPending}
+              >
+                <Download className="h-4 w-4" />
+                Exportar
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="hidden lg:flex border-destructive text-destructive hover:bg-destructive hover:text-white gap-2"
+                onClick={() => setDeleteDialogOpen(true)}
+              >
+                <Trash2 className="h-4 w-4" />
+                Eliminar
+              </Button>
+
+              {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
+              <Button
+                type="button"
+                variant="outline"
+                className="hidden xl:flex gap-2"
+                disabled={isPending}
+                asChild
+              >
+                <Link to="/companies/new">
+                  <Download className="h-4 w-4" />
+                  Nueva compañía
+                </Link>
+              </Button>
+            </>
+          )}
+
+          {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className={`px-3 ${isEditing ? 'xl:hidden' : 'md:hidden'}`}>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-48">
+              {/* Se muestra en el menú si la pantalla es menor a md */}
+              <DropdownMenuItem
+                disabled={isPending}
+                className="md:hidden gap-2"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setShouldCloseOnSubmit(true);
+                  form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
+                }}
+              >
+                <Save className="h-4 w-4" />
+                Guardar y cerrar
+              </DropdownMenuItem>
+
+              {isEditing && (
+                <>
+                  {/* Se muestra en el menú si la pantalla es menor a lg */}
+                  <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
+                    <Download className="h-4 w-4" />
                     Exportar
                   </DropdownMenuItem>
+
+                  {/* Se muestra en el menú si la pantalla es menor a xl */}
+                  <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
+                    <Link to="/companies/new">
+                      <Download className="h-4 w-4" />
+                      Nueva compañía
+                    </Link>
+                  </DropdownMenuItem>
+
+                  {/* Se muestra en el menú si la pantalla es menor a lg */}
                   <DropdownMenuItem
-                    className="gap-2 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
-                    onClick={handleDelete}
+                    disabled={isPending}
+                    className="lg:hidden gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setDeleteDialogOpen(true);
+                    }}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4 text-destructive" />
                     Eliminar
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
-      {/* TABS DE NAVEGACIÓN RESPONSIVE */}
+      {/* SECCIÓN: Navegación por Pestañas (Tabs) */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
-        {' '}
-        {/* DESKTOP */}
+        {/* Vista Escritorio */}
         <TabsList
           variant="line"
           className="hidden md:flex h-auto w-full justify-start gap-6 rounded-none border-b bg-transparent p-0"
@@ -340,17 +342,16 @@ export default function CompanyForm() {
             </TabsTrigger>
           ))}
         </TabsList>
-        {/* MOBILE */}
+
+        {/* Vista Móvil */}
         <div className="border-b md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-0 text-base font-medium">
                 {currentTab?.label}
-
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-
             <DropdownMenuContent align="start" className="w-64">
               {tabs.map((tab) => (
                 <DropdownMenuItem key={tab.value} onClick={() => setActiveTab(tab.value)}>
@@ -360,10 +361,11 @@ export default function CompanyForm() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        {/* CONTENIDO DE LOS TABS */}
+
+        {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            {/* Card 1: Formulario */}
+            {/* Formulario de Datos Básicos */}
             <Card className="lg:col-span-1 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-base font-semibold">Datos básicos</CardTitle>
@@ -445,7 +447,6 @@ export default function CompanyForm() {
                             >
                               <SelectValue placeholder="Selecciona un sector" />
                             </SelectTrigger>
-
                             <SelectContent>
                               {SECTOR_OPTIONS.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
@@ -463,7 +464,7 @@ export default function CompanyForm() {
               </CardContent>
             </Card>
 
-            {/* Card 2 */}
+            {/* Tarjetas Secundarias Estatales */}
             <Card className="shadow-sm">
               <CardHeader>
                 <CardTitle className="text-base font-semibold">Información Adicional</CardTitle>
@@ -474,7 +475,6 @@ export default function CompanyForm() {
               </CardContent>
             </Card>
 
-            {/* Card 3 */}
             <Card className="shadow-sm">
               <CardHeader>
                 <CardTitle className="text-base font-semibold">Métricas / Resumen</CardTitle>
@@ -486,12 +486,14 @@ export default function CompanyForm() {
             </Card>
           </div>
         </TabsContent>
+
         <TabsContent
           value="docs"
           className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
         >
           Aquí van los documentos...
         </TabsContent>
+
         <TabsContent
           value="audit"
           className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
@@ -499,6 +501,25 @@ export default function CompanyForm() {
           Aquí va la auditoría...
         </TabsContent>
       </Tabs>
+
+      {/* SECCIÓN: Diálogo de Confirmación de Borrado Único (Centralizado) */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar esta compañía?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La compañía será eliminada permanentemente del
+              sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} variant="destructive">
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
