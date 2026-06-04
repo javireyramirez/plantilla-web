@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LoaderCircle, Mail } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { useState } from 'react';
@@ -18,6 +19,7 @@ import { ChangePasswordSchema } from '@/schemas/auth.schema.js';
 import { ChangePasswordSchemaValues } from '@/schemas/auth.schema.js';
 
 export default function Profile() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const isVerified = session?.user?.emailVerified;
   const toggleVisibility = (field: 'newPassword' | 'confirmPassword' | 'currentPassword') => {
@@ -53,8 +55,8 @@ export default function Profile() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <LoaderCircle className="h-8 w-8 animate-spin text-primary" aria-label="Cargando" />
-          <p className="text-sm text-muted-foreground">Verificando sesión...</p>
+          <LoaderCircle className="h-8 w-8 animate-spin text-primary" aria-label={t('nav.loadingAria')} />
+          <p className="text-sm text-muted-foreground">{t('nav.verifyingSession')}</p>
         </div>
       </div>
     );
@@ -63,11 +65,11 @@ export default function Profile() {
   const onSubmit = (data: ChangePasswordSchemaValues) => {
     useChangePasswordMutation.mutate(data, {
       onSuccess: () => {
-        toast.success('Contraseña cambiada correctamente');
+        toast.success(t('profile.toast.passwordChanged'));
       },
 
       onError: (error) => {
-        toast.error(error?.message || 'Fallo al cambiar la contraseña');
+        toast.error(error?.message || t('profile.toast.passwordChangeFailed'));
       },
     });
   };
@@ -76,15 +78,15 @@ export default function Profile() {
 
   const handleVerificationEmail = () => {
     if (!session?.user?.email) {
-      toast.error('No se encontró un correo asociado');
+      toast.error(t('profile.toast.noEmailFound'));
       return;
     }
 
     sendEmail(
       { email: session.user.email },
       {
-        onSuccess: () => toast.success('Email de verificación enviado'),
-        onError: (error) => toast.error(error?.message || 'Error al enviar'),
+        onSuccess: () => toast.success(t('profile.toast.verificationSent')),
+        onError: (error) => toast.error(error?.message || t('profile.toast.sendError')),
       }
     );
   };
@@ -94,7 +96,7 @@ export default function Profile() {
       <div className="w-full max-w-sm">
         <CardHeader className="flex flex-col items-center justify-center">
           <CardTitle className="flex flex-col flex-wrap items-center justify-center mb-4">
-            Verificación email
+            {t('profile.emailVerification')}
           </CardTitle>
         </CardHeader>
         <CardFooter className="flex-col gap-2">
@@ -104,25 +106,25 @@ export default function Profile() {
             disabled={isPendingMail || isVerified || isSuccessMail}
           >
             {isVerified ? (
-              'Email verificado'
+              t('profile.emailVerified')
             ) : isPendingMail ? (
               <>
                 <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                Enviando...
+                {t('profile.sending')}
               </>
             ) : isSuccessMail ? (
-              'Enviado correctamente'
+              t('profile.sentSuccessfully')
             ) : (
               <span className="flex items-center gap-2">
                 <Mail className="size-4" />
-                Enviar link de verificación
+                {t('profile.sendVerificationLink')}
               </span>
             )}
           </Button>
 
           {!isVerified && isSuccessMail && (
             <p className="text-xs text-muted-foreground text-center animate-in fade-in">
-              Revisa tu bandeja de entrada o spam.
+              {t('profile.checkInboxOrSpam')}
             </p>
           )}
         </CardFooter>
@@ -133,7 +135,7 @@ export default function Profile() {
       <div className="w-full max-w-sm">
         <CardHeader className="flex flex-col items-center justify-center">
           <CardTitle className="flex flex-col flex-wrap items-center justify-center mb-4">
-            Cambio de contraseña
+            {t('profile.changePassword')}
           </CardTitle>
         </CardHeader>
         <form id="form-signin" onSubmit={form.handleSubmit(onSubmit)}>
@@ -146,7 +148,7 @@ export default function Profile() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <FormFieldWrapper fieldState={fieldState}>
-                      <FieldLabel htmlFor="currentPassword">Contraseña Actual</FieldLabel>
+                      <FieldLabel htmlFor="currentPassword">{t('profile.currentPassword')}</FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}
@@ -166,8 +168,8 @@ export default function Profile() {
                           disabled={isSubmitting}
                           aria-label={
                             showPassword.currentPassword
-                              ? 'Ocultar contraseña'
-                              : 'Mostrar contraseña'
+                              ? t('profile.hidePassword')
+                              : t('profile.showPassword')
                           }
                         >
                           {showPassword.currentPassword ? (
@@ -189,7 +191,7 @@ export default function Profile() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <FormFieldWrapper fieldState={fieldState}>
-                      <FieldLabel htmlFor="newPassword">Nueva Contraseña</FieldLabel>
+                      <FieldLabel htmlFor="newPassword">{t('profile.newPassword')}</FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}
@@ -208,7 +210,7 @@ export default function Profile() {
                           onClick={() => toggleVisibility('newPassword')}
                           disabled={isSubmitting}
                           aria-label={
-                            showPassword.newPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+                            showPassword.newPassword ? t('profile.hidePassword') : t('profile.showPassword')
                           }
                         >
                           {showPassword.newPassword ? (
@@ -230,7 +232,7 @@ export default function Profile() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <FormFieldWrapper fieldState={fieldState}>
-                      <FieldLabel htmlFor="confirmPassword">Repetir Contraseña</FieldLabel>
+                      <FieldLabel htmlFor="confirmPassword">{t('profile.repeatPassword')}</FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}
@@ -250,8 +252,8 @@ export default function Profile() {
                           disabled={isSubmitting}
                           aria-label={
                             showPassword.confirmPassword
-                              ? 'Ocultar contraseña'
-                              : 'Mostrar contraseña'
+                              ? t('profile.hidePassword')
+                              : t('profile.showPassword')
                           }
                         >
                           {showPassword.confirmPassword ? (
@@ -280,7 +282,7 @@ export default function Profile() {
                         disabled={isSubmitting}
                       />
                       <label htmlFor="revokeOtherSessions" className="text-sm font-medium">
-                        Eliminar sesiones en el resto de dispositivos
+                        {t('profile.revokeOtherSessions')}
                       </label>
                     </div>
                     {fieldState.invalid && <FieldError>{fieldState.error?.message}</FieldError>}
@@ -295,10 +297,10 @@ export default function Profile() {
               {isSubmitting ? (
                 <>
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  Actualizando...
+                  {t('profile.updating')}
                 </>
               ) : (
-                'Actualizar Contraseña'
+                t('profile.updatePassword')
               )}
             </Button>
           </CardFooter>

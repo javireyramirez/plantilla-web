@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2, ChevronDown, Download, MoreHorizontal, Save, Trash2 } from 'lucide-react';
+import { Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
 import { useEffect, useState } from 'react';
@@ -50,7 +51,7 @@ import { CreateCompany, CreateCompanyBodySchema } from '../companies.schema';
 import { SECTOR_OPTIONS } from '../companies.types';
 
 export default function CompanyForm() {
-  // --- Configuración de Tabs ---
+  const { t } = useTranslation();
 
   // --- Estados locales ---
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -69,9 +70,9 @@ export default function CompanyForm() {
   });
 
   const tabs = [
-    { value: 'detail', label: 'Detalle', viewAtCreate: true },
-    { value: 'docs', label: 'Documentación', viewAtCreate: isEditing },
-    { value: 'audit', label: 'Auditoría', viewAtCreate: isEditing },
+    { value: 'detail', label: t('companies.detail'), viewAtCreate: true },
+    { value: 'docs', label: t('companies.docs'), viewAtCreate: isEditing },
+    { value: 'audit', label: t('companies.audit'), viewAtCreate: isEditing },
   ];
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
@@ -176,13 +177,13 @@ export default function CompanyForm() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
-              <Link to="/companies">Compañías</Link>
+              <Link to="/companies">{t('companies.title')}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage className="font-medium text-foreground">
-              {isEditing ? `${companyName}` : 'Crear nueva compañía'}
+              {isEditing ? `${companyName}` : t('companies.createTitle')}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -198,13 +199,13 @@ export default function CompanyForm() {
                 <span className="text-primary">{companyName}</span>
               </span>
             ) : (
-              'Crear nueva compañía'
+              t('companies.createTitle')
             )}
           </h1>
           <p className="text-sm text-muted-foreground hidden sm:block">
             {isEditing
-              ? 'Datos de la empresa en el sistema.'
-              : 'Introduce los datos para registrar la empresa.'}
+              ? t('companies.editDescription')
+              : t('companies.createDescription')}
           </p>
         </div>
 
@@ -219,7 +220,7 @@ export default function CompanyForm() {
             className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
           >
             <Save className="h-4 w-4" />
-            Guardar
+            {t('companies.save')}
           </Button>
 
           {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
@@ -232,7 +233,7 @@ export default function CompanyForm() {
             className="hidden md:flex gap-2"
           >
             <Save className="h-4 w-4" />
-            Guardar y cerrar
+            {t('companies.saveAndClose')}
           </Button>
 
           {isEditing && (
@@ -245,7 +246,7 @@ export default function CompanyForm() {
                 disabled={isPending}
               >
                 <Download className="h-4 w-4" />
-                Exportar
+                {t('companies.export')}
               </Button>
 
               <Button
@@ -255,7 +256,7 @@ export default function CompanyForm() {
                 onClick={() => setDeleteDialogOpen(true)}
               >
                 <Trash2 className="h-4 w-4" />
-                Eliminar
+                {t('companies.delete')}
               </Button>
 
               {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
@@ -267,8 +268,8 @@ export default function CompanyForm() {
                 asChild
               >
                 <Link to="/companies/new">
-                  <Download className="h-4 w-4" />
-                  Nueva compañía
+                  <Plus className="h-4 w-4" />
+                  {t('companies.new')}
                 </Link>
               </Button>
             </>
@@ -294,7 +295,7 @@ export default function CompanyForm() {
                 }}
               >
                 <Save className="h-4 w-4" />
-                Guardar y cerrar
+                {t('companies.saveAndClose')}
               </DropdownMenuItem>
 
               {isEditing && (
@@ -302,14 +303,14 @@ export default function CompanyForm() {
                   {/* Se muestra en el menú si la pantalla es menor a lg */}
                   <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
                     <Download className="h-4 w-4" />
-                    Exportar
+                    {t('companies.export')}
                   </DropdownMenuItem>
 
                   {/* Se muestra en el menú si la pantalla es menor a xl */}
                   <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
                     <Link to="/companies/new">
                       <Download className="h-4 w-4" />
-                      Nueva compañía
+                      {t('companies.new')}
                     </Link>
                   </DropdownMenuItem>
 
@@ -323,7 +324,7 @@ export default function CompanyForm() {
                     }}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
-                    Eliminar
+                    {t('companies.delete')}
                   </DropdownMenuItem>
                 </>
               )}
@@ -373,8 +374,8 @@ export default function CompanyForm() {
             {/* Formulario de Datos Básicos */}
             <Card className="lg:col-span-1 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Datos básicos</CardTitle>
-                <CardDescription>Información principal de identificación.</CardDescription>
+                <CardTitle className="text-base font-semibold">{t('companies.basicData')}</CardTitle>
+                <CardDescription>{t('companies.identificationInfo')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <form
@@ -394,13 +395,13 @@ export default function CompanyForm() {
                             htmlFor="company-name"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                           >
-                            Compañía
+                            {t('companies.name')}
                           </FieldLabel>
                           <Input
                             {...field}
                             id="company-name"
                             aria-invalid={fieldState.invalid}
-                            placeholder="Nombre de la empresa"
+                            placeholder={t('companies.namePlaceholder')}
                             autoComplete="off"
                             className="mt-1.5 focus-visible:ring-primary"
                           />
@@ -418,7 +419,7 @@ export default function CompanyForm() {
                             htmlFor="company-nif"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                           >
-                            CIF / NIF
+                            {t('companies.cifNif')}
                           </FieldLabel>
                           <Input
                             {...field}
@@ -442,7 +443,7 @@ export default function CompanyForm() {
                             htmlFor="company-sector"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                           >
-                            Sector
+                            {t('companies.sector')}
                           </FieldLabel>
                           <Select value={field.value ?? undefined} onValueChange={field.onChange}>
                             <SelectTrigger
@@ -450,12 +451,12 @@ export default function CompanyForm() {
                               className="mt-1.5 focus-visible:ring-primary w-full"
                               aria-invalid={fieldState.invalid}
                             >
-                              <SelectValue placeholder="Selecciona un sector" />
+                              <SelectValue placeholder={t('companies.selectSector')} />
                             </SelectTrigger>
                             <SelectContent>
                               {SECTOR_OPTIONS.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
+                                  {t(`companies.sectors.${option.value}`)}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -472,8 +473,8 @@ export default function CompanyForm() {
             {/* Tarjetas Secundarias Estatales */}
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Información Adicional</CardTitle>
-                <CardDescription>Sección pendiente de definir.</CardDescription>
+                <CardTitle className="text-base font-semibold">{t('companies.additionalInfo')}</CardTitle>
+                <CardDescription>{t('companies.pendingDefine')}</CardDescription>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground leading-relaxed">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.
@@ -482,8 +483,8 @@ export default function CompanyForm() {
 
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Métricas / Resumen</CardTitle>
-                <CardDescription>Datos estadísticos de la entidad.</CardDescription>
+                <CardTitle className="text-base font-semibold">{t('companies.metricsSummary')}</CardTitle>
+                <CardDescription>{t('companies.entityStats')}</CardDescription>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground leading-relaxed">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget elit nec.
@@ -509,7 +510,7 @@ export default function CompanyForm() {
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
             >
-              Aquí va la auditoría...
+              {t('companies.auditContent')}
             </TabsContent>
           </>
         )}
@@ -519,16 +520,15 @@ export default function CompanyForm() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar esta compañía?</AlertDialogTitle>
+            <AlertDialogTitle>{t('companies.deleteConfirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. La compañía será eliminada permanentemente del
-              sistema.
+              {t('companies.deleteConfirmDesc')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('companies.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} variant="destructive">
-              Eliminar
+              {t('companies.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

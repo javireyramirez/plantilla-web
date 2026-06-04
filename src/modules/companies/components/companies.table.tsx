@@ -1,4 +1,5 @@
 import { CalendarIcon, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -22,6 +23,7 @@ import useCompanies from '../use-companies-table';
 
 export function CompaniesTable() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const columns = React.useMemo<ColumnDef<Company>[]>(
     () => [
@@ -35,7 +37,7 @@ export function CompaniesTable() {
               (table.getIsSomePageRowsSelected() && 'indeterminate')
             }
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Seleccionar todo"
+            aria-label={t('companies.table.selectTodo')}
             className="translate-y-0.5"
           />
         ),
@@ -43,7 +45,7 @@ export function CompaniesTable() {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Seleccionar fila"
+            aria-label={t('companies.table.selectFila')}
             className="translate-y-0.5"
           />
         ),
@@ -54,7 +56,7 @@ export function CompaniesTable() {
         accessorKey: 'name',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Compañía" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('companies.name')} />,
         cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2 min-w-0">
@@ -68,7 +70,7 @@ export function CompaniesTable() {
           );
         },
         meta: {
-          label: 'Compañía',
+          label: t('companies.name'),
           variant: 'text',
         },
       },
@@ -76,7 +78,7 @@ export function CompaniesTable() {
         accessorKey: 'nif',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="CIF" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('companies.table.cif')} />,
         cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2 min-w-0">
@@ -90,7 +92,7 @@ export function CompaniesTable() {
           );
         },
         meta: {
-          label: 'CIF',
+          label: t('companies.table.cif'),
           variant: 'text',
         },
       },
@@ -98,14 +100,14 @@ export function CompaniesTable() {
         accessorKey: 'sector',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Sector" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('companies.sector')} />,
         cell: ({ row }) => {
           const sectorValue = row.getValue('sector');
           const sectorOpt = SECTOR_OPTIONS.find((opt) => opt.value === sectorValue);
 
           return (
             <div className="flex items-center gap-2 min-w-0">
-              {sectorOpt ? sectorOpt.label : 'Sin sector'}
+              {sectorOpt ? t(`companies.sectors.${sectorOpt.value}`) : t('companies.sectors.none')}
             </div>
           );
         },
@@ -116,29 +118,32 @@ export function CompaniesTable() {
           );
         },
         meta: {
-          label: 'Sector',
+          label: t('companies.sector'),
           variant: 'multiSelect',
-          options: SECTOR_OPTIONS,
+          options: SECTOR_OPTIONS.map((opt) => ({
+            ...opt,
+            label: t(`companies.sectors.${opt.value}`),
+          })),
         },
       },
       {
         accessorKey: 'createdAt',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label="Fecha" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('companies.table.fecha')} />,
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
             {formatDate(row.getValue('createdAt'))}
           </span>
         ),
         meta: {
-          label: 'Creación',
+          label: t('companies.table.creacion'),
           variant: 'dateRange',
           icon: CalendarIcon,
         },
       },
     ],
-    []
+    [t, navigate]
   );
 
   const {
@@ -184,7 +189,7 @@ export function CompaniesTable() {
             table={table}
             actions={[
               {
-                label: 'Delete',
+                label: t('companies.delete'),
                 icon: <Trash2 className="h-4 w-4" />,
                 variant: 'destructive',
                 disabled: isPendingActions,

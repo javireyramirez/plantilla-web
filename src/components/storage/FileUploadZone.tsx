@@ -1,4 +1,5 @@
 import { FileText, LoaderCircle, UploadCloud, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -6,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { FileUploadConfigProps, useFileUploadLogic } from './useFileUploadLogic';
 
 export function FileUploadZone(props: FileUploadConfigProps) {
+  const { t } = useTranslation();
   const {
     files,
     isPendingUpload,
@@ -35,12 +37,12 @@ export function FileUploadZone(props: FileUploadConfigProps) {
           <div className="space-y-1">
             <p className="text-sm font-medium">
               {isDragActive
-                ? 'Suelta los archivos aquí'
+                ? t('storage.dropzone.dropActive')
                 : props.multiple
-                  ? 'Haz clic o arrastra los archivos'
-                  : 'Haz clic o arrastra un archivo'}
+                  ? t('storage.dropzone.clickDragMultiple')
+                  : t('storage.dropzone.clickDragSingle')}
             </p>
-            <p className="text-xs text-muted-foreground">Máximo 5MB por archivo</p>
+            <p className="text-xs text-muted-foreground">{t('storage.dropzone.maxSizeInfo')}</p>
           </div>
         </div>
       </div>
@@ -87,12 +89,12 @@ export function FileUploadZone(props: FileUploadConfigProps) {
           {isPendingUpload ? (
             <>
               <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-              Subiendo...
+              {t('storage.uploading')}
             </>
           ) : props.multiple && files.length > 1 ? (
-            `Subir ${files.length} documentos`
+            t('storage.dropzone.uploadMultipleCount', { count: files.length })
           ) : (
-            'Subir documento'
+            t('storage.dropzone.uploadSingle')
           )}
         </Button>
       )}
