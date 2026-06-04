@@ -11,7 +11,10 @@ import { DataTableFloatingBar } from '@/components/data-table/data-table-floatin
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-desktop';
 import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
-import { Document, DocumentsTableProps } from '@/components/storage-table/storage-table-types';
+import {
+  Document,
+  DocumentsTableComponentProps,
+} from '@/components/storage-table/storage-table-types';
 import {
   CONTENT_TYPE_OPTIONS,
   getContentTypeIcon,
@@ -24,7 +27,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { formatBytes, formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
-export function DocumentsTable({ entityType, entityId, isTrash = false }: DocumentsTableProps) {
+export function DocumentsTable({
+  entityType,
+  entityId,
+  isTrash = false,
+}: DocumentsTableComponentProps) {
   const columns = React.useMemo<ColumnDef<Document>[]>(
     () => [
       {

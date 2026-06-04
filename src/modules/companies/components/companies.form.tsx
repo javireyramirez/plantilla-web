@@ -5,6 +5,8 @@ import { Link, useParams } from 'react-router-dom';
 
 import { useEffect, useState } from 'react';
 
+import { DocumentsTable } from '@/components/storage-table/storage-table';
+import { FileUploadButton } from '@/components/storage/FileUploadButton';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,18 +51,11 @@ import { SECTOR_OPTIONS } from '../companies.types';
 
 export default function CompanyForm() {
   // --- Configuración de Tabs ---
-  const tabs = [
-    { value: 'detail', label: 'Detalle' },
-    { value: 'docs', label: 'Documentación' },
-    { value: 'audit', label: 'Auditoría' },
-  ];
 
   // --- Estados locales ---
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [shouldCloseOnSubmit, setShouldCloseOnSubmit] = useState(false);
   const [activeTab, setActiveTab] = useState('detail');
-
-  const currentTab = tabs.find((tab) => tab.value === activeTab);
 
   // --- Hooks de datos y formulario ---
   const { id } = useParams<{ id: string }>();
@@ -72,6 +67,14 @@ export default function CompanyForm() {
     mode: 'onBlur',
     defaultValues: defaultValues ?? { name: '', nif: '', sector: '' },
   });
+
+  const tabs = [
+    { value: 'detail', label: 'Detalle', viewAtCreate: true },
+    { value: 'docs', label: 'Documentación', viewAtCreate: isEditing },
+    { value: 'audit', label: 'Auditoría', viewAtCreate: isEditing },
+  ];
+
+  const currentTab = tabs.find((tab) => tab.value === activeTab);
 
   // --- Sincronización del formulario con el backend ---
   useEffect(() => {
@@ -334,13 +337,15 @@ export default function CompanyForm() {
         {/* Vista Escritorio */}
         <TabsList
           variant="line"
-          className="hidden md:flex h-auto w-full justify-start gap-6 rounded-none border-b bg-transparent p-0"
+          className="hidden md:flex h-auto w-fit justify-start gap-6 rounded-none border-b bg-transparent p-0"
         >
-          {tabs.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} className="px-0">
-              {tab.label}
-            </TabsTrigger>
-          ))}
+          {tabs
+            .filter((t) => t.viewAtCreate === true)
+            .map((tab) => (
+              <TabsTrigger key={tab.value} value={tab.value} className="px-0 w-32 shrink-0">
+                {tab.label}
+              </TabsTrigger>
+            ))}
         </TabsList>
 
         {/* Vista Móvil */}
@@ -487,19 +492,27 @@ export default function CompanyForm() {
           </div>
         </TabsContent>
 
-        <TabsContent
-          value="docs"
-          className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-        >
-          Aquí van los documentos...
-        </TabsContent>
+        {isEditing && (
+          <>
+            <TabsContent
+              value="docs"
+              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm flex flex-col gap-6"
+            >
+              <div className="flex justify-end">
+                <FileUploadButton entityType="companies" entityId={id!} multiple={true} />
+              </div>
 
-        <TabsContent
-          value="audit"
-          className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-        >
-          Aquí va la auditoría...
-        </TabsContent>
+              <DocumentsTable entityType="companies" entityId={id!} />
+            </TabsContent>
+
+            <TabsContent
+              value="audit"
+              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
+            >
+              Aquí va la auditoría...
+            </TabsContent>
+          </>
+        )}
       </Tabs>
 
       {/* SECCIÓN: Diálogo de Confirmación de Borrado Único (Centralizado) */}

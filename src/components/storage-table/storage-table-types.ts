@@ -17,3 +17,5 @@ export interface DocumentsTableProps {
   isTrash?: boolean;
   columns: ColumnDef<Document>[];
 }
+
+export interface DocumentsTableComponentProps extends Omit<DocumentsTableProps, 'columns'> {}
