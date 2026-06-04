@@ -7,7 +7,6 @@ import GuestRoute from '@/components/routes/GuestRoute';
 import ProtectedRoute from '@/components/routes/ProtectedRoute';
 import ForgotPassword from '@/pages/ForgotPassword';
 import Home from '@/pages/Home';
-import DocumentsTable from '@/pages/Pagina1';
 import Profile from '@/pages/Profile';
 import ResetPassword from '@/pages/ResetPassword';
 import SignIn from '@/pages/SignIn';
