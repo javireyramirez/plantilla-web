@@ -10,29 +10,22 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { CompaniesTable } from './components/companies.table';
+import { CompaniesTable } from '../components/companies.table';
 
 export default function CompaniesView() {
   const { t } = useTranslation();
 
   return (
-    // 🌟 flex-col y space-y-6 para separar perfectamente la cabecera de la tabla
     <div className="flex flex-col space-y-6">
-      {/* CABECERA DE LA VISTA: Título a la izquierda, botones a la derecha */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Título e información de contexto (Alineado a la izquierda) */}
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             {t('companies.title')}
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {t('companies.subtitle')}
-          </p>
+          <p className="text-sm text-muted-foreground">{t('companies.subtitle')}</p>
         </div>
 
-        {/* CONTENEDOR DE BOTONES (Alineado a la derecha) */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          {/* 1. ACCIÓN SECUNDARIA (Escritorio): Exportar va antes (a la izquierda) */}
           <div className="hidden sm:flex items-center gap-2">
             <Button type="button" variant="outline" size="sm" className="gap-2">
               <Upload className="h-4 w-4" />
@@ -51,7 +44,6 @@ export default function CompaniesView() {
             </Link>
           </Button>
 
-          {/* ACCIÓN SECUNDARIA (Móvil): Menú para pantallas pequeñas */}
           <div className="sm:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -75,7 +67,6 @@ export default function CompaniesView() {
         </div>
       </div>
 
-      {/* CONTENIDO PRINCIPAL */}
       <div className="rounded-xl border bg-card shadow-sm">
         <CompaniesTable />
       </div>

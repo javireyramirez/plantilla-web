@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 
-import { FileUploadConfigProps, useFileUploadLogic } from './useFileUploadLogic';
+import { FileUploadConfigProps, useFileUploadLogic } from '../model/useFileUploadLogic';
 
 interface FileUploadButtonProps extends Omit<FileUploadConfigProps, 'autoUpload'> {
   label?: string;

@@ -8,8 +8,7 @@ import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 
 import logo from '@/assets/logo.png';
-import FormFieldWrapper from '@/components/auth/FormFieldWrapper.js';
-import OauthButton from '@/components/auth/OauthButton.js';
+import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { Button } from '@/components/ui/button.js';
 import {
@@ -25,8 +24,9 @@ import { FieldError, FieldLabel } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
 import { useSignIn } from '@/hooks/use-auth.js';
 import { clearSigningOut } from '@/lib/auth-flags.js';
-import { SignInSchema } from '@/schemas/auth.schema.js';
-import { SignInValues } from '@/schemas/auth.schema.js';
+import OauthButton from '@/modules/auth/components/OauthButton.js';
+import { SignInSchema } from '@/modules/auth/model/auth.schema.js';
+import { SignInValues } from '@/modules/auth/model/auth.schema.js';
 
 export default function SignIn() {
   const { t } = useTranslation();

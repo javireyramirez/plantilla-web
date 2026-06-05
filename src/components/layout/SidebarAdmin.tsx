@@ -1,6 +1,7 @@
 import {
   Briefcase,
   Building2,
+  Building2Icon,
   FileText,
   History as HistoryIcon,
   Home,
@@ -42,6 +43,7 @@ const navItems = [
       { titleKey: 'sidebar.nav.users', url: '/users', icon: Users },
       { titleKey: 'sidebar.nav.roles', url: '/roles', icon: ShieldCheck },
       { titleKey: 'sidebar.nav.teams', url: '/teams', icon: Briefcase },
+      { titleKey: 'sidebar.nav.organizations', url: '/orgs', icon: Building2Icon },
     ],
   },
   {

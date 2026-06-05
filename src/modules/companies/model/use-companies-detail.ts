@@ -1,9 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { useEffect } from 'react';
+
 import { companiesQueries } from './companies.query';
-import { CreateCompany, UpdateCompany } from './companies.schema';
+import { CreateCompany, CreateCompanyBodySchema, UpdateCompany } from './companies.schema';
 
 export function useCompanyForm(id?: string) {
   const navigate = useNavigate();
@@ -75,11 +79,30 @@ export function useCompanyForm(id?: string) {
     });
   };
 
+  const form = useForm<CreateCompany>({
+    resolver: zodResolver(CreateCompanyBodySchema),
+    mode: 'onBlur',
+    defaultValues: data ?? { name: '', nif: '', sector: '' },
+  });
+
+  // --- Sincronización del formulario con el backend ---
+  useEffect(() => {
+    if (isEditing) {
+      if (!isLoading && !isFetching && data) {
+        form.reset(data);
+      }
+    } else {
+      form.reset({ name: '', nif: '', sector: '' });
+    }
+  }, [isEditing, data, isLoading, isFetching, form]);
+
+  const companyName = useWatch({ control: form.control, name: 'name' });
+
   return {
     isEditing,
-    defaultValues: data,
+    companyName,
     isLoading,
-    isFetching,
+    form,
     handleSubmit,
     handleDelete,
     isPending: isCreating || isUpdating || isDeleting,

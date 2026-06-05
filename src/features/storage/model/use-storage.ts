@@ -1,7 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import storageService from '@/features/storage/model/storage.service';
 import { GetDocumentsQuery } from '@/schemas/storage.schema';
-import storageService from '@/services/storage.service';
 
 // ==========================================
 // 1. CONSULTAS Y LECTURA

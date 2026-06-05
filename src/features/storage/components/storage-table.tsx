@@ -12,19 +12,19 @@ import { DataTableFloatingBar } from '@/components/data-table/data-table-floatin
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-desktop';
 import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Document,
   DocumentsTableComponentProps,
-} from '@/components/storage-table/storage-table-types';
+} from '@/features/storage/model/storage-table-types';
 import {
   CONTENT_TYPE_OPTIONS,
   getContentTypeIcon,
   getContentTypeLabel,
-} from '@/components/storage-table/storage-table-utils';
-import { useStorageTable } from '@/components/storage-table/use-storage-table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+} from '@/features/storage/model/storage-table-utils';
+import { useStorageTable } from '@/features/storage/model/use-storage-table';
 import { formatBytes, formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -66,7 +66,9 @@ export function DocumentsTable({
         accessorKey: 'fileName',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('storage.table.fileName')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('storage.table.fileName')} />
+        ),
         cell: ({ row }) => {
           const contentType = row.getValue('contentType') as string;
           const Icon = getContentTypeIcon(contentType);
@@ -91,7 +93,9 @@ export function DocumentsTable({
         accessorKey: 'contentType',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('storage.table.type')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('storage.table.type')} />
+        ),
         cell: ({ row }) => {
           const ct = row.getValue('contentType') as string;
           return (
@@ -120,7 +124,9 @@ export function DocumentsTable({
         accessorKey: 'size',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('storage.table.size')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('storage.table.size')} />
+        ),
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums">
             {formatBytes(row.getValue('size'))}
@@ -139,7 +145,9 @@ export function DocumentsTable({
         accessorKey: 'createdAt',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('storage.table.date')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('storage.table.date')} />
+        ),
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
             {formatDate(row.getValue('createdAt'))}

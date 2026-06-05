@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 import { useCallback, useState } from 'react';
 
-import { useUploadFile } from '@/hooks/use-storage';
+import { useUploadFile } from '@/features/storage/model/use-storage';
 
 export interface FileUploadConfigProps {
   entityType: string;

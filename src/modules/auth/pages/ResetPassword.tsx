@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 
 import logo from '@/assets/logo.png';
-import FormFieldWrapper from '@/components/auth/FormFieldWrapper.js';
+import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { Button } from '@/components/ui/button.js';
 import {
@@ -23,8 +23,8 @@ import {
 import { FieldLabel } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
 import { useResetPassword } from '@/hooks/use-auth.js';
-import { ResetPasswordSchema } from '@/schemas/auth.schema.js';
-import { ResetPasswordSchemaValues } from '@/schemas/auth.schema.js';
+import { ResetPasswordSchema } from '@/modules/auth/model/auth.schema.js';
+import { ResetPasswordSchemaValues } from '@/modules/auth/model/auth.schema.js';
 
 export default function ResetPassword() {
   const { t } = useTranslation();

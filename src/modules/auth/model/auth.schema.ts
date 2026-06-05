@@ -17,8 +17,11 @@ export const AuthBaseSchema = z.object({
   password: passwordValidation,
 });
 
-export const SignInSchema = AuthBaseSchema.extend({
+export const SignInSchema = AuthBaseSchema.omit({
+  password: true,
+}).extend({
   rememberMe: z.boolean().default(false),
+  password: z.string().min(1, 'Se requiere contraseña'),
 });
 
 export const SignUpSchema = AuthBaseSchema.extend({

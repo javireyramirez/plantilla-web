@@ -16,10 +16,9 @@ import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolb
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { Company } from '@/modules/companies/companies.schema';
-
-import { SECTOR_OPTIONS } from '../companies.types';
-import useCompanies from '../use-companies-table';
+import { Company } from '@/modules/companies/model/companies.schema';
+import { SECTOR_OPTIONS } from '@/modules/companies/model/companies.types';
+import useCompanies from '@/modules/companies/model/use-companies-table';
 
 export function CompaniesTable() {
   const navigate = useNavigate();
@@ -56,7 +55,9 @@ export function CompaniesTable() {
         accessorKey: 'name',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('companies.name')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('companies.name')} />
+        ),
         cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2 min-w-0">
@@ -78,7 +79,9 @@ export function CompaniesTable() {
         accessorKey: 'nif',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('companies.table.cif')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('companies.table.cif')} />
+        ),
         cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2 min-w-0">
@@ -100,7 +103,9 @@ export function CompaniesTable() {
         accessorKey: 'sector',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('companies.sector')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('companies.sector')} />
+        ),
         cell: ({ row }) => {
           const sectorValue = row.getValue('sector');
           const sectorOpt = SECTOR_OPTIONS.find((opt) => opt.value === sectorValue);
@@ -130,7 +135,9 @@ export function CompaniesTable() {
         accessorKey: 'createdAt',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('companies.table.fecha')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('companies.table.fecha')} />
+        ),
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
             {formatDate(row.getValue('createdAt'))}

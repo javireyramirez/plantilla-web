@@ -12,16 +12,16 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { Document, DocumentsTableProps } from '@/components/storage-table/storage-table-types';
-import { CONTENT_TYPE_OPTIONS } from '@/components/storage-table/storage-table-utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Document, DocumentsTableProps } from '@/features/storage/model/storage-table-types';
+import { CONTENT_TYPE_OPTIONS } from '@/features/storage/model/storage-table-utils';
 import {
   useBulkDeleteDocuments,
   useBulkDownloadUrls,
   useBulkDownloadZip,
   useDownloadUrl,
   useGetDocuments,
-} from '@/hooks/use-storage';
+} from '@/features/storage/model/use-storage';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { GetDocumentsQuery } from '@/schemas/storage.schema';
 
 export function useStorageTable({
