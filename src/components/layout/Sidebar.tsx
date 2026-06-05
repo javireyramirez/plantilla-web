@@ -1,4 +1,4 @@
-import { Building2, Home, Users } from 'lucide-react';
+import { Building2, Home, Settings, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -67,9 +67,22 @@ export default function LayoutSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex items-center justify-between p-2 md:hidden">
-          <NavUser />
-        </div>
+        <>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link to={'/admin'}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span> {t('sidebar.admin')}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+
+          <div className="flex items-center justify-between p-2 md:hidden">
+            <NavUser />
+          </div>
+        </>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

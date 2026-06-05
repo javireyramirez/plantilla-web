@@ -1,10 +1,14 @@
 // src/router.tsx
 import { Navigate, Route, Routes } from 'react-router-dom';
 
+import AdminLayout from '@/components/layout/AdminLayout';
 import PrivateLayout from '@/components/layout/PrivateLayout';
 import PublicLayout from '@/components/layout/PublicLayout';
+import AdminRoute from '@/components/routes/AdminRoute';
 import GuestRoute from '@/components/routes/GuestRoute';
 import ProtectedRoute from '@/components/routes/ProtectedRoute';
+import CompanyForm from '@/modules/companies/components/companies.form';
+import CompaniesView from '@/pages/Companies';
 import ForgotPassword from '@/pages/ForgotPassword';
 import Home from '@/pages/Home';
 import Profile from '@/pages/Profile';
@@ -13,8 +17,7 @@ import SignIn from '@/pages/SignIn';
 import SignUp from '@/pages/SignUp';
 import VerifyEmail from '@/pages/VerifyEmail';
 
-import CompanyForm from './modules/companies/components/companies.form';
-import CompaniesView from './pages/Companies';
+import Admin from './pages/Admin';
 
 export default function Router() {
   return (
@@ -42,6 +45,13 @@ export default function Router() {
           <Route path="/companies/new" element={<CompanyForm />} />
           <Route path="/companies/edit/:id" element={<CompanyForm />} />
           <Route path="/profile" element={<Profile />} />
+        </Route>
+      </Route>
+
+      {/* Rutas administración */}
+      <Route element={<AdminRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<Admin />} />
         </Route>
       </Route>
 

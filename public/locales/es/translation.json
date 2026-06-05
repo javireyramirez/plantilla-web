@@ -62,11 +62,24 @@
     "mode": "Modo oscuro"
   },
   "sidebar": {
-    "group1": "Ventas",
+    "home": "Home",
+    "admin": "Administracion",
     "nav": {
       "page1": "Inicio",
       "page2": "Página 1",
-      "companies": "Compañía"
+      "companies": "Compañía",
+      "users": "Usuarios",
+      "roles": "Roles",
+      "teams": "Equipos",
+      "organizations": "Organizaciones",
+      "audit": "Auditoría",
+      "recovery": "Restaurar datos",
+      "documents": "Recuperar documentación"
+    },
+    "groups": {
+      "group1": "Grupo",
+      "security": "Seguridad",
+      "audit": "Auditoría"
     }
   },
   "companies": {
