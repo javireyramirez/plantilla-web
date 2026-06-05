@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { useState } from 'react';
 
-import FormFieldWrapper from '@/components/auth/FormFieldWrapper.js';
+import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
 import { Button } from '@/components/ui/button.js';
 import { CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.js';
 import { Checkbox } from '@/components/ui/checkbox.js';
@@ -15,8 +15,8 @@ import { Input } from '@/components/ui/input.js';
 import { Separator } from '@/components/ui/separator.js';
 import { useSession } from '@/config/auth-client.js';
 import { useChangePassword, useSendVerificationEmail } from '@/hooks/use-auth.js';
-import { ChangePasswordSchema } from '@/schemas/auth.schema.js';
-import { ChangePasswordSchemaValues } from '@/schemas/auth.schema.js';
+import { ChangePasswordSchema } from '@/modules/auth/model/auth.schema.js';
+import { ChangePasswordSchemaValues } from '@/modules/auth/model/auth.schema.js';
 
 export default function Profile() {
   const { t } = useTranslation();
@@ -55,7 +55,10 @@ export default function Profile() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <LoaderCircle className="h-8 w-8 animate-spin text-primary" aria-label={t('nav.loadingAria')} />
+          <LoaderCircle
+            className="h-8 w-8 animate-spin text-primary"
+            aria-label={t('nav.loadingAria')}
+          />
           <p className="text-sm text-muted-foreground">{t('nav.verifyingSession')}</p>
         </div>
       </div>
@@ -148,7 +151,9 @@ export default function Profile() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <FormFieldWrapper fieldState={fieldState}>
-                      <FieldLabel htmlFor="currentPassword">{t('profile.currentPassword')}</FieldLabel>
+                      <FieldLabel htmlFor="currentPassword">
+                        {t('profile.currentPassword')}
+                      </FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}
@@ -210,7 +215,9 @@ export default function Profile() {
                           onClick={() => toggleVisibility('newPassword')}
                           disabled={isSubmitting}
                           aria-label={
-                            showPassword.newPassword ? t('profile.hidePassword') : t('profile.showPassword')
+                            showPassword.newPassword
+                              ? t('profile.hidePassword')
+                              : t('profile.showPassword')
                           }
                         >
                           {showPassword.newPassword ? (
@@ -232,7 +239,9 @@ export default function Profile() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <FormFieldWrapper fieldState={fieldState}>
-                      <FieldLabel htmlFor="confirmPassword">{t('profile.repeatPassword')}</FieldLabel>
+                      <FieldLabel htmlFor="confirmPassword">
+                        {t('profile.repeatPassword')}
+                      </FieldLabel>
                       <div className="relative">
                         <Input
                           {...field}

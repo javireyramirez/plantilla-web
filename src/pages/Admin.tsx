@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-export default function Home() {
+export default function Admin() {
   const { t } = useTranslation();
-  return t('home.title');
+  return 'Admin';
 }

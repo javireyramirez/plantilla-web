@@ -1,3 +1,6 @@
-import Home from '@/modules/home/home';
+import { useTranslation } from 'react-i18next';
 
-export default Home;
+export default function Home() {
+  const { t } = useTranslation();
+  return t('home.title');
+}

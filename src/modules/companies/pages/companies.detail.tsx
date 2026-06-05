@@ -1,13 +1,11 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { DocumentsTable } from '@/components/storage-table/storage-table';
-import { FileUploadButton } from '@/components/storage/FileUploadButton';
+import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,12 +43,11 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCompanyForm } from '@/modules/companies/use-companies-form';
+import { DocumentsTable, FileUploadButton } from '@/features/storage';
+import { SECTOR_OPTIONS } from '@/modules/companies/model/companies.types';
+import { useCompanyForm } from '@/modules/companies/model/use-companies-detail';
 
-import { CreateCompany, CreateCompanyBodySchema } from '../companies.schema';
-import { SECTOR_OPTIONS } from '../companies.types';
-
-export default function CompanyForm() {
+export default function CompanyDetail() {
   const { t } = useTranslation();
 
   // --- Estados locales ---
@@ -60,14 +57,8 @@ export default function CompanyForm() {
 
   // --- Hooks de datos y formulario ---
   const { id } = useParams<{ id: string }>();
-  const { isEditing, defaultValues, isLoading, isFetching, handleSubmit, handleDelete, isPending } =
+  const { isEditing, companyName, isLoading, form, handleSubmit, handleDelete, isPending } =
     useCompanyForm(id);
-
-  const form = useForm<CreateCompany>({
-    resolver: zodResolver(CreateCompanyBodySchema),
-    mode: 'onBlur',
-    defaultValues: defaultValues ?? { name: '', nif: '', sector: '' },
-  });
 
   const tabs = [
     { value: 'detail', label: t('companies.detail'), viewAtCreate: true },
@@ -76,19 +67,6 @@ export default function CompanyForm() {
   ];
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
-
-  // --- Sincronización del formulario con el backend ---
-  useEffect(() => {
-    if (isEditing) {
-      if (!isLoading && !isFetching && defaultValues) {
-        form.reset(defaultValues);
-      }
-    } else {
-      form.reset({ name: '', nif: '', sector: '' });
-    }
-  }, [isEditing, defaultValues, isLoading, isFetching, form]);
-
-  const companyName = useWatch({ control: form.control, name: 'name' });
 
   // --- Estado de Carga (Skeletons) ---
   if (isLoading) {
@@ -203,39 +181,12 @@ export default function CompanyForm() {
             )}
           </h1>
           <p className="text-sm text-muted-foreground hidden sm:block">
-            {isEditing
-              ? t('companies.editDescription')
-              : t('companies.createDescription')}
+            {isEditing ? t('companies.editDescription') : t('companies.createDescription')}
           </p>
         </div>
 
         {/* Contenedor Único de Botones (Control de responsividad fluido) */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          {/* Acción Principal: Siempre visible */}
-          <Button
-            form="company-form-id"
-            type="submit"
-            disabled={isPending}
-            onClick={() => setShouldCloseOnSubmit(false)}
-            className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
-          >
-            <Save className="h-4 w-4" />
-            {t('companies.save')}
-          </Button>
-
-          {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
-          <Button
-            form="company-form-id"
-            type="submit"
-            variant="outline"
-            disabled={isPending}
-            onClick={() => setShouldCloseOnSubmit(true)}
-            className="hidden md:flex gap-2"
-          >
-            <Save className="h-4 w-4" />
-            {t('companies.saveAndClose')}
-          </Button>
-
           {isEditing && (
             <>
               {/* Exportar y Eliminar: Visibles a partir de pantallas grandes (lg) */}
@@ -274,6 +225,31 @@ export default function CompanyForm() {
               </Button>
             </>
           )}
+
+          {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
+          <Button
+            form="company-form-id"
+            type="submit"
+            variant="outline"
+            disabled={isPending}
+            onClick={() => setShouldCloseOnSubmit(true)}
+            className="hidden md:flex gap-2"
+          >
+            <Save className="h-4 w-4" />
+            {t('companies.saveAndClose')}
+          </Button>
+
+          {/* Acción Principal: Siempre visible */}
+          <Button
+            form="company-form-id"
+            type="submit"
+            disabled={isPending}
+            onClick={() => setShouldCloseOnSubmit(false)}
+            className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
+          >
+            <Save className="h-4 w-4" />
+            {t('companies.save')}
+          </Button>
 
           {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
           <DropdownMenu>
@@ -374,7 +350,9 @@ export default function CompanyForm() {
             {/* Formulario de Datos Básicos */}
             <Card className="lg:col-span-1 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('companies.basicData')}</CardTitle>
+                <CardTitle className="text-base font-semibold">
+                  {t('companies.basicData')}
+                </CardTitle>
                 <CardDescription>{t('companies.identificationInfo')}</CardDescription>
               </CardHeader>
               <CardContent>
@@ -390,7 +368,7 @@ export default function CompanyForm() {
                       name="name"
                       control={form.control}
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
+                        <FormFieldWrapper fieldState={fieldState}>
                           <FieldLabel
                             htmlFor="company-name"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
@@ -401,12 +379,12 @@ export default function CompanyForm() {
                             {...field}
                             id="company-name"
                             aria-invalid={fieldState.invalid}
+                            data-invalid={fieldState.invalid}
                             placeholder={t('companies.namePlaceholder')}
                             autoComplete="off"
                             className="mt-1.5 focus-visible:ring-primary"
                           />
-                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                        </Field>
+                        </FormFieldWrapper>
                       )}
                     />
 
@@ -414,7 +392,7 @@ export default function CompanyForm() {
                       name="nif"
                       control={form.control}
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
+                        <FormFieldWrapper fieldState={fieldState}>
                           <FieldLabel
                             htmlFor="company-nif"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
@@ -425,12 +403,12 @@ export default function CompanyForm() {
                             {...field}
                             id="company-nif"
                             aria-invalid={fieldState.invalid}
+                            data-invalid={fieldState.invalid}
                             placeholder="A1234567B"
                             autoComplete="off"
                             className="mt-1.5 focus-visible:ring-primary"
                           />
-                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                        </Field>
+                        </FormFieldWrapper>
                       )}
                     />
 
@@ -438,7 +416,7 @@ export default function CompanyForm() {
                       name="sector"
                       control={form.control}
                       render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
+                        <FormFieldWrapper fieldState={fieldState}>
                           <FieldLabel
                             htmlFor="company-sector"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
@@ -450,6 +428,7 @@ export default function CompanyForm() {
                               id="company-sector"
                               className="mt-1.5 focus-visible:ring-primary w-full"
                               aria-invalid={fieldState.invalid}
+                              data-invalid={fieldState.invalid}
                             >
                               <SelectValue placeholder={t('companies.selectSector')} />
                             </SelectTrigger>
@@ -461,8 +440,7 @@ export default function CompanyForm() {
                               ))}
                             </SelectContent>
                           </Select>
-                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                        </Field>
+                        </FormFieldWrapper>
                       )}
                     />
                   </FieldGroup>
@@ -473,7 +451,9 @@ export default function CompanyForm() {
             {/* Tarjetas Secundarias Estatales */}
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('companies.additionalInfo')}</CardTitle>
+                <CardTitle className="text-base font-semibold">
+                  {t('companies.additionalInfo')}
+                </CardTitle>
                 <CardDescription>{t('companies.pendingDefine')}</CardDescription>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground leading-relaxed">
@@ -483,7 +463,9 @@ export default function CompanyForm() {
 
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('companies.metricsSummary')}</CardTitle>
+                <CardTitle className="text-base font-semibold">
+                  {t('companies.metricsSummary')}
+                </CardTitle>
                 <CardDescription>{t('companies.entityStats')}</CardDescription>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground leading-relaxed">
@@ -521,9 +503,7 @@ export default function CompanyForm() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('companies.deleteConfirmTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('companies.deleteConfirmDesc')}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t('companies.deleteConfirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('companies.cancel')}</AlertDialogCancel>
