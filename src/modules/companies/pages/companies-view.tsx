@@ -1,4 +1,4 @@
-import { Building2, Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
+import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { CompaniesTable } from '../components/companies.table';
+import { CompaniesTable } from '../components/companies-table';
 
 export default function CompaniesView() {
   const { t } = useTranslation();

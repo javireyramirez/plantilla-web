@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 
 import logo from '@/assets/logo.png';
-import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
+import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { Button } from '@/components/ui/button.js';
 import {
@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox.js';
 import { FieldError, FieldLabel } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
 import { useSignUp } from '@/hooks/use-auth.js';
-import OauthButton from '@/modules/auth/components/OauthButton.js';
+import OauthButton from '@/modules/auth/components/oauth-button.js';
 import { SignUpSchema } from '@/modules/auth/model/auth.schema.js';
 import { SignUpValues } from '@/modules/auth/model/auth.schema.js';
 

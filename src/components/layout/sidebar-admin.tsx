@@ -34,7 +34,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar.js';
 
-import NavUser from './NavUser.js';
+import NavUser from './nav-user.js';
 
 const navItems = [
   {

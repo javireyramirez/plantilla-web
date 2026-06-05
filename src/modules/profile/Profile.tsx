@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { useState } from 'react';
 
-import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
+import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
 import { Button } from '@/components/ui/button.js';
 import { CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.js';
 import { Checkbox } from '@/components/ui/checkbox.js';

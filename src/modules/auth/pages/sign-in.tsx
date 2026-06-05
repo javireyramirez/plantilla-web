@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 
 import logo from '@/assets/logo.png';
-import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
+import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { Button } from '@/components/ui/button.js';
 import {
@@ -24,7 +24,7 @@ import { FieldError, FieldLabel } from '@/components/ui/field.js';
 import { Input } from '@/components/ui/input.js';
 import { useSignIn } from '@/hooks/use-auth.js';
 import { clearSigningOut } from '@/lib/auth-flags.js';
-import OauthButton from '@/modules/auth/components/OauthButton.js';
+import OauthButton from '@/modules/auth/components/oauth-button.js';
 import { SignInSchema } from '@/modules/auth/model/auth.schema.js';
 import { SignInValues } from '@/modules/auth/model/auth.schema.js';
 

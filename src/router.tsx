@@ -1,20 +1,20 @@
 // src/router.tsx
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import AdminLayout from '@/components/layout/AdminLayout';
-import PrivateLayout from '@/components/layout/PrivateLayout';
-import PublicLayout from '@/components/layout/PublicLayout';
-import AdminRoute from '@/components/routes/AdminRoute';
-import GuestRoute from '@/components/routes/GuestRoute';
-import ProtectedRoute from '@/components/routes/ProtectedRoute';
-import ForgotPassword from '@/modules/auth/pages/ForgotPassword';
-import ResetPassword from '@/modules/auth/pages/ResetPassword';
-import SignIn from '@/modules/auth/pages/SignIn';
-import SignUp from '@/modules/auth/pages/SignUp';
-import VerifyEmail from '@/modules/auth/pages/VerifyEmail';
-import CompanyDetail from '@/modules/companies/pages/companies.detail';
-import CompaniesView from '@/modules/companies/pages/companies.view';
-import Profile from '@/modules/profile/Profile';
+import AdminLayout from '@/components/layout/admin-layout';
+import PrivateLayout from '@/components/layout/private-layout';
+import PublicLayout from '@/components/layout/public-layout';
+import AdminRoute from '@/components/routes/admin-route';
+import GuestRoute from '@/components/routes/guest-route';
+import ProtectedRoute from '@/components/routes/protected-route';
+import ForgotPassword from '@/modules/auth/pages/forgot-password';
+import ResetPassword from '@/modules/auth/pages/reset-password';
+import SignIn from '@/modules/auth/pages/sign-in';
+import SignUp from '@/modules/auth/pages/sign-up';
+import VerifyEmail from '@/modules/auth/pages/verify-email';
+import CompanyDetail from '@/modules/companies/pages/companies-detail';
+import CompaniesView from '@/modules/companies/pages/companies-view';
+import Profile from '@/modules/profile/profile';
 import Admin from '@/pages/Admin';
 import Home from '@/pages/Home';
 
