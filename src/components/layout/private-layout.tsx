@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
 
 import NavUser from './nav-user.js';
-import AppSidebar from './sidebar.js';
+import AppSidebar from './sidebar-common.js';
 
 export default function PrivateLayout() {
   return (
