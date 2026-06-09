@@ -1,4 +1,4 @@
-import { Building2, Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
+import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -10,9 +10,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { CompaniesTable } from '../components/companies.table';
+import { OrganizationsTable } from '../components/organizations-table';
 
-export default function CompaniesView() {
+export default function OrganizationsView() {
   const { t } = useTranslation();
 
   return (
@@ -20,27 +20,27 @@ export default function CompaniesView() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            {t('companies.title')}
+            {t('organizations.title')}
           </h1>
-          <p className="text-sm text-muted-foreground">{t('companies.subtitle')}</p>
+          <p className="text-sm text-muted-foreground">{t('organizations.subtitle')}</p>
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           <div className="hidden sm:flex items-center gap-2">
             <Button type="button" variant="outline" size="sm" className="gap-2">
               <Upload className="h-4 w-4" />
-              {t('companies.import')}
+              {t('organizations.import')}
             </Button>
             <Button type="button" variant="outline" size="sm" className="gap-2">
               <Download className="h-4 w-4" />
-              {t('companies.export')}
+              {t('organizations.export')}
             </Button>
           </div>
 
           <Button asChild size="sm" className="gap-2 shadow-sm flex-1 sm:flex-none justify-center">
-            <Link to="/companies/new">
+            <Link to="/organizations/new">
               <Plus className="h-4 w-4" />
-              {t('companies.new')}
+              {t('organizations.new')}
             </Link>
           </Button>
 
@@ -49,17 +49,17 @@ export default function CompaniesView() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="default" className="px-3">
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">{t('companies.moreActions')}</span>
+                  <span className="sr-only">{t('organizations.moreActions')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44">
                 <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Upload className="h-4 w-4" />
-                  {t('companies.import')}
+                  {t('organizations.import')}
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Download className="h-4 w-4 text-muted-foreground" />
-                  {t('companies.export')}
+                  {t('organizations.export')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -68,7 +68,7 @@ export default function CompaniesView() {
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm">
-        <CompaniesTable />
+        <OrganizationsTable />
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { Menu } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 
 import logo from '@/assets/logo.png';
-import { LanguageSwitcher } from '@/components/language/LanguageSwitcher';
+import { LanguageSwitcher } from '@/components/language/language-switcher';
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { Button } from '@/components/ui/button';
 import {

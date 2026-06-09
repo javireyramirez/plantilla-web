@@ -18,10 +18,11 @@ import {
 
 import { useIsMobile } from '@/hooks/use-mobile';
 
-import { companiesQueries } from './companies.query';
-import { Company, GetCompaniesQuery } from './companies.schema';
+import { teamsQueries } from './teams.query';
+import { CreateTeam, GetTeamQuery, Team } from './teams.schema';
+import { SECTOR_OPTIONS } from './teams.types';
 
-export default function useCompanies(columns: ColumnDef<Company>[]) {
+export default function useCompanies(columns: ColumnDef<Team>[]) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
@@ -42,14 +43,15 @@ export default function useCompanies(columns: ColumnDef<Company>[]) {
 
   const [sort] = sorting;
 
-  const sortBy = (sort ? sort.id : 'createdAt') as GetCompaniesQuery['sortBy'];
+  const sortBy = (sort ? sort.id : 'createdAt') as GetTeamQuery['sortBy'];
   const sortOrder = sort ? (sort.desc ? 'desc' : 'asc') : 'desc';
 
   const nameCol = columnFilters.find((f) => f.id === 'name');
   const name = typeof nameCol?.value === 'string' ? nameCol.value : undefined;
 
-  const nifCol = columnFilters.find((f) => f.id === 'nif');
-  const nif = typeof nifCol?.value === 'string' ? nifCol.value : undefined;
+  const organizationCol = columnFilters.find((f) => f.id === 'organizationId');
+  const organization =
+    typeof organizationCol?.value === 'string' ? organizationCol.value : undefined;
 
   const sectorCol = columnFilters.find((f) => f.id === 'sector');
   const sector =
@@ -62,20 +64,19 @@ export default function useCompanies(columns: ColumnDef<Company>[]) {
     ? createdAtCol.value
     : [undefined, undefined];
 
-  const { data, isLoading, isFetching } = companiesQueries.useGetAll({
+  const { data, isLoading, isFetching } = teamsQueries.useGetAll({
     page,
     limit,
     isTrash: false,
     sortBy,
     sortOrder,
     ...(name && { name }),
-    ...(nif && { nif }),
-    ...(sector && { sector }),
-    createdAtFrom: createdFrom ? createdFrom : undefined,
-    createdAtTo: createdTo ? createdTo : undefined,
+
+    // createdAtFrom: createdFrom ? createdFrom : undefined,
+    // createdAtTo: createdTo ? createdTo : undefined,
   });
 
-  const companies: Company[] = data?.data ?? [];
+  const companies: Team[] = data?.data ?? [];
   const totalPages: number = data?.meta?.totalPages ?? 1;
   const totalRows: number = data?.meta?.total ?? 0;
 
@@ -124,9 +125,9 @@ export default function useCompanies(columns: ColumnDef<Company>[]) {
     },
   });
 
-  const { mutate: mutateDelete, isPending: isPendingDelete } = companiesQueries.useSoftDeleteMany();
+  const { mutate: mutateDelete, isPending: isPendingDelete } = teamsQueries.useSoftDeleteMany();
 
-  const handleDelete = (rows: Row<Company>[]) => {
+  const handleDelete = (rows: Row<Team>[]) => {
     mutateDelete(
       rows.map((item) => item.original.id),
       {

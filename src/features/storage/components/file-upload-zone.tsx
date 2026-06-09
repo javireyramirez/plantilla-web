@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { FileUploadConfigProps, useFileUploadLogic } from '../model/useFileUploadLogic';
+import { FileUploadConfigProps, useFileUploadLogic } from '../model/use-file-upload-logic';
 
 export function FileUploadZone(props: FileUploadConfigProps) {
   const { t } = useTranslation();

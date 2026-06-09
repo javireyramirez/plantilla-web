@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { useState } from 'react';
 
-import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
+import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
 import {
   AlertDialog,
   AlertDialogAction,

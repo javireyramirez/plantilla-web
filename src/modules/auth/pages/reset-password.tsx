@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 
 import logo from '@/assets/logo.png';
-import FormFieldWrapper from '@/components/form/FormFieldWrapper.js';
+import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import { Button } from '@/components/ui/button.js';
 import {

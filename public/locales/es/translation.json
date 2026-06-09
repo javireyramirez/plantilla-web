@@ -138,6 +138,64 @@
       }
     }
   },
+  "organizations": {
+    "title": "Organizaciones",
+    "subtitle": "Gestiona y visualiza el listado de organizaciones registradas.",
+    "import": "Importar",
+    "export": "Exportar",
+    "new": "Nueva organización",
+    "moreActions": "Más acciones",
+    "createTitle": "Crear nueva organización",
+    "editDescription": "Datos de la empresa en el sistema.",
+    "createDescription": "Introduce los datos para registrar la empresa.",
+    "save": "Guardar",
+    "saveAndClose": "Guardar y cerrar",
+    "delete": "Eliminar",
+    "detail": "Detalle",
+    "docs": "Documentación",
+    "audit": "Auditoría",
+    "auditContent": "Aquí va la auditoría...",
+    "basicData": "Datos básicos",
+    "identificationInfo": "Información principal de identificación.",
+    "name": "Organización",
+    "namePlaceholder": "Nombre de la empresa",
+    "cifNif": "CIF / NIF",
+    "sector": "Sector",
+    "selectSector": "Selecciona un sector",
+    "additionalInfo": "Información Adicional",
+    "pendingDefine": "Sección pendiente de definir.",
+    "metricsSummary": "Métricas / Resumen",
+    "entityStats": "Datos estadísticos de la entidad.",
+    "deleteConfirmTitle": "¿Eliminar esta compañía?",
+    "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
+    "cancel": "Cancelar",
+    "users": "Usuarios de la organización",
+    "sectors": {
+      "tecnologia": "Tecnología",
+      "banca": "Banca",
+      "seguros": "Seguros",
+      "none": "Sin sector"
+    },
+    "table": {
+      "delete": "Compañía(s) eliminada(s) con éxito",
+      "selectTodo": "Seleccionar todo",
+      "selectFila": "Seleccionar fila",
+      "cif": "CIF",
+      "fecha": "Fecha",
+      "creacion": "Creación",
+      "name": "Organización"
+    },
+    "form": {
+      "update": "Compañía actualizada con éxito",
+      "create": "Compañía creada con éxito",
+      "delete": "Compañía eliminada con éxito",
+      "errors": {
+        "update": "Error al actualizar la compañía",
+        "create": "Error al crear la compañía",
+        "delete": "Error al eliminar la compañía"
+      }
+    }
+  },
   "profile": {
     "emailVerification": "Verificación email",
     "emailVerified": "Email verificado",

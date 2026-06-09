@@ -18,10 +18,10 @@ import {
 
 import { useIsMobile } from '@/hooks/use-mobile';
 
-import { companiesQueries } from './companies.query';
-import { Company, GetCompaniesQuery } from './companies.schema';
+import { organizationsQueries } from './organizations.query';
+import { GetOrganizationQuery, Organization } from './organizations.schema';
 
-export default function useCompanies(columns: ColumnDef<Company>[]) {
+export default function useOrganizationTable(columns: ColumnDef<Organization>[]) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
@@ -42,40 +42,30 @@ export default function useCompanies(columns: ColumnDef<Company>[]) {
 
   const [sort] = sorting;
 
-  const sortBy = (sort ? sort.id : 'createdAt') as GetCompaniesQuery['sortBy'];
+  const sortBy = (sort ? sort.id : 'createdAt') as GetOrganizationQuery['sortBy'];
   const sortOrder = sort ? (sort.desc ? 'desc' : 'asc') : 'desc';
 
   const nameCol = columnFilters.find((f) => f.id === 'name');
   const name = typeof nameCol?.value === 'string' ? nameCol.value : undefined;
-
-  const nifCol = columnFilters.find((f) => f.id === 'nif');
-  const nif = typeof nifCol?.value === 'string' ? nifCol.value : undefined;
-
-  const sectorCol = columnFilters.find((f) => f.id === 'sector');
-  const sector =
-    Array.isArray(sectorCol?.value) && sectorCol.value.length > 0
-      ? (sectorCol.value as string[])
-      : undefined;
 
   const createdAtCol = columnFilters.find((f) => f.id === 'createdAt');
   const [createdFrom, createdTo] = Array.isArray(createdAtCol?.value)
     ? createdAtCol.value
     : [undefined, undefined];
 
-  const { data, isLoading, isFetching } = companiesQueries.useGetAll({
+  const { data, isLoading, isFetching } = organizationsQueries.useGetAll({
     page,
     limit,
     isTrash: false,
     sortBy,
     sortOrder,
     ...(name && { name }),
-    ...(nif && { nif }),
-    ...(sector && { sector }),
+
     createdAtFrom: createdFrom ? createdFrom : undefined,
     createdAtTo: createdTo ? createdTo : undefined,
   });
 
-  const companies: Company[] = data?.data ?? [];
+  const companies: Organization[] = data?.data ?? [];
   const totalPages: number = data?.meta?.totalPages ?? 1;
   const totalRows: number = data?.meta?.total ?? 0;
 
@@ -124,9 +114,10 @@ export default function useCompanies(columns: ColumnDef<Company>[]) {
     },
   });
 
-  const { mutate: mutateDelete, isPending: isPendingDelete } = companiesQueries.useSoftDeleteMany();
+  const { mutate: mutateDelete, isPending: isPendingDelete } =
+    organizationsQueries.useSoftDeleteMany();
 
-  const handleDelete = (rows: Row<Company>[]) => {
+  const handleDelete = (rows: Row<Organization>[]) => {
     mutateDelete(
       rows.map((item) => item.original.id),
       {

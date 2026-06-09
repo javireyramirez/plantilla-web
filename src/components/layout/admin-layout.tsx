@@ -5,8 +5,8 @@ import logo from '@/assets/logo.png';
 import { Separator } from '@/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
 
-import NavUser from './NavUser.js';
-import AppSidebar from './SidebarAdmin.js';
+import NavUser from './nav-user.js';
+import AppSidebar from './sidebar-admin.js';
 
 export default function AdminLayout() {
   return (
