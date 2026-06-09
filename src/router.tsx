@@ -16,7 +16,7 @@ import CompanyDetail from '@/modules/companies/pages/companies-detail';
 import CompaniesView from '@/modules/companies/pages/companies-view';
 import OrganizationDetail from '@/modules/organizations/pages/organizations-detail';
 import OrganizationsView from '@/modules/organizations/pages/organizations-view';
-import Profile from '@/modules/profile/profile';
+import Profile from '@/modules/profile/profile-page';
 import Admin from '@/pages/Admin';
 import Home from '@/pages/Home';
 
