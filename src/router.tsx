@@ -17,6 +17,8 @@ import CompaniesView from '@/modules/companies/pages/companies-view';
 import OrganizationDetail from '@/modules/organizations/pages/organizations-detail';
 import OrganizationsView from '@/modules/organizations/pages/organizations-view';
 import Profile from '@/modules/profile/profile-page';
+import TeamDetail from '@/modules/teams/pages/teams-detail';
+import TeamsView from '@/modules/teams/pages/teams-view';
 import Admin from '@/pages/Admin';
 import Home from '@/pages/Home';
 
@@ -55,6 +57,10 @@ export default function Router() {
       <Route element={<AdminRoute />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<Admin />} />
+
+          <Route path="/teams" element={<TeamsView />} />
+          <Route path="/teams/new" element={<TeamDetail />} />
+          <Route path="/teams/edit/:id" element={<TeamDetail />} />
 
           <Route path="/organizations" element={<OrganizationsView />} />
           <Route path="/organizations/new" element={<OrganizationDetail />} />
