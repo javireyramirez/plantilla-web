@@ -64,20 +64,19 @@ export default function useCompanies(columns: ColumnDef<Team>[]) {
     ? createdAtCol.value
     : [undefined, undefined];
 
-  const { data, isLoading, isFetching } = companiesQueries.useGetAll({
+  const { data, isLoading, isFetching } = teamsQueries.useGetAll({
     page,
     limit,
     isTrash: false,
     sortBy,
     sortOrder,
     ...(name && { name }),
-    ...(nif && { nif }),
-    ...(sector && { sector }),
-    createdAtFrom: createdFrom ? createdFrom : undefined,
-    createdAtTo: createdTo ? createdTo : undefined,
+
+    // createdAtFrom: createdFrom ? createdFrom : undefined,
+    // createdAtTo: createdTo ? createdTo : undefined,
   });
 
-  const companies: Company[] = data?.data ?? [];
+  const companies: Team[] = data?.data ?? [];
   const totalPages: number = data?.meta?.totalPages ?? 1;
   const totalRows: number = data?.meta?.total ?? 0;
 
@@ -126,9 +125,9 @@ export default function useCompanies(columns: ColumnDef<Team>[]) {
     },
   });
 
-  const { mutate: mutateDelete, isPending: isPendingDelete } = companiesQueries.useSoftDeleteMany();
+  const { mutate: mutateDelete, isPending: isPendingDelete } = teamsQueries.useSoftDeleteMany();
 
-  const handleDelete = (rows: Row<Company>[]) => {
+  const handleDelete = (rows: Row<Team>[]) => {
     mutateDelete(
       rows.map((item) => item.original.id),
       {

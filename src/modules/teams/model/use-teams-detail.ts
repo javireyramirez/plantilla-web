@@ -6,32 +6,29 @@ import { toast } from 'sonner';
 
 import { useEffect } from 'react';
 
-import { companiesQueries } from './teams.query';
-import { CreateCompany, CreateCompanyBodySchema, UpdateCompany } from './teams.schema';
+import { teamsQueries } from './teams.query';
+import { CreateTeam, CreateTeamBodySchema, UpdateTeam } from './teams.schema';
 
 export function useCompanyForm(id?: string) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isEditing = !!id;
 
-  const { data, isLoading, isFetching } = companiesQueries.useGetById(id as string, {
+  const { data, isLoading, isFetching } = teamsQueries.useGetById(id as string, {
     enabled: isEditing,
   });
 
-  const { mutate: create, isPending: isCreating } = companiesQueries.useCreate();
-  const { mutate: update, isPending: isUpdating } = companiesQueries.useUpdate();
-  const { mutate: softDelete, isPending: isDeleting } = companiesQueries.useSoftDelete();
+  const { mutate: create, isPending: isCreating } = teamsQueries.useCreate();
+  const { mutate: update, isPending: isUpdating } = teamsQueries.useUpdate();
+  const { mutate: softDelete, isPending: isDeleting } = teamsQueries.useSoftDelete();
 
-  const handleSubmit = (
-    formData: CreateCompany | UpdateCompany,
-    options?: { shouldClose?: boolean }
-  ) => {
-    const { owner, ownerTeam, ownerOrganization, ...clean } = formData;
+  const handleSubmit = (formData: CreateTeam | UpdateTeam, options?: { shouldClose?: boolean }) => {
+    const { ...clean } = formData;
     const shouldClose = options?.shouldClose ?? false;
 
     if (isEditing) {
       update(
-        { id, body: clean as UpdateCompany },
+        { id, body: clean as UpdateTeam },
         {
           onSuccess: () => {
             toast.success(t('companies.form.update'));
@@ -44,7 +41,7 @@ export function useCompanyForm(id?: string) {
         }
       );
     } else {
-      create(clean as CreateCompany, {
+      create(clean as CreateTeam, {
         onSuccess: (newCompany) => {
           toast.success(t('companies.form.create'));
 
@@ -79,10 +76,10 @@ export function useCompanyForm(id?: string) {
     });
   };
 
-  const form = useForm<CreateCompany>({
-    resolver: zodResolver(CreateCompanyBodySchema),
+  const form = useForm<CreateTeam>({
+    resolver: zodResolver(CreateTeamBodySchema),
     mode: 'onBlur',
-    defaultValues: data ?? { name: '', nif: '', sector: '' },
+    defaultValues: data ?? { name: '' },
   });
 
   // --- Sincronización del formulario con el backend ---
@@ -92,7 +89,7 @@ export function useCompanyForm(id?: string) {
         form.reset(data);
       }
     } else {
-      form.reset({ name: '', nif: '', sector: '' });
+      form.reset({ name: '' });
     }
   }, [isEditing, data, isLoading, isFetching, form]);
 
