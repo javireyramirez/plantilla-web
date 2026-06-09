@@ -14,6 +14,8 @@ import SignUp from '@/modules/auth/pages/sign-up';
 import VerifyEmail from '@/modules/auth/pages/verify-email';
 import CompanyDetail from '@/modules/companies/pages/companies-detail';
 import CompaniesView from '@/modules/companies/pages/companies-view';
+import OrganizationDetail from '@/modules/organizations/pages/organizations-detail';
+import OrganizationsView from '@/modules/organizations/pages/organizations-view';
 import Profile from '@/modules/profile/profile';
 import Admin from '@/pages/Admin';
 import Home from '@/pages/Home';
@@ -40,9 +42,11 @@ export default function Router() {
       <Route element={<ProtectedRoute />}>
         <Route element={<PrivateLayout />}>
           <Route path="/home" element={<Home />} />
+
           <Route path="/companies" element={<CompaniesView />} />
           <Route path="/companies/new" element={<CompanyDetail />} />
           <Route path="/companies/edit/:id" element={<CompanyDetail />} />
+
           <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>
@@ -51,6 +55,10 @@ export default function Router() {
       <Route element={<AdminRoute />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<Admin />} />
+
+          <Route path="/organizations" element={<OrganizationsView />} />
+          <Route path="/organizations/new" element={<OrganizationDetail />} />
+          <Route path="/organizations/edit/:id" element={<OrganizationDetail />} />
         </Route>
       </Route>
 
