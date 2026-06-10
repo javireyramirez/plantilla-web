@@ -22,7 +22,7 @@ import { teamsQueries } from './teams.query';
 import { CreateTeam, GetTeamQuery, Team } from './teams.schema';
 import { SECTOR_OPTIONS } from './teams.types';
 
-export default function useCompanies(columns: ColumnDef<Team>[]) {
+export default function useTeams(columns: ColumnDef<Team>[]) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
@@ -76,12 +76,12 @@ export default function useCompanies(columns: ColumnDef<Team>[]) {
     // createdAtTo: createdTo ? createdTo : undefined,
   });
 
-  const companies: Team[] = data?.data ?? [];
+  const teams: Team[] = data?.data ?? [];
   const totalPages: number = data?.meta?.totalPages ?? 1;
   const totalRows: number = data?.meta?.total ?? 0;
 
   const table = useReactTable({
-    data: companies,
+    data: teams,
     columns,
     manualPagination: true,
     manualFiltering: true,
@@ -133,7 +133,7 @@ export default function useCompanies(columns: ColumnDef<Team>[]) {
       {
         onSuccess: () => {
           setRowSelection([]);
-          toast.success(t('companies.table.delete'));
+          toast.success(t('teams.table.delete'));
         },
       }
     );

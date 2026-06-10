@@ -9,14 +9,14 @@ import {
   GetListQueryType,
   GetTeamMembersQuery,
   GetTeamQuery,
-  Team,
   TeamListResponse,
   TeamMember,
   TeamMemberListResponse,
+  TeamResponse,
   UpdateTeam,
 } from './teams.schema';
 
-type Item = Team;
+type Item = TeamResponse;
 type CreateBody = CreateTeam;
 type UpdateBody = UpdateTeam;
 type QueryParams = GetTeamQuery;

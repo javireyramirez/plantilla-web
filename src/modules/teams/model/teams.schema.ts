@@ -171,3 +171,4 @@ export type GetListQueryType = z.infer<typeof GetListQuery>;
 export type TeamMemberListResponse = z.infer<typeof TeamMemberListResponseSchema>;
 export type BulkMemberIdsBody = z.infer<typeof BulkMemberIdsBodySchema>;
 export type BulkResponse = z.infer<typeof BulkResponseSchema>;
+export type TeamResponse = z.infer<typeof TeamResponseSchema>;

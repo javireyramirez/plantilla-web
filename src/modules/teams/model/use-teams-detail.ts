@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { teamsQueries } from './teams.query';
 import { CreateTeam, CreateTeamBodySchema, UpdateTeam } from './teams.schema';
 
-export function useCompanyForm(id?: string) {
+export function useTeamForm(id?: string) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isEditing = !!id;
@@ -31,31 +31,31 @@ export function useCompanyForm(id?: string) {
         { id, body: clean as UpdateTeam },
         {
           onSuccess: () => {
-            toast.success(t('companies.form.update'));
-            if (shouldClose) navigate('/companies');
+            toast.success(t('teams.form.update'));
+            if (shouldClose) navigate('/teams');
           },
           onError: (error: any) => {
             const serverMessage = error?.response?.data?.message || error?.message;
-            toast.error(serverMessage || t('companies.form.errors.update'));
+            toast.error(serverMessage || t('teams.form.errors.update'));
           },
         }
       );
     } else {
       create(clean as CreateTeam, {
-        onSuccess: (newCompany) => {
-          toast.success(t('companies.form.create'));
+        onSuccess: (newTeam) => {
+          toast.success(t('teams.form.create'));
 
           if (shouldClose) {
-            navigate('/companies');
-          } else if (newCompany?.id) {
-            navigate(`/companies/edit/${newCompany.id}`);
+            navigate('/teams');
+          } else if (newTeam?.id) {
+            navigate(`/teams/edit/${newTeam.id}`);
           } else {
-            navigate('/companies');
+            navigate('/teams');
           }
         },
         onError: (error: any) => {
           const serverMessage = error?.response?.data?.message || error?.message;
-          toast.error(serverMessage || t('companies.form.errors.create'));
+          toast.error(serverMessage || t('teams.form.errors.create'));
         },
       });
     }
@@ -66,12 +66,12 @@ export function useCompanyForm(id?: string) {
 
     softDelete(id, {
       onSuccess: () => {
-        toast.success(t('companies.form.delete'));
-        navigate('/companies');
+        toast.success(t('teams.form.delete'));
+        navigate('/teams');
       },
       onError: (error: any) => {
         const serverMessage = error?.response?.data?.message || error?.message;
-        toast.error(serverMessage || t('companies.form.errors.delete'));
+        toast.error(serverMessage || t('teams.form.errors.delete'));
       },
     });
   };
@@ -93,11 +93,12 @@ export function useCompanyForm(id?: string) {
     }
   }, [isEditing, data, isLoading, isFetching, form]);
 
-  const companyName = useWatch({ control: form.control, name: 'name' });
+  const teamName = useWatch({ control: form.control, name: 'name' });
 
   return {
+    data,
     isEditing,
-    companyName,
+    teamName,
     isLoading,
     form,
     handleSubmit,

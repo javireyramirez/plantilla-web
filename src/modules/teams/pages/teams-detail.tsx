@@ -32,22 +32,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DocumentsTable, FileUploadButton } from '@/features/storage';
-import { SECTOR_OPTIONS } from '@/modules/companies/model/companies.types';
-import { useCompanyForm } from '@/modules/companies/model/use-companies-detail';
+import { OrganizationSelector } from '@/modules/organizations/components/organization-selector';
 
-export default function CompanyDetail() {
+import { useTeamForm } from '../model/use-teams-detail';
+
+export default function TeamDetail() {
   const { t } = useTranslation();
 
   // --- Estados locales ---
@@ -57,16 +51,18 @@ export default function CompanyDetail() {
 
   // --- Hooks de datos y formulario ---
   const { id } = useParams<{ id: string }>();
-  const { isEditing, companyName, isLoading, form, handleSubmit, handleDelete, isPending } =
-    useCompanyForm(id);
+  const { data, isEditing, teamName, isLoading, form, handleSubmit, handleDelete, isPending } =
+    useTeamForm(id);
 
   const tabs = [
-    { value: 'detail', label: t('companies.detail'), viewAtCreate: true },
-    { value: 'docs', label: t('companies.docs'), viewAtCreate: isEditing },
-    { value: 'audit', label: t('companies.audit'), viewAtCreate: isEditing },
+    { value: 'detail', label: t('teams.detail'), viewAtCreate: true },
+    { value: 'docs', label: t('teams.docs'), viewAtCreate: isEditing },
+    { value: 'audit', label: t('teams.audit'), viewAtCreate: isEditing },
   ];
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
+
+  console.log(data);
 
   // --- Estado de Carga (Skeletons) ---
   if (isLoading) {
@@ -155,13 +151,13 @@ export default function CompanyDetail() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
-              <Link to="/companies">{t('companies.title')}</Link>
+              <Link to="/teams">{t('teams.title')}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage className="font-medium text-foreground">
-              {isEditing ? `${companyName}` : t('companies.createTitle')}
+              {isEditing ? `${teamName}` : t('teams.createTitle')}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -174,14 +170,14 @@ export default function CompanyDetail() {
             <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             {isEditing ? (
               <span className="truncate">
-                <span className="text-primary">{companyName}</span>
+                <span className="text-primary">{teamName}</span>
               </span>
             ) : (
-              t('companies.createTitle')
+              t('teams.createTitle')
             )}
           </h1>
           <p className="text-sm text-muted-foreground hidden sm:block">
-            {isEditing ? t('companies.editDescription') : t('companies.createDescription')}
+            {isEditing ? t('teams.editDescription') : t('teams.createDescription')}
           </p>
         </div>
 
@@ -197,7 +193,7 @@ export default function CompanyDetail() {
                 disabled={isPending}
               >
                 <Download className="h-4 w-4" />
-                {t('companies.export')}
+                {t('teams.export')}
               </Button>
 
               <Button
@@ -207,7 +203,7 @@ export default function CompanyDetail() {
                 onClick={() => setDeleteDialogOpen(true)}
               >
                 <Trash2 className="h-4 w-4" />
-                {t('companies.delete')}
+                {t('teams.delete')}
               </Button>
 
               {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
@@ -218,9 +214,9 @@ export default function CompanyDetail() {
                 disabled={isPending}
                 asChild
               >
-                <Link to="/companies/new">
+                <Link to="/teams/new">
                   <Plus className="h-4 w-4" />
-                  {t('companies.new')}
+                  {t('teams.new')}
                 </Link>
               </Button>
             </>
@@ -228,7 +224,7 @@ export default function CompanyDetail() {
 
           {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
           <Button
-            form="company-form-id"
+            form="team-form-id"
             type="submit"
             variant="outline"
             disabled={isPending}
@@ -236,19 +232,19 @@ export default function CompanyDetail() {
             className="hidden md:flex gap-2"
           >
             <Save className="h-4 w-4" />
-            {t('companies.saveAndClose')}
+            {t('teams.saveAndClose')}
           </Button>
 
           {/* Acción Principal: Siempre visible */}
           <Button
-            form="company-form-id"
+            form="team-form-id"
             type="submit"
             disabled={isPending}
             onClick={() => setShouldCloseOnSubmit(false)}
             className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
           >
             <Save className="h-4 w-4" />
-            {t('companies.save')}
+            {t('teams.save')}
           </Button>
 
           {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
@@ -271,7 +267,7 @@ export default function CompanyDetail() {
                 }}
               >
                 <Save className="h-4 w-4" />
-                {t('companies.saveAndClose')}
+                {t('teams.saveAndClose')}
               </DropdownMenuItem>
 
               {isEditing && (
@@ -279,14 +275,14 @@ export default function CompanyDetail() {
                   {/* Se muestra en el menú si la pantalla es menor a lg */}
                   <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
                     <Download className="h-4 w-4" />
-                    {t('companies.export')}
+                    {t('teams.export')}
                   </DropdownMenuItem>
 
                   {/* Se muestra en el menú si la pantalla es menor a xl */}
                   <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
-                    <Link to="/companies/new">
+                    <Link to="/teams/new">
                       <Download className="h-4 w-4" />
-                      {t('companies.new')}
+                      {t('teams.new')}
                     </Link>
                   </DropdownMenuItem>
 
@@ -300,7 +296,7 @@ export default function CompanyDetail() {
                     }}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
-                    {t('companies.delete')}
+                    {t('teams.delete')}
                   </DropdownMenuItem>
                 </>
               )}
@@ -350,14 +346,12 @@ export default function CompanyDetail() {
             {/* Formulario de Datos Básicos */}
             <Card className="lg:col-span-1 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  {t('companies.basicData')}
-                </CardTitle>
-                <CardDescription>{t('companies.identificationInfo')}</CardDescription>
+                <CardTitle className="text-base font-semibold">{t('teams.basicData')}</CardTitle>
+                <CardDescription>{t('teams.identificationInfo')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <form
-                  id="company-form-id"
+                  id="team-form-id"
                   onSubmit={form.handleSubmit((data) =>
                     handleSubmit(data, { shouldClose: shouldCloseOnSubmit })
                   )}
@@ -370,17 +364,17 @@ export default function CompanyDetail() {
                       render={({ field, fieldState }) => (
                         <FormFieldWrapper fieldState={fieldState}>
                           <FieldLabel
-                            htmlFor="company-name"
+                            htmlFor="team-name"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                           >
-                            {t('companies.name')}
+                            {t('teams.name')}
                           </FieldLabel>
                           <Input
                             {...field}
-                            id="company-name"
+                            id="team-name"
                             aria-invalid={fieldState.invalid}
                             data-invalid={fieldState.invalid}
-                            placeholder={t('companies.namePlaceholder')}
+                            placeholder={t('teams.namePlaceholder')}
                             autoComplete="off"
                             className="mt-1.5 focus-visible:ring-primary"
                           />
@@ -389,57 +383,25 @@ export default function CompanyDetail() {
                     />
 
                     <Controller
-                      name="nif"
+                      name="organizationId"
                       control={form.control}
                       render={({ field, fieldState }) => (
                         <FormFieldWrapper fieldState={fieldState}>
                           <FieldLabel
-                            htmlFor="company-nif"
+                            htmlFor="team-organization"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                           >
-                            {t('companies.cifNif')}
+                            {t('teams.organization')}
                           </FieldLabel>
-                          <Input
-                            {...field}
-                            id="company-nif"
-                            aria-invalid={fieldState.invalid}
-                            data-invalid={fieldState.invalid}
-                            placeholder="A1234567B"
-                            autoComplete="off"
-                            className="mt-1.5 focus-visible:ring-primary"
+                          <OrganizationSelector
+                            value={field.value}
+                            onChange={field.onChange}
+                            selectedOptions={
+                              data?.organization
+                                ? [{ id: data.organizationId, name: data.organization.name }]
+                                : []
+                            }
                           />
-                        </FormFieldWrapper>
-                      )}
-                    />
-
-                    <Controller
-                      name="sector"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <FormFieldWrapper fieldState={fieldState}>
-                          <FieldLabel
-                            htmlFor="company-sector"
-                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                          >
-                            {t('companies.sector')}
-                          </FieldLabel>
-                          <Select value={field.value ?? undefined} onValueChange={field.onChange}>
-                            <SelectTrigger
-                              id="company-sector"
-                              className="mt-1.5 focus-visible:ring-primary w-full"
-                              aria-invalid={fieldState.invalid}
-                              data-invalid={fieldState.invalid}
-                            >
-                              <SelectValue placeholder={t('companies.selectSector')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {SECTOR_OPTIONS.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {t(`companies.sectors.${option.value}`)}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
                         </FormFieldWrapper>
                       )}
                     />
@@ -448,28 +410,14 @@ export default function CompanyDetail() {
               </CardContent>
             </Card>
 
-            {/* Tarjetas Secundarias Estatales */}
-            <Card className="shadow-sm">
+            {/* Tarjeta Usuarios */}
+            <Card className="shadow-sm lg:col-span-2">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  {t('companies.additionalInfo')}
-                </CardTitle>
-                <CardDescription>{t('companies.pendingDefine')}</CardDescription>
+                <CardTitle className="text-base font-semibold">{t('teams.users')}</CardTitle>
+                <CardDescription>{t('teams.pendingDefine')}</CardDescription>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground leading-relaxed">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  {t('companies.metricsSummary')}
-                </CardTitle>
-                <CardDescription>{t('companies.entityStats')}</CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget elit nec.
               </CardContent>
             </Card>
           </div>
@@ -482,17 +430,17 @@ export default function CompanyDetail() {
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm flex flex-col gap-6"
             >
               <div className="flex justify-end">
-                <FileUploadButton entityType="companies" entityId={id!} multiple={true} />
+                <FileUploadButton entityType="teams" entityId={id!} multiple={true} />
               </div>
 
-              <DocumentsTable entityType="companies" entityId={id!} />
+              <DocumentsTable entityType="teams" entityId={id!} />
             </TabsContent>
 
             <TabsContent
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
             >
-              {t('companies.auditContent')}
+              {t('teams.auditContent')}
             </TabsContent>
           </>
         )}
@@ -502,13 +450,13 @@ export default function CompanyDetail() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('companies.deleteConfirmTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('companies.deleteConfirmDesc')}</AlertDialogDescription>
+            <AlertDialogTitle>{t('teams.deleteConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('teams.deleteConfirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('companies.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('teams.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} variant="destructive">
-              {t('companies.delete')}
+              {t('teams.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
