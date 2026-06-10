@@ -10,6 +10,8 @@ import { DataTableFacetedFilter } from '@/components/data-table/data-table-facet
 import { DataTableSliderFilter } from '@/components/data-table/data-table-slider-filter';
 import { cn } from '@/lib/utils';
 
+import { Selector } from '../selector/selector';
+
 interface DataTableToolbarFilterProps<TData> {
   column: Column<TData>;
   className?: string;
@@ -84,6 +86,33 @@ export function DataTableToolbarFilter<TData>({
               options={columnMeta.options ?? []}
               multiple={columnMeta.variant === 'multiSelect'}
               className={className}
+            />
+          );
+
+        case 'asyncSelect':
+          return columnMeta.useGetList ? (
+            <Selector
+              useGetList={columnMeta.useGetList}
+              value={(column.getFilterValue() as string) ?? undefined}
+              onChange={(value) => {
+                column.setFilterValue(value ?? undefined);
+              }}
+              placeholder={columnMeta.label}
+              className={cn('h-8 w-40 lg:w-56', className)}
+            />
+          ) : null;
+
+        case 'asyncMultiSelect':
+          if (!columnMeta.useGetList) return null;
+          return (
+            <Selector
+              useGetList={columnMeta.useGetList}
+              multiple={true}
+              applyButton={true}
+              value={(column.getFilterValue() as string[]) ?? undefined}
+              onChange={(value) => column.setFilterValue(value.length === 0 ? undefined : value)}
+              placeholder={columnMeta.label}
+              className={cn('h-8 w-40 lg:w-56', className)}
             />
           );
 
