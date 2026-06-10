@@ -199,8 +199,8 @@
   },
 
   "teams": {
-    "title": "Organizaciones",
-    "subtitle": "Gestiona y visualiza el listado de organizaciones registradas.",
+    "title": "Equipos",
+    "subtitle": "Gestiona y visualiza el listado de equipos registrados.",
     "import": "Importar",
     "export": "Exportar",
     "new": "Nuevo equipo",
