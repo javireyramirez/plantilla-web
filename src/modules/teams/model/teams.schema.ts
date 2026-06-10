@@ -18,7 +18,6 @@ export const TeamSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional().nullable(),
   status: recordStatusSchema,
-  organization: z.object().nullable().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
   deletedAt: z.date().optional().nullable(),
@@ -172,3 +171,4 @@ export type GetListQueryType = z.infer<typeof GetListQuery>;
 export type TeamMemberListResponse = z.infer<typeof TeamMemberListResponseSchema>;
 export type BulkMemberIdsBody = z.infer<typeof BulkMemberIdsBodySchema>;
 export type BulkResponse = z.infer<typeof BulkResponseSchema>;
+export type TeamResponse = z.infer<typeof TeamResponseSchema>;

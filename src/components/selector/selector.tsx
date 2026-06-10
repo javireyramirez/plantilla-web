@@ -27,8 +27,8 @@ export interface EntityOption {
 // Interfaz genérica para el hook del CRUD
 interface UseGetListParams {
   limit: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
   name?: string;
   [key: string]: any;
 }

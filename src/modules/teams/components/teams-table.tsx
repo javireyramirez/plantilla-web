@@ -16,7 +16,7 @@ import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolb
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { Team } from '@/modules/teams/model/teams.schema';
+import { Team, TeamResponse } from '@/modules/teams/model/teams.schema';
 import { SECTOR_OPTIONS } from '@/modules/teams/model/teams.types';
 import useteams from '@/modules/teams/model/use-teams-table';
 
@@ -24,7 +24,7 @@ export function TeamsTable() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const columns = React.useMemo<ColumnDef<Team>[]>(
+  const columns = React.useMemo<ColumnDef<TeamResponse>[]>(
     () => [
       {
         id: 'select',
