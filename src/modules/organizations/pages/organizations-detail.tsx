@@ -371,7 +371,6 @@ export default function OrganizationDetail() {
                             id="organization-name"
                             aria-invalid={fieldState.invalid}
                             data-invalid={fieldState.invalid}
-                            placeholder={t('organizations.namePlaceholder')}
                             autoComplete="off"
                             className="mt-1.5 focus-visible:ring-primary"
                           />

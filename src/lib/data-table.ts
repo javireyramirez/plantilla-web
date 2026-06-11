@@ -42,6 +42,8 @@ export function getFilterOperators(filterVariant: FilterVariant) {
     boolean: dataTableConfig.booleanOperators,
     select: dataTableConfig.selectOperators,
     multiSelect: dataTableConfig.multiSelectOperators,
+    asyncSelect: dataTableConfig.selectOperators,
+    asyncMultiSelect: dataTableConfig.multiSelectOperators,
   };
 
   return operatorMap[filterVariant] ?? dataTableConfig.textOperators;

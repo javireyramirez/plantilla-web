@@ -36,7 +36,6 @@ import { FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DocumentsTable, FileUploadButton } from '@/features/storage';
 import { OrganizationSelector } from '@/modules/organizations/components/organization-selector';
 
 import { useTeamForm } from '../model/use-teams-detail';
@@ -56,7 +55,6 @@ export default function TeamDetail() {
 
   const tabs = [
     { value: 'detail', label: t('teams.detail'), viewAtCreate: true },
-    { value: 'docs', label: t('teams.docs'), viewAtCreate: isEditing },
     { value: 'audit', label: t('teams.audit'), viewAtCreate: isEditing },
   ];
 
@@ -374,7 +372,6 @@ export default function TeamDetail() {
                             id="team-name"
                             aria-invalid={fieldState.invalid}
                             data-invalid={fieldState.invalid}
-                            placeholder={t('teams.namePlaceholder')}
                             autoComplete="off"
                             className="mt-1.5 focus-visible:ring-primary"
                           />
@@ -391,7 +388,7 @@ export default function TeamDetail() {
                             htmlFor="team-organization"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                           >
-                            {t('teams.organization')}
+                            {t('teams.table.organization')}
                           </FieldLabel>
                           <OrganizationSelector
                             value={field.value}
@@ -425,17 +422,6 @@ export default function TeamDetail() {
 
         {isEditing && (
           <>
-            <TabsContent
-              value="docs"
-              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm flex flex-col gap-6"
-            >
-              <div className="flex justify-end">
-                <FileUploadButton entityType="teams" entityId={id!} multiple={true} />
-              </div>
-
-              <DocumentsTable entityType="teams" entityId={id!} />
-            </TabsContent>
-
             <TabsContent
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"

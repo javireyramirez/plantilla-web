@@ -1,4 +1,13 @@
 {
+  "dataTable": {
+    "selector": {
+      "placeholder": "Select...",
+      "searchPlaceholder": "Search...",
+      "emptyMessage": "No results found.",
+      "refineMessage": "more results, refine your search",
+      "applyLabel": "Apply"
+    }
+  },
   "auth": {
     "orContinueWith": "Or continue with",
     "signInWithGoogle": "Sign in with Google",

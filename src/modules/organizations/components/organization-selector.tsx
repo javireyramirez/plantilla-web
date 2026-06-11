@@ -33,11 +33,5 @@ type OrganizationSelectorProps = SingleProps | MultipleProps;
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function OrganizationSelector(props: OrganizationSelectorProps) {
-  return (
-    <Selector
-      {...props}
-      useGetList={organizationsQueries.useGetList}
-      placeholder={props.placeholder ?? 'organizations.select.placeholder'}
-    />
-  );
+  return <Selector {...props} useGetList={organizationsQueries.useGetList} />;
 }

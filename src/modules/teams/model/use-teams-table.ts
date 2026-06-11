@@ -49,14 +49,14 @@ export default function useTeams(columns: ColumnDef<Team>[]) {
   const nameCol = columnFilters.find((f) => f.id === 'name');
   const name = typeof nameCol?.value === 'string' ? nameCol.value : undefined;
 
-  const organizationCol = columnFilters.find((f) => f.id === 'organizationId');
-  const organization =
-    typeof organizationCol?.value === 'string' ? organizationCol.value : undefined;
+  const organizationCol = columnFilters.find((f) => f.id === 'organization');
 
-  const sectorCol = columnFilters.find((f) => f.id === 'sector');
-  const sector =
-    Array.isArray(sectorCol?.value) && sectorCol.value.length > 0
-      ? (sectorCol.value as string[])
+  const organization = Array.isArray(organizationCol?.value)
+    ? organizationCol.value.length > 0
+      ? organizationCol.value
+      : undefined
+    : typeof organizationCol?.value === 'string'
+      ? organizationCol.value
       : undefined;
 
   const createdAtCol = columnFilters.find((f) => f.id === 'createdAt');
@@ -71,9 +71,9 @@ export default function useTeams(columns: ColumnDef<Team>[]) {
     sortBy,
     sortOrder,
     ...(name && { name }),
-
-    // createdAtFrom: createdFrom ? createdFrom : undefined,
-    // createdAtTo: createdTo ? createdTo : undefined,
+    ...(organization && { organizationId: organization }),
+    createdAtFrom: createdFrom ? createdFrom : undefined,
+    createdAtTo: createdTo ? createdTo : undefined,
   });
 
   const teams: Team[] = data?.data ?? [];

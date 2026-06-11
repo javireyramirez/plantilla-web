@@ -16,6 +16,7 @@ import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolb
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { organizationsQueries } from '@/modules/organizations/model/organizations.query';
 import { Team, TeamResponse } from '@/modules/teams/model/teams.schema';
 import { SECTOR_OPTIONS } from '@/modules/teams/model/teams.types';
 import useteams from '@/modules/teams/model/use-teams-table';
@@ -95,7 +96,8 @@ export function TeamsTable() {
         },
         meta: {
           label: t('teams.table.organization'),
-          variant: 'text',
+          variant: 'asyncMultiSelect',
+          useGetList: organizationsQueries.useGetList,
         },
       },
 

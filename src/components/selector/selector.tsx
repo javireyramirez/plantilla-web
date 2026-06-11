@@ -1,8 +1,8 @@
 import { Check, ChevronsUpDown, Loader2, X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 import * as React from 'react';
 
+import { useDataTableI18n } from '@/components/data-table/data-table-i18n';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +24,6 @@ export interface EntityOption {
   name: string;
 }
 
-// Interfaz genérica para el hook del CRUD
 interface UseGetListParams {
   limit: number;
   sortBy: string;
@@ -59,6 +58,8 @@ interface SingleProps extends BaseProps {
 
 interface MultipleProps extends BaseProps {
   multiple: true;
+  applyButton?: boolean;
+  applyLabel?: string;
   value?: string[];
   onChange: (value: string[]) => void;
 }
@@ -84,20 +85,42 @@ export function Selector({
   multiple,
   value,
   onChange,
-  placeholder = 'common.select_placeholder',
-  searchPlaceholder = 'common.search',
-  emptyMessage = 'common.no_results',
-  refineMessage = 'common.refine_search',
+  placeholder,
+  searchPlaceholder,
+  emptyMessage,
+  refineMessage,
+  ...rest
 }: AsyncSelectProps) {
-  const { t } = useTranslation();
+  const i18n = useDataTableI18n();
+
+  const _placeholder = placeholder ?? i18n.selector.placeholder;
+  const _searchPlaceholder = searchPlaceholder ?? i18n.selector.searchPlaceholder;
+  const _emptyMessage = emptyMessage ?? i18n.selector.emptyMessage;
+  const _refineMessage = refineMessage ?? i18n.selector.refineMessage;
+
+  const applyButton = multiple ? (rest as MultipleProps).applyButton : false;
+  const applyLabel = multiple ? ((rest as MultipleProps).applyLabel ?? 'Apply') : 'Apply';
+
+  const _applyLabel = (rest as any).applyLabel ?? i18n.selector.applyLabel;
 
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const [debouncedSearch, setDebouncedSearch] = React.useState('');
 
+  // Pending selection state — only used when applyButton is true
+  const [pendingValue, setPendingValue] = React.useState<string[]>(
+    multiple ? ((value as string[]) ?? []) : []
+  );
+
+  // Sync pendingValue when popover opens
+  React.useEffect(() => {
+    if (open && multiple && applyButton) {
+      setPendingValue((value as string[]) ?? []);
+    }
+  }, [open]);
+
   const debouncedSetSearch = useDebouncedCallback(setDebouncedSearch, debounceMs);
 
-  // Consumimos el hook genérico pasado por props
   const { data, isLoading } = useGetList({
     limit: 20,
     sortBy: 'name',
@@ -113,6 +136,9 @@ export function Selector({
     [entities, excludeIds]
   );
 
+  // The "active" value for rendering check marks: pending when applyButton, real otherwise
+  const activeValue = multiple && applyButton ? pendingValue : value;
+
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   function handleSearch(val: string) {
@@ -122,11 +148,18 @@ export function Selector({
 
   function handleSelect(entity: EntityOption) {
     if (multiple) {
-      const current = (value as string[] | undefined) ?? [];
-      const next = current.includes(entity.id)
-        ? current.filter((id) => id !== entity.id)
-        : [...current, entity.id];
-      (onChange as MultipleProps['onChange'])(next);
+      if (applyButton) {
+        // Mutate pending state only, don't call onChange yet
+        setPendingValue((prev) =>
+          prev.includes(entity.id) ? prev.filter((id) => id !== entity.id) : [...prev, entity.id]
+        );
+      } else {
+        const current = (value as string[] | undefined) ?? [];
+        const next = current.includes(entity.id)
+          ? current.filter((id) => id !== entity.id)
+          : [...current, entity.id];
+        (onChange as MultipleProps['onChange'])(next);
+      }
     } else {
       const next = value === entity.id ? undefined : entity.id;
       (onChange as SingleProps['onChange'])(next);
@@ -134,11 +167,21 @@ export function Selector({
     }
   }
 
+  function handleApply() {
+    (onChange as MultipleProps['onChange'])(pendingValue);
+    setOpen(false);
+  }
+
   function handleRemove(id: string, e: React.MouseEvent) {
     e.stopPropagation();
     if (!multiple) return;
     const current = (value as string[]) ?? [];
     (onChange as MultipleProps['onChange'])(current.filter((v) => v !== id));
+  }
+
+  function handleRemoveAll(e: React.MouseEvent) {
+    e.stopPropagation();
+    (onChange as MultipleProps['onChange'])([]);
   }
 
   // ── Trigger label ─────────────────────────────────────────────────────────
@@ -154,10 +197,10 @@ export function Selector({
   }, [value, entities, selectedOptions]);
 
   const triggerLabel = React.useMemo(() => {
-    if (selectedEntities.length === 0) return t(placeholder);
-    if (!multiple) return selectedEntities[0]?.name ?? t(placeholder);
+    if (selectedEntities.length === 0) return _placeholder;
+    if (!multiple) return selectedEntities[0]?.name ?? _placeholder;
     return null;
-  }, [selectedEntities, multiple, t, placeholder]);
+  }, [selectedEntities, multiple, _placeholder]);
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -171,12 +214,12 @@ export function Selector({
           disabled={disabled}
           className={cn(
             'h-auto min-h-9 w-full justify-between font-normal',
-            !triggerLabel && 'text-muted-foreground',
+            selectedEntities.length === 0 && 'text-muted-foreground',
             className
           )}
         >
           <span className="flex min-w-0 flex-1 flex-wrap gap-1">
-            {multiple && selectedEntities.length > 0 ? (
+            {multiple && selectedEntities.length === 1 ? (
               selectedEntities.map((entity) => (
                 <Badge key={entity.id} variant="secondary" className="gap-1 pr-1">
                   {entity.name}
@@ -189,6 +232,17 @@ export function Selector({
                   </button>
                 </Badge>
               ))
+            ) : multiple && selectedEntities.length > 1 ? (
+              <Badge variant="secondary" className="gap-1 pr-1">
+                {selectedEntities.length}
+                <button
+                  type="button"
+                  onClick={handleRemoveAll}
+                  className="rounded-full hover:bg-muted"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
             ) : (
               <span className="truncate">{triggerLabel}</span>
             )}
@@ -200,7 +254,7 @@ export function Selector({
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder={t(searchPlaceholder)}
+            placeholder={_searchPlaceholder}
             value={search}
             onValueChange={handleSearch}
           />
@@ -211,7 +265,7 @@ export function Selector({
               </div>
             ) : (
               <>
-                <CommandEmpty>{t(emptyMessage)}</CommandEmpty>
+                <CommandEmpty>{_emptyMessage}</CommandEmpty>
                 <CommandGroup>
                   {filtered.map((entity) => (
                     <CommandItem
@@ -222,7 +276,7 @@ export function Selector({
                       <Check
                         className={cn(
                           'mr-2 h-4 w-4',
-                          isSelected(entity.id, value) ? 'opacity-100' : 'opacity-0'
+                          isSelected(entity.id, activeValue) ? 'opacity-100' : 'opacity-0'
                         )}
                       />
                       {entity.name}
@@ -231,12 +285,20 @@ export function Selector({
                 </CommandGroup>
                 {total > 20 && (
                   <p className="px-3 py-2 text-center text-xs text-muted-foreground">
-                    {total - 20} {t(refineMessage)}
+                    {total - 20} {_refineMessage}
                   </p>
                 )}
               </>
             )}
           </CommandList>
+
+          {multiple && applyButton && (
+            <div className="border-t p-2">
+              <Button size="sm" className="w-full" onClick={handleApply}>
+                {_applyLabel}
+              </Button>
+            </div>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

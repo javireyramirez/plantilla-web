@@ -1,4 +1,13 @@
 {
+  "dataTable": {
+    "selector": {
+      "placeholder": "Seleccionar...",
+      "searchPlaceholder": "Buscar...",
+      "emptyMessage": "Sin resultados.",
+      "refineMessage": "resultados más, refina la búsqueda",
+      "applyLabel": "Aplicar"
+    }
+  },
   "auth": {
     "orContinueWith": "O continúa con",
     "signInWithGoogle": "Iniciar sesión con Google",
@@ -234,7 +243,7 @@
       "delete": "Compañía(s) eliminada(s) con éxito",
       "selectTodo": "Seleccionar todo",
       "selectFila": "Seleccionar fila",
-      "organization": "Organizacion",
+      "organization": "Organización",
       "fecha": "Fecha",
       "creacion": "Creación",
       "name": "Equipo"
