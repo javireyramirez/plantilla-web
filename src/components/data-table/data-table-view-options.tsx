@@ -5,6 +5,7 @@ import * as React from 'react';
 import type { Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
+import { useDataTableI18n } from '@/components/data-table/data-table-i18n';
 import {
   Command,
   CommandEmpty,
@@ -28,6 +29,7 @@ export function DataTableViewOptions<TData>({
   className,
   ...props
 }: DataTableViewOptionsProps<TData>) {
+  const i18n = useDataTableI18n();
   const columns = React.useMemo(
     () =>
       table
@@ -40,7 +42,7 @@ export function DataTableViewOptions<TData>({
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          aria-label="Toggle columns"
+          aria-label={i18n.viewOptions.toggleColumns}
           role="combobox"
           variant="outline"
           size="sm"
@@ -48,14 +50,14 @@ export function DataTableViewOptions<TData>({
           disabled={disabled}
         >
           <Settings2 className="text-muted-foreground" />
-          View
+          {i18n.viewOptions.title}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-44 p-0" {...props}>
         <Command>
-          <CommandInput placeholder="Search columns..." />
+          <CommandInput placeholder={i18n.viewOptions.searchPlaceholder} />
           <CommandList>
-            <CommandEmpty>No columns found.</CommandEmpty>
+            <CommandEmpty>{i18n.viewOptions.emptyMessage}</CommandEmpty>
             <CommandGroup>
               {columns.map((column) => (
                 <CommandItem

@@ -4,6 +4,7 @@ import type * as React from 'react';
 import { type Table as TanstackTable, flexRender } from '@tanstack/react-table';
 
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
+import { useDataTableI18n } from '@/components/data-table/data-table-i18n';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
@@ -42,6 +43,7 @@ export function DataTable<TData>({
 }: DataTableProps<TData>) {
   const rows = table.getRowModel().rows;
   const allColumns = table.getAllColumns();
+  const i18n = useDataTableI18n();
 
   return (
     <div className={cn('flex w-full flex-col gap-2.5 overflow-auto', className)} {...props}>
@@ -59,10 +61,10 @@ export function DataTable<TData>({
                 (table.getIsSomePageRowsSelected() && 'indeterminate')
               }
               onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-              aria-label="Seleccionar todo"
+              aria-label={i18n.table.selectAll}
               className="mt-0.5 shrink-0"
             />
-            <span className="text-xs text-muted-foreground">Seleccionar todo</span>
+            <span className="text-xs text-muted-foreground">{i18n.table.selectAll}</span>
           </div>
           {rows.length ? (
             rows.map((row) => {
@@ -89,7 +91,7 @@ export function DataTable<TData>({
                     <Checkbox
                       checked={row.getIsSelected()}
                       onCheckedChange={(value) => row.toggleSelected(!!value)}
-                      aria-label="Seleccionar fila"
+                      aria-label={i18n.table.selectRow}
                       className="mt-0.5 shrink-0"
                     />
 
@@ -120,7 +122,7 @@ export function DataTable<TData>({
               );
             })
           ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">No results.</p>
+            <p className="py-6 text-center text-sm text-muted-foreground">{i18n.mobile.noResults}</p>
           )}
         </div>
       )}
@@ -162,7 +164,7 @@ export function DataTable<TData>({
             ) : (
               <TableRow>
                 <TableCell colSpan={allColumns.length} className="h-24 text-center">
-                  No results.
+                  {i18n.table.noResults}
                 </TableCell>
               </TableRow>
             )}
