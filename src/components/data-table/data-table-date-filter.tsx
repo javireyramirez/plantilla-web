@@ -5,11 +5,11 @@ import * as React from 'react';
 
 import type { Column } from '@tanstack/react-table';
 
+import { useDataTableI18n } from '@/components/data-table/data-table-i18n';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
-import { useDataTableI18n } from '@/components/data-table/data-table-i18n';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -176,7 +176,7 @@ export function DataTableDateFilter<TData>({
           className={cn('border-dashed font-normal h-8 justify-start', className)}
         >
           {hasValue ? (
-          <div
+            <div
               role="button"
               aria-label={i18n.dateFilter.clearFilterAria}
               tabIndex={0}
