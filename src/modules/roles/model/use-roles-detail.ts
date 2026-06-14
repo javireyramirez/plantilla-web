@@ -8,23 +8,23 @@ import { useEffect } from 'react';
 
 import { slugify } from '@/lib/utils';
 
-import { teamsQueries } from './teams.query';
-import { CreateTeam, CreateTeamBodySchema, UpdateTeam } from './teams.schema';
+import { rolesQueries } from './roles.query';
+import { CreateRole, CreateRoleBodySchema, UpdateRole } from './roles.schema';
 
-export function useTeamForm(id?: string) {
+export function useRoleForm(id?: string) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isEditing = !!id;
 
-  const { data, isLoading, isFetching } = teamsQueries.useGetById(id as string, {
+  const { data, isLoading, isFetching } = rolesQueries.useGetById(id as string, {
     enabled: isEditing,
   });
 
-  const { mutate: create, isPending: isCreating } = teamsQueries.useCreate();
-  const { mutate: update, isPending: isUpdating } = teamsQueries.useUpdate();
-  const { mutate: softDelete, isPending: isDeleting } = teamsQueries.useSoftDelete();
+  const { mutate: create, isPending: isCreating } = rolesQueries.useCreate();
+  const { mutate: update, isPending: isUpdating } = rolesQueries.useUpdate();
+  const { mutate: softDelete, isPending: isDeleting } = rolesQueries.useSoftDelete();
 
-  const handleSubmit = (formData: CreateTeam | UpdateTeam, options?: { shouldClose?: boolean }) => {
+  const handleSubmit = (formData: CreateRole | UpdateRole, options?: { shouldClose?: boolean }) => {
     const payload = {
       ...formData,
       slug: slugify(formData.name),
@@ -34,34 +34,34 @@ export function useTeamForm(id?: string) {
 
     if (isEditing) {
       update(
-        { id, body: payload as UpdateTeam },
+        { id, body: payload as UpdateRole },
         {
           onSuccess: () => {
-            toast.success(t('teams.form.update'));
-            if (shouldClose) navigate('/teams');
+            toast.success(t('roles.form.update'));
+            if (shouldClose) navigate('/roles');
           },
           onError: (error: any) => {
             const serverMessage = error?.response?.data?.message || error?.message;
-            toast.error(serverMessage || t('teams.form.errors.update'));
+            toast.error(serverMessage || t('roles.form.errors.update'));
           },
         }
       );
     } else {
-      create(payload as CreateTeam, {
-        onSuccess: (newTeam) => {
-          toast.success(t('teams.form.create'));
+      create(payload as CreateRole, {
+        onSuccess: (newRole) => {
+          toast.success(t('roles.form.create'));
 
           if (shouldClose) {
-            navigate('/teams');
-          } else if (newTeam?.id) {
-            navigate(`/teams/edit/${newTeam.id}`);
+            navigate('/roles');
+          } else if (newRole?.id) {
+            navigate(`/roles/edit/${newRole.id}`);
           } else {
-            navigate('/teams');
+            navigate('/roles');
           }
         },
         onError: (error: any) => {
           const serverMessage = error?.response?.data?.message || error?.message;
-          toast.error(serverMessage || t('teams.form.errors.create'));
+          toast.error(serverMessage || t('roles.form.errors.create'));
         },
       });
     }
@@ -72,18 +72,18 @@ export function useTeamForm(id?: string) {
 
     softDelete(id, {
       onSuccess: () => {
-        toast.success(t('teams.form.delete'));
-        navigate('/teams');
+        toast.success(t('roles.form.delete'));
+        navigate('/roles');
       },
       onError: (error: any) => {
         const serverMessage = error?.response?.data?.message || error?.message;
-        toast.error(serverMessage || t('teams.form.errors.delete'));
+        toast.error(serverMessage || t('roles.form.errors.delete'));
       },
     });
   };
 
-  const form = useForm<CreateTeam>({
-    resolver: zodResolver(CreateTeamBodySchema),
+  const form = useForm<CreateRole>({
+    resolver: zodResolver(CreateRoleBodySchema),
     mode: 'onBlur',
     defaultValues: data ?? { name: '' },
   });
@@ -99,12 +99,12 @@ export function useTeamForm(id?: string) {
     }
   }, [isEditing, data, isLoading, isFetching, form]);
 
-  const teamName = useWatch({ control: form.control, name: 'name' });
+  const roleName = useWatch({ control: form.control, name: 'name' });
 
   return {
     data,
     isEditing,
-    teamName,
+    roleName,
     isLoading,
     form,
     handleSubmit,

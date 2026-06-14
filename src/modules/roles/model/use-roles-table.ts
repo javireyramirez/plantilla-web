@@ -18,11 +18,10 @@ import {
 
 import { useIsMobile } from '@/hooks/use-mobile';
 
-import { teamsQueries } from './teams.query';
-import { CreateTeam, GetTeamQuery, Team } from './teams.schema';
-import { SECTOR_OPTIONS } from './teams.types';
+import { rolesQueries } from './roles.query';
+import { CreateRole, GetRoleQuery, Role } from './roles.schema';
 
-export default function useTeams(columns: ColumnDef<Team>[]) {
+export default function useRoles(columns: ColumnDef<Role>[]) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
@@ -43,7 +42,7 @@ export default function useTeams(columns: ColumnDef<Team>[]) {
 
   const [sort] = sorting;
 
-  const sortBy = (sort ? sort.id : 'createdAt') as GetTeamQuery['sortBy'];
+  const sortBy = (sort ? sort.id : 'createdAt') as GetRoleQuery['sortBy'];
   const sortOrder = sort ? (sort.desc ? 'desc' : 'asc') : 'desc';
 
   const nameCol = columnFilters.find((f) => f.id === 'name');
@@ -54,7 +53,7 @@ export default function useTeams(columns: ColumnDef<Team>[]) {
     ? createdAtCol.value
     : [undefined, undefined];
 
-  const { data, isLoading, isFetching } = teamsQueries.useGetAll({
+  const { data, isLoading, isFetching } = rolesQueries.useGetAll({
     page,
     limit,
     isTrash: false,
@@ -65,12 +64,12 @@ export default function useTeams(columns: ColumnDef<Team>[]) {
     createdAtTo: createdTo ? createdTo : undefined,
   });
 
-  const teams: Team[] = data?.data ?? [];
+  const roles: Role[] = data?.data ?? [];
   const totalPages: number = data?.meta?.totalPages ?? 1;
   const totalRows: number = data?.meta?.total ?? 0;
 
   const table = useReactTable({
-    data: teams,
+    data: roles,
     columns,
     manualPagination: true,
     manualFiltering: true,
@@ -114,15 +113,15 @@ export default function useTeams(columns: ColumnDef<Team>[]) {
     },
   });
 
-  const { mutate: mutateDelete, isPending: isPendingDelete } = teamsQueries.useSoftDeleteMany();
+  const { mutate: mutateDelete, isPending: isPendingDelete } = rolesQueries.useSoftDeleteMany();
 
-  const handleDelete = (rows: Row<Team>[]) => {
+  const handleDelete = (rows: Row<Role>[]) => {
     mutateDelete(
       rows.map((item) => item.original.id),
       {
         onSuccess: () => {
           setRowSelection([]);
-          toast.success(t('teams.table.delete'));
+          toast.success(t('roles.table.delete'));
         },
       }
     );

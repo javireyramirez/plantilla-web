@@ -35,26 +35,7 @@ import {
 } from '@/components/ui/sidebar.js';
 
 import NavUser from './nav-user.js';
-
-const navItems = [
-  {
-    groupKey: 'sidebar.groups.security',
-    items: [
-      { titleKey: 'sidebar.nav.users', url: '/users', icon: Users },
-      { titleKey: 'sidebar.nav.roles', url: '/roles', icon: ShieldCheck },
-      { titleKey: 'sidebar.nav.teams', url: '/teams', icon: Briefcase },
-      { titleKey: 'sidebar.nav.organizations', url: '/organizations', icon: Building2Icon },
-    ],
-  },
-  {
-    groupKey: 'sidebar.groups.audit',
-    items: [
-      { titleKey: 'sidebar.nav.audit', url: '/audit', icon: HistoryIcon },
-      { titleKey: 'sidebar.nav.recovery', url: '/recovery', icon: RotateCcw },
-      { titleKey: 'sidebar.nav.documents', url: '/documents', icon: FileText },
-    ],
-  },
-];
+import { adminItems } from './sidebar-routes.js';
 
 export default function LayoutSidebar() {
   const { t } = useTranslation();
@@ -77,7 +58,7 @@ export default function LayoutSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {navItems.map((group) => (
+        {adminItems.map((group) => (
           <SidebarGroup key={group.groupKey}>
             <SidebarGroupLabel>{t(group.groupKey)}</SidebarGroupLabel>
             <SidebarGroupContent>

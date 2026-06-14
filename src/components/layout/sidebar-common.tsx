@@ -22,11 +22,7 @@ import {
 } from '@/components/ui/sidebar.js';
 
 import NavUser from './nav-user.js';
-
-const salesItems = [
-  { titleKey: 'sidebar.nav.page1', url: '/home', icon: Home },
-  { titleKey: 'sidebar.nav.companies', url: '/companies', icon: Building2 },
-];
+import { commonItems } from './sidebar-routes.js';
 
 export default function LayoutSidebar() {
   const { t } = useTranslation();
@@ -52,7 +48,7 @@ export default function LayoutSidebar() {
           <SidebarGroupLabel>{t('sidebar.group1')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {salesItems.map((item) => (
+              {commonItems.map((item) => (
                 <SidebarMenuItem key={item.titleKey}>
                   <SidebarMenuButton asChild isActive={location.pathname === item.url}>
                     <Link to={item.url}>
