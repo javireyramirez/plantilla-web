@@ -37,9 +37,9 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { useTeamForm } from '../model/use-teams-detail';
+import { useUsersForm } from '../model/use-users-detail';
 
-export default function TeamDetail() {
+export default function UsersDetail() {
   const { t } = useTranslation();
 
   // --- Estados locales ---
@@ -49,17 +49,15 @@ export default function TeamDetail() {
 
   // --- Hooks de datos y formulario ---
   const { id } = useParams<{ id: string }>();
-  const { data, isEditing, teamName, isLoading, form, handleSubmit, handleDelete, isPending } =
-    useTeamForm(id);
+  const { data, isEditing, userName, isLoading, form, handleSubmit, handleDelete, isPending } =
+    useUsersForm(id);
 
   const tabs = [
-    { value: 'detail', label: t('teams.detail'), viewAtCreate: true },
-    { value: 'audit', label: t('teams.audit'), viewAtCreate: isEditing },
+    { value: 'detail', label: t('users.detail'), viewAtCreate: true },
+    { value: 'audit', label: t('users.audit'), viewAtCreate: isEditing },
   ];
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
-
-  console.log(data);
 
   // --- Estado de Carga (Skeletons) ---
   if (isLoading) {
@@ -148,13 +146,13 @@ export default function TeamDetail() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
-              <Link to="/teams">{t('teams.title')}</Link>
+              <Link to="/users">{t('users.title')}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage className="font-medium text-foreground">
-              {isEditing ? `${teamName}` : t('teams.createTitle')}
+              {isEditing ? `${userName}` : t('users.createTitle')}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -167,14 +165,14 @@ export default function TeamDetail() {
             <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             {isEditing ? (
               <span className="truncate">
-                <span className="text-primary">{teamName}</span>
+                <span className="text-primary">{userName}</span>
               </span>
             ) : (
-              t('teams.createTitle')
+              t('users.createTitle')
             )}
           </h1>
           <p className="text-sm text-muted-foreground hidden sm:block">
-            {isEditing ? t('teams.editDescription') : t('teams.createDescription')}
+            {isEditing ? t('users.editDescription') : t('users.createDescription')}
           </p>
         </div>
 
@@ -190,7 +188,7 @@ export default function TeamDetail() {
                 disabled={isPending}
               >
                 <Download className="h-4 w-4" />
-                {t('teams.export')}
+                {t('users.export')}
               </Button>
 
               <Button
@@ -200,7 +198,7 @@ export default function TeamDetail() {
                 onClick={() => setDeleteDialogOpen(true)}
               >
                 <Trash2 className="h-4 w-4" />
-                {t('teams.delete')}
+                {t('users.delete')}
               </Button>
 
               {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
@@ -211,9 +209,9 @@ export default function TeamDetail() {
                 disabled={isPending}
                 asChild
               >
-                <Link to="/teams/new">
+                <Link to="/users/new">
                   <Plus className="h-4 w-4" />
-                  {t('teams.new')}
+                  {t('users.new')}
                 </Link>
               </Button>
             </>
@@ -221,7 +219,7 @@ export default function TeamDetail() {
 
           {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
           <Button
-            form="team-form-id"
+            form="user-form-id"
             type="submit"
             variant="outline"
             disabled={isPending}
@@ -229,19 +227,19 @@ export default function TeamDetail() {
             className="hidden md:flex gap-2"
           >
             <Save className="h-4 w-4" />
-            {t('teams.saveAndClose')}
+            {t('users.saveAndClose')}
           </Button>
 
           {/* Acción Principal: Siempre visible */}
           <Button
-            form="team-form-id"
+            form="user-form-id"
             type="submit"
             disabled={isPending}
             onClick={() => setShouldCloseOnSubmit(false)}
             className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
           >
             <Save className="h-4 w-4" />
-            {t('teams.save')}
+            {t('users.save')}
           </Button>
 
           {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
@@ -264,7 +262,7 @@ export default function TeamDetail() {
                 }}
               >
                 <Save className="h-4 w-4" />
-                {t('teams.saveAndClose')}
+                {t('users.saveAndClose')}
               </DropdownMenuItem>
 
               {isEditing && (
@@ -272,14 +270,14 @@ export default function TeamDetail() {
                   {/* Se muestra en el menú si la pantalla es menor a lg */}
                   <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
                     <Download className="h-4 w-4" />
-                    {t('teams.export')}
+                    {t('users.export')}
                   </DropdownMenuItem>
 
                   {/* Se muestra en el menú si la pantalla es menor a xl */}
                   <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
-                    <Link to="/teams/new">
+                    <Link to="/users/new">
                       <Download className="h-4 w-4" />
-                      {t('teams.new')}
+                      {t('users.new')}
                     </Link>
                   </DropdownMenuItem>
 
@@ -293,7 +291,7 @@ export default function TeamDetail() {
                     }}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
-                    {t('teams.delete')}
+                    {t('users.delete')}
                   </DropdownMenuItem>
                 </>
               )}
@@ -343,12 +341,12 @@ export default function TeamDetail() {
             {/* Formulario de Datos Básicos */}
             <Card className="lg:col-span-1 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('teams.basicData')}</CardTitle>
-                <CardDescription>{t('teams.identificationInfo')}</CardDescription>
+                <CardTitle className="text-base font-semibold">{t('users.basicData')}</CardTitle>
+                <CardDescription>{t('users.identificationInfo')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <form
-                  id="team-form-id"
+                  id="user-form-id"
                   onSubmit={form.handleSubmit((data) =>
                     handleSubmit(data, { shouldClose: shouldCloseOnSubmit })
                   )}
@@ -361,14 +359,37 @@ export default function TeamDetail() {
                       render={({ field, fieldState }) => (
                         <FormFieldWrapper fieldState={fieldState}>
                           <FieldLabel
-                            htmlFor="team-name"
+                            htmlFor="user-name"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                           >
-                            {t('teams.name')}
+                            {t('users.name')}
                           </FieldLabel>
                           <Input
                             {...field}
-                            id="team-name"
+                            id="user-name"
+                            aria-invalid={fieldState.invalid}
+                            data-invalid={fieldState.invalid}
+                            autoComplete="off"
+                            className="mt-1.5 focus-visible:ring-primary"
+                          />
+                        </FormFieldWrapper>
+                      )}
+                    />
+
+                    <Controller
+                      name="email"
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <FormFieldWrapper fieldState={fieldState}>
+                          <FieldLabel
+                            htmlFor="user-email"
+                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                          >
+                            {t('users.email')}
+                          </FieldLabel>
+                          <Input
+                            {...field}
+                            id="user-email"
                             aria-invalid={fieldState.invalid}
                             data-invalid={fieldState.invalid}
                             autoComplete="off"
@@ -385,8 +406,8 @@ export default function TeamDetail() {
             {/* Tarjeta Usuarios */}
             <Card className="shadow-sm lg:col-span-2">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('teams.users')}</CardTitle>
-                <CardDescription>{t('teams.pendingDefine')}</CardDescription>
+                <CardTitle className="text-base font-semibold">{t('users.users')}</CardTitle>
+                <CardDescription>{t('users.pendingDefine')}</CardDescription>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground leading-relaxed">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.
@@ -401,7 +422,7 @@ export default function TeamDetail() {
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
             >
-              {t('teams.auditContent')}
+              {t('users.auditContent')}
             </TabsContent>
           </>
         )}
@@ -411,13 +432,13 @@ export default function TeamDetail() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('teams.deleteConfirmTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('teams.deleteConfirmDesc')}</AlertDialogDescription>
+            <AlertDialogTitle>{t('users.deleteConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('users.deleteConfirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('teams.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('users.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} variant="destructive">
-              {t('teams.delete')}
+              {t('users.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

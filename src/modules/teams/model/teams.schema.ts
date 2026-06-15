@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import {
   GetListQueryBase,
-  OrganizationSchemaBase,
   ResponseListSchemaBase,
   UserSchemaBase,
   recordStatusSchema,
@@ -14,8 +13,8 @@ import {
 
 export const TeamSchema = z.object({
   id: z.uuidv7(),
-  organizationId: z.uuidv7(),
   name: z.string().min(1),
+  slug: z.string().optional(),
   description: z.string().optional().nullable(),
   status: recordStatusSchema,
   createdAt: z.date(),
@@ -30,7 +29,7 @@ export const TeamSchema = z.object({
 export const TeamMemberSchemaBase = z.object({
   id: z.uuidv7(),
   teamId: z.uuidv7(),
-  memberId: z.uuidv7(), // FK a OrganizationMember
+  memberId: z.uuidv7(),
   joinedAt: z.date(),
   invitedBy: z.string().optional().nullable(),
   removedBy: z.string().optional().nullable(),
@@ -59,7 +58,6 @@ export const GetTeamQuerySchema = z.object({
   limit: z.coerce.number().optional().default(10),
   isTrash: z.preprocess((val) => val === 'true' || val === true, z.boolean()).default(false),
   name: z.string().optional(),
-  organizationId: z.union([z.uuidv7(), z.array(z.uuidv7())]).optional(),
   createdAtFrom: z.coerce.date().optional(),
   createdAtTo: z.coerce.date().optional(),
   sortBy: z.string().optional().default('createdAt'),
@@ -114,9 +112,7 @@ export const BulkMemberIdsBodySchema = z.object({
 // RESPONSES
 // ==========================================
 
-export const TeamResponseSchema = TeamSchema.extend({
-  organization: OrganizationSchemaBase.optional(),
-});
+export const TeamResponseSchema = TeamSchema;
 
 export const ResponseListSchema = ResponseListSchemaBase;
 

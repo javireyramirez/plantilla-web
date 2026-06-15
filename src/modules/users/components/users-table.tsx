@@ -16,14 +16,14 @@ import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolb
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { TeamResponse } from '@/modules/teams/model/teams.schema';
-import useteams from '@/modules/teams/model/use-teams-table';
+import useUsers from '@/modules/users//model/use-users-table';
+import { UsersResponse } from '@/modules/users/model/users.schema';
 
-export function TeamsTable() {
+export function UsersTable() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const columns = React.useMemo<ColumnDef<TeamResponse>[]>(
+  const columns = React.useMemo<ColumnDef<UsersResponse>[]>(
     () => [
       {
         id: 'select',
@@ -35,7 +35,7 @@ export function TeamsTable() {
               (table.getIsSomePageRowsSelected() && 'indeterminate')
             }
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label={t('teams.table.selectTodo')}
+            aria-label={t('users.table.selectTodo')}
             className="translate-y-0.5"
           />
         ),
@@ -43,7 +43,7 @@ export function TeamsTable() {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label={t('teams.table.selectFila')}
+            aria-label={t('users.table.selectFila')}
             className="translate-y-0.5"
           />
         ),
@@ -54,13 +54,13 @@ export function TeamsTable() {
         accessorKey: 'name',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('teams.name')} />,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('users.name')} />,
         cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2 min-w-0">
               <button
                 className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
-                onClick={() => navigate(`/teams/edit/${row.original.id}`)}
+                onClick={() => navigate(`/users/edit/${row.original.id}`)}
               >
                 {row.getValue('name')}
               </button>
@@ -68,7 +68,7 @@ export function TeamsTable() {
           );
         },
         meta: {
-          label: t('teams.name'),
+          label: t('users.name'),
           variant: 'text',
         },
       },
@@ -78,7 +78,7 @@ export function TeamsTable() {
         enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('teams.table.fecha')} />
+          <DataTableColumnHeader column={column} label={t('users.table.fecha')} />
         ),
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
@@ -86,7 +86,7 @@ export function TeamsTable() {
           </span>
         ),
         meta: {
-          label: t('teams.table.creacion'),
+          label: t('users.table.creacion'),
           variant: 'dateRange',
           icon: CalendarIcon,
         },
@@ -104,7 +104,7 @@ export function TeamsTable() {
     limit,
     handleDelete,
     isPendingActions,
-  } = useteams(columns);
+  } = useUsers(columns);
 
   // Skeleton
   if (isLoading) {
@@ -138,7 +138,7 @@ export function TeamsTable() {
             table={table}
             actions={[
               {
-                label: t('teams.delete'),
+                label: t('users.delete'),
                 icon: <Trash2 className="h-4 w-4" />,
                 variant: 'destructive',
                 disabled: isPendingActions,

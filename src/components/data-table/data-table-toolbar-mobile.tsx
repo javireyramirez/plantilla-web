@@ -5,6 +5,7 @@ import * as React from 'react';
 import type { Column, Table } from '@tanstack/react-table';
 
 import { DataTableToolbarFilter } from '@/components/data-table/data-table-toolbar-filter';
+import { useDataTableI18n } from '@/components/data-table/data-table-i18n';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,6 +31,7 @@ export function DataTableToolbarMobile<TData>({
   ...props
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
+  const i18n = useDataTableI18n();
 
   const columns = React.useMemo(
     () => table.getAllColumns().filter((column) => column.getCanFilter()),
@@ -66,13 +68,13 @@ export function DataTableToolbarMobile<TData>({
               ))}
               {isFiltered && (
                 <Button
-                  aria-label="Reset filters"
+                  aria-label={i18n.toolbar.resetFilters}
                   variant="outline"
                   className="w-full border-dashed mt-2"
                   onClick={onReset}
                 >
                   <X />
-                  Reset
+                  {i18n.toolbar.resetFilters}
                 </Button>
               )}
             </div>

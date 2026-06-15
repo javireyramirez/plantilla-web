@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import type { Column } from '@tanstack/react-table';
 
+import { useDataTableI18n } from '@/components/data-table/data-table-i18n';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -60,6 +61,7 @@ export function DataTableDateFilter<TData>({
   className,
 }: DataTableDateFilterProps<TData>) {
   const columnFilterValue = column.getFilterValue();
+  const i18n = useDataTableI18n();
 
   const selectedDates = React.useMemo<DateSelection>(() => {
     if (!columnFilterValue) {
@@ -127,7 +129,9 @@ export function DataTableDateFilter<TData>({
       if (!getIsDateRange(selectedDates)) return null;
 
       const hasSelectedDates = selectedDates.from || selectedDates.to;
-      const dateText = hasSelectedDates ? formatDateRange(selectedDates) : 'Select date range';
+      const dateText = hasSelectedDates
+        ? formatDateRange(selectedDates)
+        : i18n.dateFilter.selectDateRange;
 
       return (
         <span className="flex items-center gap-2">
@@ -148,7 +152,7 @@ export function DataTableDateFilter<TData>({
     if (getIsDateRange(selectedDates)) return null;
 
     const hasSelectedDate = selectedDates.length > 0;
-    const dateText = hasSelectedDate ? formatDate(selectedDates[0]) : 'Select date';
+    const dateText = hasSelectedDate ? formatDate(selectedDates[0]) : i18n.dateFilter.selectDate;
 
     return (
       <span className="flex items-center gap-2">
@@ -174,7 +178,7 @@ export function DataTableDateFilter<TData>({
           {hasValue ? (
             <div
               role="button"
-              aria-label={`Clear ${title} filter`}
+              aria-label={i18n.dateFilter.clearFilterAria}
               tabIndex={0}
               onClick={onReset}
               className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
