@@ -21,6 +21,8 @@ import RoleDetail from '@/modules/roles/pages/roles-detail';
 import RolesView from '@/modules/roles/pages/roles-view';
 import TeamDetail from '@/modules/teams/pages/teams-detail';
 import TeamsView from '@/modules/teams/pages/teams-view';
+import UsersDetail from '@/modules/users/pages/users-detail';
+import UsersView from '@/modules/users/pages/users-view';
 import Admin from '@/pages/Admin';
 import Home from '@/pages/Home';
 
@@ -59,6 +61,10 @@ export default function Router() {
       <Route element={<AdminRoute />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<Admin />} />
+
+          <Route path="/users" element={<UsersView />} />
+          <Route path="/users/new" element={<UsersDetail />} />
+          <Route path="/users/edit/:id" element={<UsersDetail />} />
 
           <Route path="/teams" element={<TeamsView />} />
           <Route path="/teams/new" element={<TeamDetail />} />

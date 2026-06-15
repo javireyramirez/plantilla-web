@@ -25,7 +25,7 @@ export const adminItems = [
       { titleKey: 'sidebar.nav.users', url: '/users', icon: Users },
       { titleKey: 'sidebar.nav.roles', url: '/roles', icon: ShieldCheck },
       { titleKey: 'sidebar.nav.teams', url: '/teams', icon: Briefcase },
-      { titleKey: 'sidebar.nav.organizations', url: '/organizations', icon: Building2Icon },
+      // { titleKey: 'sidebar.nav.organizations', url: '/organizations', icon: Building2Icon },
     ],
   },
   {
