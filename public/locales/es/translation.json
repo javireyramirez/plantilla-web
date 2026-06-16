@@ -207,6 +207,122 @@
     }
   },
 
+  "users": {
+    "title": "Usuarios",
+    "subtitle": "Gestiona y visualiza el listado de usuarios registrados en el sistema.",
+    "import": "Importar",
+    "export": "Exportar",
+    "new": "Nuevo usuario",
+    "moreActions": "Más acciones",
+    "createTitle": "Crear nuevo usuario",
+    "editDescription": "Datos del usuario en el sistema.",
+    "createDescription": "Introduce los datos para registrar el usuario.",
+    "save": "Guardar",
+    "saveAndClose": "Guardar y cerrar",
+    "delete": "Eliminar",
+    "detail": "Detalle",
+    "docs": "Documentación",
+    "audit": "Auditoría",
+    "auditContent": "Aquí va la auditoría...",
+    "basicData": "Datos básicos",
+    "identificationInfo": "Información principal de identificación.",
+    "name": "Usuario",
+    "namePlaceholder": "Nombre del usuario",
+    "email": "Email",
+    "emailPlaceholder": "Correo electrónico del usuario",
+    "username": "Nombre de usuario",
+    "usernamePlaceholder": "Nombre de usuario único",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "role": "Rol",
+    "selectRole": "Selecciona un rol",
+    "additionalInfo": "Información Adicional",
+    "pendingDefine": "Sección pendiente de definir.",
+    "metricsSummary": "Métricas / Resumen",
+    "entityStats": "Datos estadísticos del usuario.",
+    "deleteConfirmTitle": "¿Eliminar este usuario?",
+    "deleteConfirmDesc": "Esta acción no se puede deshacer. El usuario será eliminado permanentemente del sistema.",
+    "cancel": "Cancelar",
+    "table": {
+      "delete": "Usuario(s) eliminado(s) con éxito",
+      "selectTodo": "Seleccionar todo",
+      "selectFila": "Seleccionar fila",
+      "email": "Email",
+      "username": "Usuario",
+      "status": "Estado",
+      "role": "Rol",
+      "fecha": "Fecha",
+      "creacion": "Creación"
+    },
+    "form": {
+      "update": "Usuario actualizado con éxito",
+      "create": "Usuario creado con éxito",
+      "delete": "Usuario eliminado con éxito",
+      "errors": {
+        "update": "Error al actualizar el usuario",
+        "create": "Error al crear el usuario",
+        "delete": "Error al eliminar el usuario"
+      }
+    }
+  },
+
+  "roles": {
+    "title": "Roles",
+    "subtitle": "Gestiona y visualiza el listado de roles y sus permisos en el sistema.",
+    "import": "Importar",
+    "export": "Exportar",
+    "new": "Nuevo rol",
+    "moreActions": "Más acciones",
+    "createTitle": "Crear nuevo rol",
+    "editDescription": "Datos del rol en el sistema.",
+    "createDescription": "Introduce los datos para registrar el rol y sus permisos.",
+    "save": "Guardar",
+    "saveAndClose": "Guardar y cerrar",
+    "delete": "Eliminar",
+    "detail": "Detalle",
+    "docs": "Documentación",
+    "audit": "Auditoría",
+    "auditContent": "Aquí va la auditoría...",
+    "basicData": "Datos básicos",
+    "identificationInfo": "Información principal de identificación.",
+    "name": "Rol",
+    "namePlaceholder": "Nombre del rol",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Descripción del rol y su propósito",
+    "permissions": "Permisos",
+    "selectPermissions": "Selecciona los permisos",
+    "searchPermissions": "Buscar permisos...",
+    "additionalInfo": "Información Adicional",
+    "pendingDefine": "Sección pendiente de definir.",
+    "metricsSummary": "Métricas / Resumen",
+    "entityStats": "Datos estadísticos del rol.",
+    "deleteConfirmTitle": "¿Eliminar este rol?",
+    "deleteConfirmDesc": "Esta acción no se puede deshacer. El rol será eliminado permanentemente del sistema.",
+    "cancel": "Cancelar",
+    "usersWithRole": "Usuarios con este rol",
+    "table": {
+      "delete": "Rol(es) eliminado(s) con éxito",
+      "selectTodo": "Seleccionar todo",
+      "selectFila": "Seleccionar fila",
+      "name": "Rol",
+      "description": "Descripción",
+      "permissionsCount": "Nº Permisos",
+      "fecha": "Fecha",
+      "creacion": "Creación"
+    },
+    "form": {
+      "update": "Rol actualizado con éxito",
+      "create": "Rol creado con éxito",
+      "delete": "Rol eliminado con éxito",
+      "errors": {
+        "update": "Error al actualizar el rol",
+        "create": "Error al crear el rol",
+        "delete": "Error al eliminar el rol"
+      }
+    }
+  },
+
   "teams": {
     "title": "Equipos",
     "subtitle": "Gestiona y visualiza el listado de equipos registrados.",
@@ -238,7 +354,7 @@
     "deleteConfirmTitle": "¿Eliminar esta compañía?",
     "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
     "cancel": "Cancelar",
-    "users": "Usuarios del equipo",
+    "members": "Miembros del equipo",
     "table": {
       "delete": "Compañía(s) eliminada(s) con éxito",
       "selectTodo": "Seleccionar todo",
@@ -260,6 +376,7 @@
       }
     }
   },
+
   "teamMembers": {
     "add": "Añadir miembros",
     "addTitle": "Añadir miembros al equipo",

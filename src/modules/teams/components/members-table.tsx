@@ -1,5 +1,6 @@
 import { CalendarIcon, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import * as React from 'react';
@@ -27,6 +28,7 @@ interface MembersTableProps {
 
 export function MembersTable({ teamId }: MembersTableProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const columns = React.useMemo<ColumnDef<TeamMemberWithRelations>[]>(
     () => [
@@ -71,7 +73,15 @@ export function MembersTable({ teamId }: MembersTableProps) {
               <Avatar className="h-7 w-7">
                 <AvatarFallback>{memberName.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
-              <span className="truncate font-medium">{memberName}</span>
+              <span className="truncate font-medium">
+                {' '}
+                <button
+                  className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                  onClick={() => navigate(`/users/edit/${row.original.id}`)}
+                >
+                  {memberName}
+                </button>
+              </span>
             </div>
           );
         },
