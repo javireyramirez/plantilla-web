@@ -36,6 +36,7 @@ import { FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MembersTable } from '@/modules/teams/components/members-table';
 
 import { useTeamForm } from '../model/use-teams-detail';
 
@@ -54,6 +55,7 @@ export default function TeamDetail() {
 
   const tabs = [
     { value: 'detail', label: t('teams.detail'), viewAtCreate: true },
+    { value: 'members', label: t('teams.members'), viewAtCreate: isEditing },
     { value: 'audit', label: t('teams.audit'), viewAtCreate: isEditing },
   ];
 
@@ -397,6 +399,10 @@ export default function TeamDetail() {
 
         {isEditing && (
           <>
+            <TabsContent value="members" className="outline-none">
+              <MembersTable teamId={id as string} />
+            </TabsContent>
+
             <TabsContent
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
