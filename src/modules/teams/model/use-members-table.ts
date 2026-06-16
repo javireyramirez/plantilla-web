@@ -141,7 +141,7 @@ export default function useMembers(teamId: string, columns: ColumnDef<TeamMember
 
   const handleAddMember = (userId: string) => {
     mutateAddMember(
-      // NOTE: adjust the body shape to match your actual CreateTeamMember type.
+      // NOTE: adjust the body shape to match your actual CreateTeamMember type
       { teamId, body: { userId } as CreateTeamMember },
       {
         onSuccess: () => {
