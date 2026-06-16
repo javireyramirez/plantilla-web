@@ -1,7 +1,6 @@
-import { CalendarIcon, Trash2 } from 'lucide-react';
+import { CalendarIcon, Shield, Trash2, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
 import * as React from 'react';
 
@@ -17,20 +16,20 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { TeamMemberWithRelations } from '@/modules/teams/model/teams.schema';
-import useMembers from '@/modules/teams/model/use-members-table';
 
-import { AddMembersDrawer } from './add-member';
+import { RoleAssignmentResponse } from '../model/roles.schema';
+import useRoleAssignments from '../model/use-role-assignments-table';
+import { AddRoleAssignmentDrawer } from './add-role-assignment';
 
-interface MembersTableProps {
-  teamId: string;
+interface RoleAssignmentsTableProps {
+  roleId: string;
 }
 
-export function MembersTable({ teamId }: MembersTableProps) {
+export function RoleAssignmentsTable({ roleId }: RoleAssignmentsTableProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const columns = React.useMemo<ColumnDef<TeamMemberWithRelations>[]>(
+  const columns = React.useMemo<ColumnDef<RoleAssignmentResponse>[]>(
     () => [
       {
         id: 'select',
@@ -59,28 +58,49 @@ export function MembersTable({ teamId }: MembersTableProps) {
       },
       {
         id: 'name',
-        accessorFn: (row) => row.user?.name ?? '',
+        // Determina dinámicamente el nombre si es un usuario asignado o un equipo asignado
+        accessorFn: (row) => row.assignedUser?.name ?? row.assignedTeam?.name ?? '',
         enableColumnFilter: true,
-        enableSorting: true,
+        enableSorting: false,
         header: ({ column }) => (
           <DataTableColumnHeader column={column} label={t('teamMembers.name')} />
         ),
         cell: ({ row }) => {
-          const member = row.original;
-          const memberName = member.user?.name ?? member.userId;
+          const assignment = row.original;
+          const isTeam = !!assignment.teamId;
+
+          const displayName = isTeam
+            ? (assignment.assignedTeam?.name ?? 'Equipo')
+            : (assignment.assignedUser?.name ?? assignment.userId ?? 'Usuario');
+
           return (
             <div className="flex items-center gap-2 min-w-0">
-              <Avatar className="h-7 w-7">
-                <AvatarFallback>{memberName.charAt(0).toUpperCase()}</AvatarFallback>
+              <Avatar className={cn('h-7 w-7 rounded-md', !isTeam && 'rounded-full')}>
+                <AvatarFallback
+                  className={isTeam ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}
+                >
+                  {isTeam ? <Users className="h-3.5 w-3.5" /> : displayName.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <span className="truncate font-medium">
-                {' '}
-                <button
-                  className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
-                  onClick={() => navigate(`/users/edit/${row.original.id}`)}
-                >
-                  {memberName}
-                </button>
+                {isTeam ? (
+                  <span className="text-foreground">
+                    <button
+                      className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                      onClick={() => navigate(`/teams/edit/${assignment.teamId}`)}
+                    >
+                      {displayName}
+                    </button>{' '}
+                    <span className="text-xs text-muted-foreground">(Equipo)</span>
+                  </span>
+                ) : (
+                  <button
+                    className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                    onClick={() => navigate(`/users/edit/${assignment.userId}`)}
+                  >
+                    {displayName}
+                  </button>
+                )}
               </span>
             </div>
           );
@@ -91,39 +111,46 @@ export function MembersTable({ teamId }: MembersTableProps) {
         },
       },
       {
-        id: 'email',
-        accessorFn: (row) => row.user?.email ?? '',
-        enableColumnFilter: false,
-        enableSorting: false,
+        id: 'details',
+        accessorFn: (row) => row.assignedUser?.email ?? '',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('teamMembers.email')} />
+          <DataTableColumnHeader
+            column={column}
+            label={t('teamMembers.email', { defaultValue: 'Contacto / Detalle' })}
+          />
         ),
-        cell: ({ row }) => (
-          <span className="text-muted-foreground text-sm truncate">
-            {row.original.user?.email ?? row.original.userId}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const { assignedUser, teamId } = row.original;
+          return (
+            <span className="text-muted-foreground text-sm truncate">
+              {teamId ? '---' : assignedUser?.email}
+            </span>
+          );
+        },
       },
       {
-        accessorKey: 'joinedAt',
+        accessorKey: 'assignedAt',
         enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('teamMembers.table.fecha')} />
+          <DataTableColumnHeader
+            column={column}
+            label={t('teamMembers.table.fecha', { defaultValue: 'Asignado el' })}
+          />
         ),
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
-            {formatDate(row.getValue('joinedAt'))}
+            {formatDate(row.getValue('assignedAt'))}
           </span>
         ),
         meta: {
-          label: t('teamMembers.table.joinedAt'),
+          label: t('roles.assignments.assignedAt', { defaultValue: 'Fecha Asignación' }),
           variant: 'dateRange',
           icon: CalendarIcon,
         },
       },
     ],
-    [t]
+    [t, navigate]
   );
 
   const {
@@ -133,26 +160,24 @@ export function MembersTable({ teamId }: MembersTableProps) {
     isFetching,
     isMobile,
     limit,
-    memberUserIds,
+    assignedUserIds,
     handleRemove,
     isPendingActions,
-    handleAddMembers,
+    handleAddAssignments,
     isPendingAdd,
-  } = useMembers(teamId, columns);
+  } = useRoleAssignments(roleId, columns);
 
-  // Skeleton
   if (isLoading) {
     return (
       <DataTableSkeleton
         columnCount={columns.length}
         rowCount={limit}
-        filterCount={2}
+        filterCount={1}
         withPagination={true}
       />
     );
   }
 
-  // Tabla
   return (
     <div
       className={cn(
@@ -161,10 +186,15 @@ export function MembersTable({ teamId }: MembersTableProps) {
       )}
     >
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-semibold">{t('teams.members')}</h2>
-        <AddMembersDrawer
-          excludeUserIds={memberUserIds}
-          onAddMembers={handleAddMembers}
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-base font-semibold">
+            {t('roles.assignments.title', { defaultValue: 'Usuarios y Equipos Asignados' })}
+          </h2>
+        </div>
+        <AddRoleAssignmentDrawer
+          excludeUserIds={assignedUserIds}
+          onAddAssignments={handleAddAssignments}
           isAdding={isPendingAdd}
         />
       </div>
@@ -174,14 +204,14 @@ export function MembersTable({ teamId }: MembersTableProps) {
         totalCount={totalRows}
         mobileConfig={{
           primaryColumn: 'name',
-          stackedColumns: ['joinedAt'],
+          stackedColumns: ['assignedAt'],
         }}
         actionBar={
           <DataTableFloatingBar
             table={table}
             actions={[
               {
-                label: t('teamMembers.remove'),
+                label: t('roles.assignments.removeSelected', { defaultValue: 'Revocar Rol' }),
                 icon: <Trash2 className="h-4 w-4" />,
                 variant: 'destructive',
                 disabled: isPendingActions,

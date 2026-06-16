@@ -37,6 +37,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { RoleAssignmentsTable } from '../components/role-assignments-table';
 import { useRoleForm } from '../model/use-roles-detail';
 
 export default function RoleDetail() {
@@ -54,6 +55,7 @@ export default function RoleDetail() {
 
   const tabs = [
     { value: 'detail', label: t('roles.detail'), viewAtCreate: true },
+    { value: 'members', label: t('roles.members'), viewAtCreate: isEditing },
     { value: 'audit', label: t('roles.audit'), viewAtCreate: isEditing },
   ];
 
@@ -395,6 +397,10 @@ export default function RoleDetail() {
 
         {isEditing && (
           <>
+            <TabsContent value="members" className="outline-none">
+              <RoleAssignmentsTable roleId={id as string} />
+            </TabsContent>
+
             <TabsContent
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
