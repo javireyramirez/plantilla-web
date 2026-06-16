@@ -17,30 +17,56 @@ import {
 // query (org members, better-auth users, etc.) and map its response into
 // { id, name }[] — that's all Selector needs.
 import { usersQueries } from '@/modules/users/model/users.query';
+import { GetUsersQuery } from '@/modules/users/model/users.schema';
 
 interface AddMembersDrawerProps {
   excludeUserIds: string[];
-  onAddMember: (userId: string) => void;
+  onAddMembers: (userIds: string[]) => void;
   isAdding?: boolean;
 }
 
 function useUsersOptions(params: {
+  page?: number;
   limit: number;
+  isTrash?: boolean;
   sortBy: string;
   sortOrder: 'asc' | 'desc';
   name?: string;
 }) {
   // NOTE: swap for your actual users list hook/endpoint.
-  const { data, isLoading } = usersQueries.useGetAll(params);
+  const { name, ...rest } = params;
+  const { data, isLoading } = usersQueries.useGetAll({
+    page: rest.page ?? 1,
+    isTrash: rest.isTrash ?? false,
+    ...rest,
+    sortBy: rest.sortBy as GetUsersQuery['sortBy'],
+    search: name,
+  });
   return {
-    data: data?.data?.map((u: { id: string; name: string }) => ({ id: u.id, name: u.name })) ?? [],
+    data:
+      data?.data?.map((u: { id: string; name?: string | null; email?: string | null }) => ({
+        id: u.id,
+        name: u.name ?? u.email ?? u.id,
+      })) ?? [],
     isLoading,
   };
 }
 
-export function AddMembersDrawer({ excludeUserIds, onAddMember, isAdding }: AddMembersDrawerProps) {
+export function AddMembersDrawer({ excludeUserIds, onAddMembers, isAdding }: AddMembersDrawerProps) {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
+  const [selectedUserIds, setSelectedUserIds] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (!open) {
+      setSelectedUserIds([]);
+    }
+  }, [open]);
+
+  const handleApply = React.useCallback(() => {
+    onAddMembers(selectedUserIds);
+    setOpen(false);
+  }, [onAddMembers, selectedUserIds]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -57,21 +83,29 @@ export function AddMembersDrawer({ excludeUserIds, onAddMember, isAdding }: AddM
           <SheetDescription>{t('teamMembers.addDescription')}</SheetDescription>
         </SheetHeader>
 
-        <Selector
-          multiple
-          applyButton={false}
-          disabled={isAdding}
-          value={[]}
-          onChange={(ids) => {
-            const userId = ids[0];
-            if (userId) onAddMember(userId);
-          }}
-          excludeIds={excludeUserIds}
-          useGetList={useUsersOptions}
-          placeholder={t('teamMembers.selectUser')}
-          searchPlaceholder={t('teamMembers.searchUser')}
-          emptyMessage={t('teamMembers.noUsersFound')}
-        />
+        <div className="flex-1 min-h-0">
+          <Selector
+            multiple
+            applyButton={false}
+            disabled={isAdding}
+            value={selectedUserIds}
+            onChange={setSelectedUserIds}
+            excludeIds={excludeUserIds}
+            useGetList={useUsersOptions}
+            placeholder={t('teamMembers.selectUser')}
+            searchPlaceholder={t('teamMembers.searchUser')}
+            emptyMessage={t('teamMembers.noUsersFound')}
+          />
+        </div>
+
+        <div className="flex items-center justify-end gap-2 border-t pt-4">
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={isAdding}>
+            {t('teams.cancel')}
+          </Button>
+          <Button onClick={handleApply} disabled={isAdding || selectedUserIds.length === 0}>
+            {t('dataTable.selector.applyLabel')}
+          </Button>
+        </div>
       </SheetContent>
     </Sheet>
   );

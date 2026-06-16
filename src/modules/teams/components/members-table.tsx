@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { TeamMember } from '@/modules/teams/model/teams.schema';
+import { TeamMemberWithRelations } from '@/modules/teams/model/teams.schema';
 import useMembers from '@/modules/teams/model/use-members-table';
 
 import { AddMembersDrawer } from './add-member';
@@ -28,7 +28,7 @@ interface MembersTableProps {
 export function MembersTable({ teamId }: MembersTableProps) {
   const { t } = useTranslation();
 
-  const columns = React.useMemo<ColumnDef<TeamMember>[]>(
+  const columns = React.useMemo<ColumnDef<TeamMemberWithRelations>[]>(
     () => [
       {
         id: 'select',
@@ -57,7 +57,7 @@ export function MembersTable({ teamId }: MembersTableProps) {
       },
       {
         id: 'name',
-        accessorFn: (row) => row.user.name,
+        accessorFn: (row) => row.user?.name ?? '',
         enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => (
@@ -65,12 +65,13 @@ export function MembersTable({ teamId }: MembersTableProps) {
         ),
         cell: ({ row }) => {
           const member = row.original;
+          const memberName = member.user?.name ?? member.userId;
           return (
             <div className="flex items-center gap-2 min-w-0">
               <Avatar className="h-7 w-7">
-                <AvatarFallback>{member.user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                <AvatarFallback>{memberName.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
-              <span className="truncate font-medium">{member.user.name}</span>
+              <span className="truncate font-medium">{memberName}</span>
             </div>
           );
         },
@@ -81,14 +82,16 @@ export function MembersTable({ teamId }: MembersTableProps) {
       },
       {
         id: 'email',
-        accessorFn: (row) => row.user.email,
+        accessorFn: (row) => row.user?.email ?? '',
         enableColumnFilter: false,
         enableSorting: false,
         header: ({ column }) => (
           <DataTableColumnHeader column={column} label={t('teamMembers.email')} />
         ),
         cell: ({ row }) => (
-          <span className="text-muted-foreground text-sm truncate">{row.original.user.email}</span>
+          <span className="text-muted-foreground text-sm truncate">
+            {row.original.user?.email ?? row.original.userId}
+          </span>
         ),
       },
       {
@@ -123,7 +126,7 @@ export function MembersTable({ teamId }: MembersTableProps) {
     memberUserIds,
     handleRemove,
     isPendingActions,
-    handleAddMember,
+    handleAddMembers,
     isPendingAdd,
   } = useMembers(teamId, columns);
 
@@ -151,7 +154,7 @@ export function MembersTable({ teamId }: MembersTableProps) {
         <h2 className="text-base font-semibold">{t('teams.members')}</h2>
         <AddMembersDrawer
           excludeUserIds={memberUserIds}
-          onAddMember={handleAddMember}
+          onAddMembers={handleAddMembers}
           isAdding={isPendingAdd}
         />
       </div>
