@@ -70,7 +70,7 @@ export default function useMembers(teamId: string, columns: ColumnDef<TeamMember
   // NOTE: only the current page's userIds. If members can span more pages
   // than fit in one fetch, consider a dedicated unpaginated endpoint for
   // accurate exclusion in the "add member" selector.
-  const memberUserIds: string[] = members.map((m) => m.userId);
+  const memberUserIds: string[] = members.map((m) => m.memberId);
 
   const table = useReactTable({
     data: members,
@@ -142,7 +142,7 @@ export default function useMembers(teamId: string, columns: ColumnDef<TeamMember
   const handleAddMember = (userId: string) => {
     mutateAddMember(
       // NOTE: adjust the body shape to match your actual CreateTeamMember type
-      { teamId, body: { userId } as CreateTeamMember },
+      { teamId, body: { memberId: userId } },
       {
         onSuccess: () => {
           toast.success(t('teamMembers.added'));
