@@ -32,16 +32,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DocumentsTable, FileUploadButton } from '@/features/storage';
+import { SECTOR_OPTIONS } from '@/modules/companies/model/companies.types';
+import { useCompanyForm } from '@/modules/companies/model/use-companies-detail';
 
-import { RoleAssignmentsTable } from '../components/role-assignments-table';
-import { RolePermissionsMatrix } from '../components/role-permissions-matrix';
-import { useRoleForm } from '../model/use-roles-detail';
-
-export default function RoleDetail() {
+export default function CompanyDetail() {
   const { t } = useTranslation();
 
   // --- Estados locales ---
@@ -51,14 +57,13 @@ export default function RoleDetail() {
 
   // --- Hooks de datos y formulario ---
   const { id } = useParams<{ id: string }>();
-  const { data, isEditing, roleName, isLoading, form, handleSubmit, handleDelete, isPending } =
-    useRoleForm(id);
+  const { isEditing, companyName, isLoading, form, handleSubmit, handleDelete, isPending } =
+    useCompanyForm(id);
 
   const tabs = [
-    { value: 'detail', label: t('roles.detail'), viewAtCreate: true },
-    { value: 'members', label: t('roles.members'), viewAtCreate: isEditing },
-    { value: 'permissions', label: t('roles.permissions'), viewAtCreate: isEditing },
-    { value: 'audit', label: t('roles.audit'), viewAtCreate: isEditing },
+    { value: 'detail', label: t('companies.detail'), viewAtCreate: true },
+    { value: 'docs', label: t('companies.docs'), viewAtCreate: isEditing },
+    { value: 'audit', label: t('companies.audit'), viewAtCreate: isEditing },
   ];
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
@@ -150,13 +155,13 @@ export default function RoleDetail() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
-              <Link to="/roles">{t('roles.title')}</Link>
+              <Link to="/companies">{t('companies.title')}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage className="font-medium text-foreground">
-              {isEditing ? `${roleName}` : t('roles.createTitle')}
+              {isEditing ? `${companyName}` : t('companies.createTitle')}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -169,14 +174,14 @@ export default function RoleDetail() {
             <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             {isEditing ? (
               <span className="truncate">
-                <span className="text-primary">{roleName}</span>
+                <span className="text-primary">{companyName}</span>
               </span>
             ) : (
-              t('roles.createTitle')
+              t('companies.createTitle')
             )}
           </h1>
           <p className="text-sm text-muted-foreground hidden sm:block">
-            {isEditing ? t('roles.editDescription') : t('roles.createDescription')}
+            {isEditing ? t('companies.editDescription') : t('companies.createDescription')}
           </p>
         </div>
 
@@ -192,7 +197,7 @@ export default function RoleDetail() {
                 disabled={isPending}
               >
                 <Download className="h-4 w-4" />
-                {t('roles.export')}
+                {t('companies.export')}
               </Button>
 
               <Button
@@ -202,7 +207,7 @@ export default function RoleDetail() {
                 onClick={() => setDeleteDialogOpen(true)}
               >
                 <Trash2 className="h-4 w-4" />
-                {t('roles.delete')}
+                {t('companies.delete')}
               </Button>
 
               {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
@@ -213,9 +218,9 @@ export default function RoleDetail() {
                 disabled={isPending}
                 asChild
               >
-                <Link to="/roles/new">
+                <Link to="/companies/new">
                   <Plus className="h-4 w-4" />
-                  {t('roles.new')}
+                  {t('companies.new')}
                 </Link>
               </Button>
             </>
@@ -223,7 +228,7 @@ export default function RoleDetail() {
 
           {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
           <Button
-            form="role-form-id"
+            form="company-form-id"
             type="submit"
             variant="outline"
             disabled={isPending}
@@ -231,19 +236,19 @@ export default function RoleDetail() {
             className="hidden md:flex gap-2"
           >
             <Save className="h-4 w-4" />
-            {t('roles.saveAndClose')}
+            {t('companies.saveAndClose')}
           </Button>
 
           {/* Acción Principal: Siempre visible */}
           <Button
-            form="role-form-id"
+            form="company-form-id"
             type="submit"
             disabled={isPending}
             onClick={() => setShouldCloseOnSubmit(false)}
             className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
           >
             <Save className="h-4 w-4" />
-            {t('roles.save')}
+            {t('companies.save')}
           </Button>
 
           {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
@@ -266,7 +271,7 @@ export default function RoleDetail() {
                 }}
               >
                 <Save className="h-4 w-4" />
-                {t('roles.saveAndClose')}
+                {t('companies.saveAndClose')}
               </DropdownMenuItem>
 
               {isEditing && (
@@ -274,14 +279,14 @@ export default function RoleDetail() {
                   {/* Se muestra en el menú si la pantalla es menor a lg */}
                   <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
                     <Download className="h-4 w-4" />
-                    {t('roles.export')}
+                    {t('companies.export')}
                   </DropdownMenuItem>
 
                   {/* Se muestra en el menú si la pantalla es menor a xl */}
                   <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
-                    <Link to="/roles/new">
+                    <Link to="/companies/new">
                       <Download className="h-4 w-4" />
-                      {t('roles.new')}
+                      {t('companies.new')}
                     </Link>
                   </DropdownMenuItem>
 
@@ -295,7 +300,7 @@ export default function RoleDetail() {
                     }}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
-                    {t('roles.delete')}
+                    {t('companies.delete')}
                   </DropdownMenuItem>
                 </>
               )}
@@ -345,12 +350,14 @@ export default function RoleDetail() {
             {/* Formulario de Datos Básicos */}
             <Card className="lg:col-span-1 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('roles.basicData')}</CardTitle>
-                <CardDescription>{t('roles.identificationInfo')}</CardDescription>
+                <CardTitle className="text-base font-semibold">
+                  {t('companies.basicData')}
+                </CardTitle>
+                <CardDescription>{t('companies.identificationInfo')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <form
-                  id="role-form-id"
+                  id="company-form-id"
                   onSubmit={form.handleSubmit((data) =>
                     handleSubmit(data, { shouldClose: shouldCloseOnSubmit })
                   )}
@@ -363,19 +370,76 @@ export default function RoleDetail() {
                       render={({ field, fieldState }) => (
                         <FormFieldWrapper fieldState={fieldState}>
                           <FieldLabel
-                            htmlFor="role-name"
+                            htmlFor="company-name"
                             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                           >
-                            {t('roles.name')}
+                            {t('companies.name')}
                           </FieldLabel>
                           <Input
                             {...field}
-                            id="role-name"
+                            id="company-name"
                             aria-invalid={fieldState.invalid}
                             data-invalid={fieldState.invalid}
+                            placeholder={t('companies.namePlaceholder')}
                             autoComplete="off"
                             className="mt-1.5 focus-visible:ring-primary"
                           />
+                        </FormFieldWrapper>
+                      )}
+                    />
+
+                    <Controller
+                      name="nif"
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <FormFieldWrapper fieldState={fieldState}>
+                          <FieldLabel
+                            htmlFor="company-nif"
+                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                          >
+                            {t('companies.cifNif')}
+                          </FieldLabel>
+                          <Input
+                            {...field}
+                            id="company-nif"
+                            aria-invalid={fieldState.invalid}
+                            data-invalid={fieldState.invalid}
+                            placeholder="A1234567B"
+                            autoComplete="off"
+                            className="mt-1.5 focus-visible:ring-primary"
+                          />
+                        </FormFieldWrapper>
+                      )}
+                    />
+
+                    <Controller
+                      name="sector"
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <FormFieldWrapper fieldState={fieldState}>
+                          <FieldLabel
+                            htmlFor="company-sector"
+                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                          >
+                            {t('companies.sector')}
+                          </FieldLabel>
+                          <Select value={field.value ?? undefined} onValueChange={field.onChange}>
+                            <SelectTrigger
+                              id="company-sector"
+                              className="mt-1.5 focus-visible:ring-primary w-full"
+                              aria-invalid={fieldState.invalid}
+                              data-invalid={fieldState.invalid}
+                            >
+                              <SelectValue placeholder={t('companies.selectSector')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {SECTOR_OPTIONS.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {t(`companies.sectors.${option.value}`)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </FormFieldWrapper>
                       )}
                     />
@@ -384,14 +448,28 @@ export default function RoleDetail() {
               </CardContent>
             </Card>
 
-            {/* Tarjeta Usuarios */}
-            <Card className="shadow-sm lg:col-span-2">
+            {/* Tarjetas Secundarias Estatales */}
+            <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('roles.users')}</CardTitle>
-                <CardDescription>{t('roles.pendingDefine')}</CardDescription>
+                <CardTitle className="text-base font-semibold">
+                  {t('companies.additionalInfo')}
+                </CardTitle>
+                <CardDescription>{t('companies.pendingDefine')}</CardDescription>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground leading-relaxed">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-base font-semibold">
+                  {t('companies.metricsSummary')}
+                </CardTitle>
+                <CardDescription>{t('companies.entityStats')}</CardDescription>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget elit nec.
               </CardContent>
             </Card>
           </div>
@@ -399,19 +477,22 @@ export default function RoleDetail() {
 
         {isEditing && (
           <>
-            <TabsContent value="members" className="outline-none">
-              <RoleAssignmentsTable roleId={id as string} />
-            </TabsContent>
+            <TabsContent
+              value="docs"
+              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm flex flex-col gap-6"
+            >
+              <div className="flex justify-end">
+                <FileUploadButton entityType="companies" entityId={id!} multiple={true} />
+              </div>
 
-            <TabsContent value="permissions" className="outline-none">
-              <RolePermissionsMatrix roleId={id as string} />
+              <DocumentsTable entityType="companies" entityId={id!} />
             </TabsContent>
 
             <TabsContent
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
             >
-              {t('roles.auditContent')}
+              {t('companies.auditContent')}
             </TabsContent>
           </>
         )}
@@ -421,13 +502,13 @@ export default function RoleDetail() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('roles.deleteConfirmTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('roles.deleteConfirmDesc')}</AlertDialogDescription>
+            <AlertDialogTitle>{t('companies.deleteConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('companies.deleteConfirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('roles.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('companies.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} variant="destructive">
-              {t('roles.delete')}
+              {t('companies.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
