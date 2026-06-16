@@ -301,6 +301,7 @@
     "deleteConfirmDesc": "Esta acción no se puede deshacer. El rol será eliminado permanentemente del sistema.",
     "cancel": "Cancelar",
     "usersWithRole": "Usuarios con este rol",
+    "members": "Miembros del rol",
     "table": {
       "delete": "Rol(es) eliminado(s) con éxito",
       "selectTodo": "Seleccionar todo",
