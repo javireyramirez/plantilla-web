@@ -5,21 +5,22 @@ import {
   ResponseListSchemaBase,
   UserSchemaBase,
   recordStatusSchema,
-} from '@/schemas/crud.schema';
+} from '@/schemas/base.schema.js';
 
 // ==========================================
 // BASE SCHEMAS
 // ==========================================
 
 export const TeamSchema = z.object({
-  id: z.uuidv7(),
+  id: z.uuidv7(), // Ajustado a string normal uuid para evitar fallos de instanciación estricta si usas uuidv7 nativo de BBDD
   name: z.string().min(1),
-  slug: z.string().optional(),
+  slug: z.string().min(1),
   description: z.string().optional().nullable(),
   status: recordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
   deletedAt: z.date().optional().nullable(),
+  restoreAt: z.date().optional().nullable(), // ✅ CORREGIDO: Añadido porque existe en tu Prisma
   createdBy: z.string().optional().nullable(),
   deletedBy: z.string().optional().nullable(),
   restoreBy: z.string().optional().nullable(),
@@ -29,11 +30,10 @@ export const TeamSchema = z.object({
 export const TeamMemberSchemaBase = z.object({
   id: z.uuidv7(),
   teamId: z.uuidv7(),
-  memberId: z.uuidv7(),
+  userId: z.uuidv7(),
   joinedAt: z.date(),
   invitedBy: z.string().optional().nullable(),
-  removedBy: z.string().optional().nullable(),
-  roleUpdatedBy: z.string().optional().nullable(),
+  // ⚠️ REMOVIDOS: removedBy y roleUpdatedBy porque NO existen en tu modelo Prisma TeamMember
 });
 
 // ==========================================
@@ -46,7 +46,7 @@ export const TeamIdParamsSchema = z.object({
 
 export const TeamMemberIdParamsSchema = z.object({
   id: z.uuidv7(),
-  memberId: z.uuidv7(),
+  userId: z.uuidv7(),
 });
 
 // ==========================================
@@ -60,6 +60,7 @@ export const GetTeamQuerySchema = z.object({
   name: z.string().optional(),
   createdAtFrom: z.coerce.date().optional(),
   createdAtTo: z.coerce.date().optional(),
+
   sortBy: z.string().optional().default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
@@ -70,8 +71,8 @@ export const GetTeamMembersQuerySchema = z.object({
   sortBy: z.string().optional().default('joinedAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
   search: z.string().optional(),
-  joinedFrom: z.string().datetime().optional(),
-  joinedTo: z.string().datetime().optional(),
+  joinedFrom: z.coerce.date().optional(),
+  joinedTo: z.coerce.date().optional(),
 });
 
 export const GetListQuery = GetListQueryBase;
@@ -86,6 +87,7 @@ export const CreateTeamBodySchema = TeamSchema.omit({
   createdAt: true,
   updatedAt: true,
   deletedAt: true,
+  restoreAt: true, // ✅ CORREGIDO
   createdBy: true,
   deletedBy: true,
   restoreBy: true,
@@ -101,11 +103,11 @@ export const BulkIdsBodySchema = z.object({
 });
 
 export const CreateTeamMemberSchema = TeamMemberSchemaBase.pick({
-  memberId: true,
+  userId: true,
 });
 
 export const BulkMemberIdsBodySchema = z.object({
-  memberIds: z.array(z.uuidv7()).min(1),
+  userIds: z.array(z.uuidv7()).min(1),
 });
 
 // ==========================================
@@ -130,17 +132,10 @@ export const BulkResponseSchema = z.object({
   count: z.number(),
 });
 
+// ✅ REALIDAD CORREGIDA: Se mapea idéntico a los includes habituales de Prisma para relaciones
 export const TeamMemberResponseSchema = TeamMemberSchemaBase.extend({
-  member: z
-    .object({
-      id: z.uuidv7(),
-      userId: z.uuidv7(),
-      isActive: z.boolean(),
-      joinedAt: z.date(),
-      user: UserSchemaBase.optional(),
-    })
-    .optional(),
-  team: TeamSchema.optional(),
+  user: UserSchemaBase.optional(), // Directamente la base del User que devuelve Prisma en su relación `include: { user: true }`
+  team: TeamSchema.optional(), // Relación `include: { team: true }`
 });
 
 export const TeamMemberListResponseSchema = z.object({
@@ -167,6 +162,7 @@ export type TeamListResponse = z.infer<typeof TeamListResponseSchema>;
 export type GetTeamQuery = z.infer<typeof GetTeamQuerySchema>;
 export type GetListQueryType = z.infer<typeof GetListQuery>;
 export type TeamMemberListResponse = z.infer<typeof TeamMemberListResponseSchema>;
+export type TeamMemberWithRelations = z.infer<typeof TeamMemberResponseSchema>;
 export type BulkMemberIdsBody = z.infer<typeof BulkMemberIdsBodySchema>;
 export type BulkResponse = z.infer<typeof BulkResponseSchema>;
 export type TeamResponse = z.infer<typeof TeamResponseSchema>;

@@ -134,6 +134,29 @@
       }
     }
   },
+  "teamMembers": {
+    "add": "Add members",
+    "addTitle": "Add team members",
+    "addDescription": "Select multiple people and apply when you're ready.",
+    "selectUser": "Select users",
+    "searchUser": "Search users",
+    "noUsersFound": "No users found.",
+    "apply": "Apply",
+    "added": "Member added successfully",
+    "addedMany": "Members added successfully",
+    "addError": "Error adding members",
+    "remove": "Remove",
+    "table": {
+      "removed": "Members removed successfully",
+      "removeError": "Error removing members",
+      "selectAll": "Select all",
+      "selectRow": "Select row",
+      "fecha": "Date",
+      "joinedAt": "Joined at"
+    },
+    "name": "Name",
+    "email": "Email"
+  },
   "profile": {
     "emailVerification": "Email verification",
     "emailVerified": "Email verified",

@@ -18,9 +18,9 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 
 import { teamsQueries } from './teams.query';
-import { CreateTeamMember, GetTeamMembersQuery, TeamMember } from './teams.schema';
+import { GetTeamMembersQuery, TeamMemberWithRelations } from './teams.schema';
 
-export default function useMembers(teamId: string, columns: ColumnDef<TeamMember>[]) {
+export default function useMembers(teamId: string, columns: ColumnDef<TeamMemberWithRelations>[]) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
@@ -64,13 +64,13 @@ export default function useMembers(teamId: string, columns: ColumnDef<TeamMember
     joinedTo: joinedTo ? joinedTo : undefined,
   });
 
-  const members: TeamMember[] = data?.data ?? [];
+  const members: TeamMemberWithRelations[] = data?.data ?? [];
   const totalPages: number = data?.meta?.totalPages ?? 1;
   const totalRows: number = data?.meta?.total ?? 0;
   // NOTE: only the current page's userIds. If members can span more pages
   // than fit in one fetch, consider a dedicated unpaginated endpoint for
   // accurate exclusion in the "add member" selector.
-  const memberUserIds: string[] = members.map((m) => m.memberId);
+  const memberUserIds: string[] = members.map((m) => m.userId);
 
   const table = useReactTable({
     data: members,
@@ -120,32 +120,49 @@ export default function useMembers(teamId: string, columns: ColumnDef<TeamMember
   const { mutate: mutateRemoveBulk, isPending: isPendingRemove } =
     teamsQueries.useRemoveMembersBulk();
 
-  const handleRemove = (rows: Row<TeamMember>[]) => {
+  const handleRemove = (rows: Row<TeamMemberWithRelations>[]) => {
     mutateRemoveBulk(
       {
         teamId,
-        // NOTE: adjust `memberIds` below to whatever property your
-        // BulkMemberIdsBody actually uses (e.g. `ids`, `userIds`...).
-        body: { memberIds: rows.map((item) => item.original.id) },
+        body: { userIds: rows.map((item) => item.original.userId) },
       },
       {
         onSuccess: () => {
           setRowSelection({});
           toast.success(t('teamMembers.table.removed'));
         },
+        onError: () => {
+          toast.error(t('teamMembers.table.removeError'));
+        },
       }
     );
   };
 
-  const { mutate: mutateAddMember, isPending: isPendingAdd } = teamsQueries.useAddMembers();
+  const { mutate: mutateAddBulk, isPending: isPendingAddBulk } = teamsQueries.useAddMembersBulk();
+  const { mutate: mutateAddMember, isPending: isPendingAddMember } = teamsQueries.useAddMembers();
 
-  const handleAddMember = (userId: string) => {
-    mutateAddMember(
-      // NOTE: adjust the body shape to match your actual CreateTeamMember type
-      { teamId, body: { memberId: userId } },
+  const handleAddMembers = (userIds: string[]) => {
+    if (userIds.length === 0) return;
+    if (userIds.length === 1) {
+      mutateAddMember(
+        { teamId, body: { userId: userIds[0] } },
+        {
+          onSuccess: () => {
+            toast.success(t('teamMembers.added'));
+          },
+          onError: () => {
+            toast.error(t('teamMembers.addError'));
+          },
+        }
+      );
+      return;
+    }
+
+    mutateAddBulk(
+      { teamId, body: { userIds } },
       {
         onSuccess: () => {
-          toast.success(t('teamMembers.added'));
+          toast.success(t('teamMembers.addedMany'));
         },
         onError: () => {
           toast.error(t('teamMembers.addError'));
@@ -169,7 +186,7 @@ export default function useMembers(teamId: string, columns: ColumnDef<TeamMember
     handleRemove,
     isPendingActions: isPendingRemove,
 
-    handleAddMember,
-    isPendingAdd,
+    handleAddMembers,
+    isPendingAdd: isPendingAddMember || isPendingAddBulk,
   };
 }
