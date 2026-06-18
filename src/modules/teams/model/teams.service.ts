@@ -38,7 +38,7 @@ class TeamsService extends CrudService<
   }
 
   private getMembersPath(teamId: string) {
-    return `/teams/${teamId}/members`;
+    return `/teams/${teamId}/users`;
   }
 
   // ── Lectura ────────────────────────────────

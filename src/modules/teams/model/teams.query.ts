@@ -13,7 +13,7 @@ import {
 import { teamsService } from './teams.service';
 
 const keys = {
-  all: (teamId: string) => ['teams', teamId, 'members'] as const,
+  all: (teamId: string) => ['teams', teamId, 'users'] as const,
   list: (teamId: string, query?: GetTeamMembersQuery) => [...keys.all(teamId), query] as const,
 };
 
