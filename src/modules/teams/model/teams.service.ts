@@ -2,8 +2,8 @@ import instance from '@/config/api';
 import { CrudService } from '@/services/crud.service';
 
 import {
-  BulkMemberIdsBody,
   BulkResponse,
+  BulkUserIdsBody,
   CreateTeam,
   CreateTeamMember,
   GetListQueryType,
@@ -55,20 +55,18 @@ class TeamsService extends CrudService<
     return data;
   };
 
-  removeMember = async (teamId: string, memberId: string) => {
-    const { data } = await instance.delete<TeamMember>(
-      `${this.getMembersPath(teamId)}/${memberId}`
-    );
+  removeMember = async (teamId: string, userId: string) => {
+    const { data } = await instance.delete<TeamMember>(`${this.getMembersPath(teamId)}/${userId}`);
     return data;
   };
 
   // ── Bulk ───────────────────────────────────
-  addMembersBulk = async (teamId: string, body: BulkMemberIdsBody) => {
+  addMembersBulk = async (teamId: string, body: BulkUserIdsBody) => {
     const { data } = await instance.post<BulkResponse>(`${this.getMembersPath(teamId)}/bulk`, body);
     return data;
   };
 
-  removeMembersBulk = async (teamId: string, body: BulkMemberIdsBody) => {
+  removeMembersBulk = async (teamId: string, body: BulkUserIdsBody) => {
     const { data } = await instance.delete<BulkResponse>(`${this.getMembersPath(teamId)}/bulk`, {
       data: body,
     });

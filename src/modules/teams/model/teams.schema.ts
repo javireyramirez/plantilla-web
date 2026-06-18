@@ -44,7 +44,7 @@ export const TeamIdParamsSchema = z.object({
   id: z.uuidv7(),
 });
 
-export const TeamMemberIdParamsSchema = z.object({
+export const TeamUserIdParamsSchema = z.object({
   id: z.uuidv7(),
   userId: z.uuidv7(),
 });
@@ -106,7 +106,7 @@ export const CreateTeamMemberSchema = TeamMemberSchemaBase.pick({
   userId: true,
 });
 
-export const BulkMemberIdsBodySchema = z.object({
+export const BulkUserIdsBodySchema = z.object({
   userIds: z.array(z.uuidv7()).min(1),
 });
 
@@ -163,6 +163,6 @@ export type GetTeamQuery = z.infer<typeof GetTeamQuerySchema>;
 export type GetListQueryType = z.infer<typeof GetListQuery>;
 export type TeamMemberListResponse = z.infer<typeof TeamMemberListResponseSchema>;
 export type TeamMemberWithRelations = z.infer<typeof TeamMemberResponseSchema>;
-export type BulkMemberIdsBody = z.infer<typeof BulkMemberIdsBodySchema>;
+export type BulkUserIdsBody = z.infer<typeof BulkUserIdsBodySchema>;
 export type BulkResponse = z.infer<typeof BulkResponseSchema>;
 export type TeamResponse = z.infer<typeof TeamResponseSchema>;

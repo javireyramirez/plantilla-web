@@ -26,7 +26,7 @@ export function useCompanyForm(id?: string) {
     formData: CreateCompany | UpdateCompany,
     options?: { shouldClose?: boolean }
   ) => {
-    const { owner, ownerTeam, ownerOrganization, ...clean } = formData;
+    const { owner, ...clean } = formData;
     const shouldClose = options?.shouldClose ?? false;
 
     if (isEditing) {

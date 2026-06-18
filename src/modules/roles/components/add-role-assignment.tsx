@@ -36,7 +36,7 @@ function useUsersOptions(params: {
     isTrash: rest.isTrash ?? false,
     ...rest,
     sortBy: rest.sortBy as GetUsersQuery['sortBy'],
-    search: name,
+    name: name,
   });
 
   return {

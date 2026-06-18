@@ -105,9 +105,9 @@ export const BulkResponseSchema = z.object({
 // ==========================================
 // TYPES INFERIDOS
 // ==========================================
-export type Module = z.infer<typeof ModuleSchema>;
+export type Modules = z.infer<typeof ModuleSchema>;
 export type GetModulesQuery = z.infer<typeof GetModulesQuerySchema>;
 export type GetListQueryType = z.infer<typeof GetListQuery>;
-export type CreateModule = z.infer<typeof CreateModuleBodySchema>;
-export type UpdateModule = z.infer<typeof UpdateModuleBodySchema>;
+export type CreateModules = z.infer<typeof CreateModuleBodySchema>;
+export type UpdateModules = z.infer<typeof UpdateModuleBodySchema>;
 export type ModulesListResponse = z.infer<typeof ModulesListResponseSchema>;
