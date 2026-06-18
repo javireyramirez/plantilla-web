@@ -38,6 +38,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { RoleAssignmentsTable } from '../components/role-assignments-table';
+import { RolePermissionsMatrix } from '../components/role-permissions-matrix';
 import { useRoleForm } from '../model/use-roles-detail';
 
 export default function RoleDetail() {
@@ -56,6 +57,7 @@ export default function RoleDetail() {
   const tabs = [
     { value: 'detail', label: t('roles.detail'), viewAtCreate: true },
     { value: 'members', label: t('roles.members'), viewAtCreate: isEditing },
+    { value: 'permissions', label: t('roles.permissions'), viewAtCreate: isEditing },
     { value: 'audit', label: t('roles.audit'), viewAtCreate: isEditing },
   ];
 
@@ -399,6 +401,10 @@ export default function RoleDetail() {
           <>
             <TabsContent value="members" className="outline-none">
               <RoleAssignmentsTable roleId={id as string} />
+            </TabsContent>
+
+            <TabsContent value="permissions" className="outline-none">
+              <RolePermissionsMatrix roleId={id as string} />
             </TabsContent>
 
             <TabsContent

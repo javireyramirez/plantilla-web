@@ -40,7 +40,7 @@ function useUsersOptions(params: {
     isTrash: rest.isTrash ?? false,
     ...rest,
     sortBy: rest.sortBy as GetUsersQuery['sortBy'],
-    search: name,
+    name: name,
   });
   return {
     data:
@@ -52,7 +52,11 @@ function useUsersOptions(params: {
   };
 }
 
-export function AddMembersDrawer({ excludeUserIds, onAddMembers, isAdding }: AddMembersDrawerProps) {
+export function AddMembersDrawer({
+  excludeUserIds,
+  onAddMembers,
+  isAdding,
+}: AddMembersDrawerProps) {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const [selectedUserIds, setSelectedUserIds] = React.useState<string[]>([]);

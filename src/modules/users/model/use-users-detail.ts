@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { resetPassword } from 'better-auth/api';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +24,10 @@ export function useUsersForm(id?: string) {
   const { mutate: create, isPending: isCreating } = usersQueries.useCreate();
   const { mutate: update, isPending: isUpdating } = usersQueries.useUpdate();
   const { mutate: softDelete, isPending: isDeleting } = usersQueries.useSoftDelete();
+  const { mutate: suspend, isPending: isSuspending } = usersQueries.useSuspend();
+  const { mutate: unsuspend, isPending: isUnsuspending } = usersQueries.useUnsuspend();
+  const { mutate: resendInvitation, isPending: isResendingInvitation } =
+    usersQueries.useResendInvitation();
 
   const handleSubmit = (
     formData: CreateUsers | UpdateUsers,
@@ -85,16 +90,56 @@ export function useUsersForm(id?: string) {
     });
   };
 
+  const handleSuspend = () => {
+    if (!id) return;
+
+    suspend(id, {
+      onSuccess: () => {
+        toast.success(t('users.form.suspend'));
+      },
+      onError: (error: any) => {
+        const serverMessage = error?.response?.data?.message || error?.message;
+        toast.error(serverMessage || t('users.form.errors.suspend'));
+      },
+    });
+  };
+
+  const handleUnSuspend = () => {
+    if (!id) return;
+
+    unsuspend(id, {
+      onSuccess: () => {
+        toast.success(t('users.form.unsuspend'));
+      },
+      onError: (error: any) => {
+        const serverMessage = error?.response?.data?.message || error?.message;
+        toast.error(serverMessage || t('users.form.errors.unsuspend'));
+      },
+    });
+  };
+
+  const handleResendInvitation = () => {
+    if (!id) return;
+
+    resendInvitation(id, {
+      onSuccess: () => {
+        toast.success(t('users.form.resendInvitation'));
+      },
+      onError: (error: any) => {
+        const serverMessage = error?.response?.data?.message || error?.message;
+        toast.error(serverMessage || t('users.form.errors.resendInvitation'));
+      },
+    });
+  };
+
   const formDefaultValues = data
     ? {
         name: data.name ?? '',
         email: data.email ?? '',
-        isSuperAdmin: !!data.isSuperAdmin,
       }
     : {
         name: '',
         email: '',
-        isSuperAdmin: false,
       };
 
   const form = useForm<CreateUsers>({
@@ -107,9 +152,8 @@ export function useUsersForm(id?: string) {
     if (isEditing) {
       if (!isLoading && !isFetching && data) {
         form.reset({
-          name: data.name ?? '',
-          email: data.email ?? '',
-          isSuperAdmin: !!data.isSuperAdmin,
+          name: data?.name ?? '',
+          email: data?.email ?? '',
         });
       }
     } else {
@@ -118,15 +162,25 @@ export function useUsersForm(id?: string) {
   }, [isEditing, data, isLoading, isFetching, form]);
 
   const userName = useWatch({ control: form.control, name: 'name' });
-
+  const isActive = data?.isActive ?? false;
   return {
     data,
     isEditing,
     userName,
+    isActive,
     isLoading,
     form,
     handleSubmit,
     handleDelete,
-    isPending: isCreating || isUpdating || isDeleting,
+    handleSuspend,
+    handleUnSuspend,
+    handleResendInvitation,
+    isPending:
+      isCreating ||
+      isUpdating ||
+      isDeleting ||
+      isSuspending ||
+      isUnsuspending ||
+      isResendingInvitation,
   };
 }

@@ -1,4 +1,17 @@
-import { Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
+import {
+  // Símbolo de candado
+  Ban,
+  Building2,
+  ChevronDown,
+  Download,
+  Lock,
+  MoreHorizontal,
+  Plus,
+  Save,
+  Send,
+  Trash2,
+  UserCheck,
+} from 'lucide-react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -49,8 +62,22 @@ export default function UsersDetail() {
 
   // --- Hooks de datos y formulario ---
   const { id } = useParams<{ id: string }>();
-  const { data, isEditing, userName, isLoading, form, handleSubmit, handleDelete, isPending } =
-    useUsersForm(id);
+
+  // Extraemos las nuevas propiedades y funciones desde tu hook
+  const {
+    data,
+    isEditing,
+    userName,
+    isActive,
+    isLoading,
+    form,
+    handleSubmit,
+    handleDelete,
+    handleSuspend,
+    handleUnSuspend,
+    handleResendInvitation,
+    isPending,
+  } = useUsersForm(id);
 
   const tabs = [
     { value: 'detail', label: t('users.detail'), viewAtCreate: true },
@@ -151,7 +178,9 @@ export default function UsersDetail() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage className="font-medium text-foreground">
+            <BreadcrumbPage className="font-medium text-foreground flex items-center gap-1.5">
+              {/* Candado en el Breadcrumb si está inactivo */}
+              {isEditing && !isActive && <Lock className="h-3.5 w-3.5 text-destructive" />}
               {isEditing ? `${userName}` : t('users.createTitle')}
             </BreadcrumbPage>
           </BreadcrumbItem>
@@ -164,8 +193,15 @@ export default function UsersDetail() {
           <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             {isEditing ? (
-              <span className="truncate">
+              <span className="truncate flex items-center gap-2">
                 <span className="text-primary">{userName}</span>
+                {/* Candado / Tag indicador visual al lado del nombre principal */}
+                {!isActive && (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
+                    <Lock className="h-3 w-3" />
+                    {t('users.statusName.suspended')}
+                  </span>
+                )}
               </span>
             ) : (
               t('users.createTitle')
@@ -176,11 +212,46 @@ export default function UsersDetail() {
           </p>
         </div>
 
-        {/* Contenedor Único de Botones (Control de responsividad fluido) */}
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+        {/* Contenedor Único de Botones (con flex-wrap para pantallas intermedias) */}
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
           {isEditing && (
             <>
-              {/* Exportar y Eliminar: Visibles a partir de pantallas grandes (lg) */}
+              {/* Ocultos en tablets/portátiles (< lg), visibles en pantallas grandes */}
+              <Button
+                type="button"
+                variant="outline"
+                className="hidden lg:flex gap-2"
+                disabled={isPending}
+                onClick={handleResendInvitation}
+              >
+                <Send className="h-4 w-4" />
+                {t('users.resendInvitation')}
+              </Button>
+
+              {isActive ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="hidden lg:flex border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white gap-2"
+                  disabled={isPending}
+                  onClick={handleSuspend}
+                >
+                  <Ban className="h-4 w-4" />
+                  {t('users.suspend')}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="hidden lg:flex border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white gap-2"
+                  disabled={isPending}
+                  onClick={handleUnSuspend}
+                >
+                  <UserCheck className="h-4 w-4" />
+                  {t('users.unsuspend')}
+                </Button>
+              )}
+
               <Button
                 type="button"
                 variant="outline"
@@ -201,7 +272,7 @@ export default function UsersDetail() {
                 {t('users.delete')}
               </Button>
 
-              {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
+              {/* Solo visible en pantallas muy grandes (xl) */}
               <Button
                 type="button"
                 variant="outline"
@@ -217,12 +288,12 @@ export default function UsersDetail() {
             </>
           )}
 
-          {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
+          {/* Botón Guardar y Cerrar: Visible a partir de tablets (md) */}
           <Button
             form="user-form-id"
             type="submit"
             variant="outline"
-            disabled={isPending}
+            disabled={isPending || (isEditing && !isActive)}
             onClick={() => setShouldCloseOnSubmit(true)}
             className="hidden md:flex gap-2"
           >
@@ -230,11 +301,11 @@ export default function UsersDetail() {
             {t('users.saveAndClose')}
           </Button>
 
-          {/* Acción Principal: Siempre visible */}
+          {/* Acción Principal: Siempre visible en barra principal */}
           <Button
             form="user-form-id"
             type="submit"
-            disabled={isPending}
+            disabled={isPending || (isEditing && !isActive)}
             onClick={() => setShouldCloseOnSubmit(false)}
             className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
           >
@@ -242,7 +313,7 @@ export default function UsersDetail() {
             {t('users.save')}
           </Button>
 
-          {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
+          {/* Menú Desplegable Adaptativo Móvil / Tablet / Portátil */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className={`px-3 ${isEditing ? 'xl:hidden' : 'md:hidden'}`}>
@@ -250,10 +321,10 @@ export default function UsersDetail() {
               </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-48">
-              {/* Se muestra en el menú si la pantalla es menor a md */}
+            <DropdownMenuContent align="end" className="w-52">
+              {/* Aparece aquí en móviles (< md) */}
               <DropdownMenuItem
-                disabled={isPending}
+                disabled={isPending || (isEditing && !isActive)}
                 className="md:hidden gap-2"
                 onSelect={(e) => {
                   e.preventDefault();
@@ -267,21 +338,49 @@ export default function UsersDetail() {
 
               {isEditing && (
                 <>
-                  {/* Se muestra en el menú si la pantalla es menor a lg */}
+                  {/* Aparecen aquí si la pantalla es menor que LG (portátiles pequeños/tablets) */}
+                  <DropdownMenuItem
+                    disabled={isPending}
+                    className="lg:hidden gap-2"
+                    onSelect={handleResendInvitation}
+                  >
+                    <Send className="h-4 w-4" />
+                    {t('users.resendInvitation')}
+                  </DropdownMenuItem>
+
+                  {isActive ? (
+                    <DropdownMenuItem
+                      disabled={isPending}
+                      className="lg:hidden gap-2 text-amber-600 focus:text-amber-700"
+                      onSelect={handleSuspend}
+                    >
+                      <Ban className="h-4 w-4" />
+                      {t('users.suspend')}
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      disabled={isPending}
+                      className="lg:hidden gap-2 text-emerald-600 focus:text-emerald-700"
+                      onSelect={handleUnSuspend}
+                    >
+                      <UserCheck className="h-4 w-4" />
+                      {t('users.unsuspend')}
+                    </DropdownMenuItem>
+                  )}
+
                   <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
                     <Download className="h-4 w-4" />
                     {t('users.export')}
                   </DropdownMenuItem>
 
-                  {/* Se muestra en el menú si la pantalla es menor a xl */}
+                  {/* Aparece aquí si la pantalla es menor que XL */}
                   <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
                     <Link to="/users/new">
-                      <Download className="h-4 w-4" />
+                      <Plus className="h-4 w-4" />
                       {t('users.new')}
                     </Link>
                   </DropdownMenuItem>
 
-                  {/* Se muestra en el menú si la pantalla es menor a lg */}
                   <DropdownMenuItem
                     disabled={isPending}
                     className="lg:hidden gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
@@ -302,7 +401,6 @@ export default function UsersDetail() {
 
       {/* SECCIÓN: Navegación por Pestañas (Tabs) */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
-        {/* Vista Escritorio */}
         <TabsList
           variant="line"
           className="hidden md:flex h-auto w-fit justify-start gap-6 rounded-none border-b bg-transparent p-0"
@@ -316,7 +414,6 @@ export default function UsersDetail() {
             ))}
         </TabsList>
 
-        {/* Vista Móvil */}
         <div className="border-b md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -338,8 +435,12 @@ export default function UsersDetail() {
         {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            {/* Formulario de Datos Básicos */}
-            <Card className="lg:col-span-1 shadow-sm">
+            {/* CARD FORMULARIO (Quitado el blur-[1.5px], se mantiene opacidad y pointer-events) */}
+            <Card
+              className={`lg:col-span-1 shadow-sm transition-all duration-300 relative ${
+                isEditing && !isActive ? 'pointer-events-none select-none opacity-70' : ''
+              }`}
+            >
               <CardHeader>
                 <CardTitle className="text-base font-semibold">{t('users.basicData')}</CardTitle>
                 <CardDescription>{t('users.identificationInfo')}</CardDescription>
@@ -403,7 +504,7 @@ export default function UsersDetail() {
               </CardContent>
             </Card>
 
-            {/* Tarjeta Usuarios */}
+            {/* Tarjeta Usuarios adicionales */}
             <Card className="shadow-sm lg:col-span-2">
               <CardHeader>
                 <CardTitle className="text-base font-semibold">{t('users.users')}</CardTitle>
@@ -417,18 +518,16 @@ export default function UsersDetail() {
         </TabsContent>
 
         {isEditing && (
-          <>
-            <TabsContent
-              value="audit"
-              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-            >
-              {t('users.auditContent')}
-            </TabsContent>
-          </>
+          <TabsContent
+            value="audit"
+            className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
+          >
+            {t('users.auditContent')}
+          </TabsContent>
         )}
       </Tabs>
 
-      {/* SECCIÓN: Diálogo de Confirmación de Borrado Único (Centralizado) */}
+      {/* SECCIÓN: Diálogo de Confirmación de Borrado */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

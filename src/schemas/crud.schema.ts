@@ -3,8 +3,6 @@ import { z } from 'zod';
 export const CreateSchema = z
   .object({
     ownerId: z.uuidv7().optional(),
-    ownerTeamId: z.uuidv7().optional(),
-    ownerOrganizationId: z.uuidv7().optional(),
   })
   .loose();
 
@@ -13,21 +11,9 @@ export const OwnerSchema = z.object({
   email: z.email(),
 });
 
-export const OwnerTeamSchema = z.object({
-  name: z.string(),
-});
-
-export const OwnerOrganizationSchema = z.object({
-  name: z.string(),
-});
-
 export const UserSchemaBase = z.object({
   name: z.string(),
   email: z.email(),
-});
-
-export const OrganizationSchemaBase = z.object({
-  name: z.string(),
 });
 
 export const TeamSchemaBase = z.object({
@@ -60,3 +46,45 @@ export const recordStatusSchema = z.enum([
   'ARCHIVED',
   'SUSPENDED',
 ]);
+
+export const AuditFieldsSchema = z.object({
+  status: recordStatusSchema,
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date().optional().nullable(),
+  restoredAt: z.date().optional().nullable(),
+  createdBy: z.string().optional().nullable(),
+  deletedBy: z.string().optional().nullable(),
+  restoredBy: z.string().optional().nullable(),
+  updatedBy: z.string().optional().nullable(),
+});
+
+export const GetPaginatedQueryBaseSchema = z.object({
+  page: z.coerce.number().int().positive().optional().default(1),
+  limit: z.coerce.number().int().positive().max(100).optional().default(10),
+  isTrash: z.preprocess((val) => val === 'true' || val === true, z.boolean()).default(false),
+  name: z.string().optional(),
+  createdAtFrom: z.date().optional().nullable(),
+  createdAtTo: z.date().optional().nullable(),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
+});
+
+export const dateQueryBase = z
+  .preprocess((val) => {
+    if (!val) return undefined;
+    const num = Number(val);
+    return isNaN(num) ? new Date(val as string) : new Date(num);
+  }, z.date().optional())
+  .optional();
+
+export function createPaginatedResponseSchema<T extends z.ZodTypeAny>(dataSchema: T) {
+  return z.object({
+    data: z.array(dataSchema),
+    meta: z.object({
+      page: z.number(),
+      limit: z.number(),
+      total: z.number(),
+      totalPages: z.number(),
+    }),
+  });
+}

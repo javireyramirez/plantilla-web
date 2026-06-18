@@ -244,6 +244,12 @@
     "deleteConfirmTitle": "¿Eliminar este usuario?",
     "deleteConfirmDesc": "Esta acción no se puede deshacer. El usuario será eliminado permanentemente del sistema.",
     "cancel": "Cancelar",
+    "suspend": "Suspender",
+    "unsuspend": "Activar cuenta",
+    "resendInvitation": "Reenviar invitación",
+    "statusName": {
+      "suspended": "Suspendido"
+    },
     "table": {
       "delete": "Usuario(s) eliminado(s) con éxito",
       "selectTodo": "Seleccionar todo",

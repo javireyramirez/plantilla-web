@@ -3,8 +3,8 @@ import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstac
 import { createGenericQueries } from '@/hooks/use-crud';
 
 import {
-  BulkMemberIdsBody,
   BulkResponse,
+  BulkUserIdsBody,
   CreateTeamMember,
   GetTeamMembersQuery,
   TeamMember,
@@ -47,8 +47,8 @@ export const teamsQueries = {
 
   useRemoveMembers: () => {
     const qc = useQueryClient();
-    return useMutation<TeamMember, Error, { teamId: string; memberId: string }>({
-      mutationFn: ({ teamId, memberId }) => teamsService.removeMember(teamId, memberId),
+    return useMutation<TeamMember, Error, { teamId: string; userId: string }>({
+      mutationFn: ({ teamId, userId }) => teamsService.removeMember(teamId, userId),
       onSuccess: (_, { teamId }) => {
         qc.invalidateQueries({ queryKey: keys.all(teamId) });
       },
@@ -59,7 +59,7 @@ export const teamsQueries = {
 
   useAddMembersBulk: () => {
     const qc = useQueryClient();
-    return useMutation<BulkResponse, Error, { teamId: string; body: BulkMemberIdsBody }>({
+    return useMutation<BulkResponse, Error, { teamId: string; body: BulkUserIdsBody }>({
       mutationFn: ({ teamId, body }) => teamsService.addMembersBulk(teamId, body),
       onSuccess: (_, { teamId }) => {
         qc.invalidateQueries({ queryKey: keys.all(teamId) });
@@ -69,7 +69,7 @@ export const teamsQueries = {
 
   useRemoveMembersBulk: () => {
     const qc = useQueryClient();
-    return useMutation<BulkResponse, Error, { teamId: string; body: BulkMemberIdsBody }>({
+    return useMutation<BulkResponse, Error, { teamId: string; body: BulkUserIdsBody }>({
       mutationFn: ({ teamId, body }) => teamsService.removeMembersBulk(teamId, body),
       onSuccess: (_, { teamId }) => {
         qc.invalidateQueries({ queryKey: keys.all(teamId) });

@@ -1,9 +1,12 @@
 import instance from '@/config/api';
 import {
+  BulkIdsBody,
+  BulkResponse,
   CreateUsers,
   GetListQueryType,
   GetUsersQuery,
   UpdateUsers,
+  Users,
   UsersListResponse,
   UsersResponse,
 } from '@/modules/users/model/users.schema';
@@ -30,9 +33,36 @@ class UsersService extends CrudService<
     super('users');
   }
 
-  private getMembersPath(UsersId: string) {
-    return `/users/${UsersId}/members`;
+  private getMembersPath(usersId: string) {
+    return `/users/${usersId}`;
   }
+
+  resendInvitation = async (usersId: string) => {
+    const { data } = await instance.post<Users>(
+      `${this.getMembersPath(usersId)}/resend-invitation`
+    );
+    return data;
+  };
+
+  suspend = async (usersId: string) => {
+    const { data } = await instance.post<Users>(`${this.getMembersPath(usersId)}/suspend`);
+    return data;
+  };
+
+  unsuspend = async (usersId: string) => {
+    const { data } = await instance.post<Users>(`${this.getMembersPath(usersId)}/unsuspend`);
+    return data;
+  };
+
+  suspendBulk = async (body: BulkIdsBody) => {
+    const { data } = await instance.post<BulkResponse>(`users/bulk/suspend`, body);
+    return data;
+  };
+
+  unsuspendBulk = async (body: BulkIdsBody) => {
+    const { data } = await instance.post<BulkResponse>(`users/bulk/unsuspend`, body);
+    return data;
+  };
 }
 
 export const usersService = new UsersService();

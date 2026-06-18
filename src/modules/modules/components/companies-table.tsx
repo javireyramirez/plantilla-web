@@ -16,14 +16,15 @@ import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolb
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { Organization } from '@/modules/organizations/model/organizations.schema';
-import useOrganizationTable from '@/modules/organizations/model/use-organizations-table';
+import { Company } from '@/modules/companies/model/companies.schema';
+import { SECTOR_OPTIONS } from '@/modules/companies/model/companies.types';
+import useCompanies from '@/modules/companies/model/use-companies-table';
 
-export function OrganizationsTable() {
+export function CompaniesTable() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const columns = React.useMemo<ColumnDef<Organization>[]>(
+  const columns = React.useMemo<ColumnDef<Company>[]>(
     () => [
       {
         id: 'select',
@@ -35,7 +36,7 @@ export function OrganizationsTable() {
               (table.getIsSomePageRowsSelected() && 'indeterminate')
             }
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label={t('organizations.table.selectTodo')}
+            aria-label={t('companies.table.selectTodo')}
             className="translate-y-0.5"
           />
         ),
@@ -43,7 +44,7 @@ export function OrganizationsTable() {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label={t('organizations.table.selectFila')}
+            aria-label={t('companies.table.selectFila')}
             className="translate-y-0.5"
           />
         ),
@@ -55,14 +56,14 @@ export function OrganizationsTable() {
         enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('organizations.name')} />
+          <DataTableColumnHeader column={column} label={t('companies.name')} />
         ),
         cell: ({ row }) => {
           return (
             <div className="flex items-center gap-2 min-w-0">
               <button
                 className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
-                onClick={() => navigate(`/organizations/edit/${row.original.id}`)}
+                onClick={() => navigate(`/companies/edit/${row.original.id}`)}
               >
                 {row.getValue('name')}
               </button>
@@ -70,8 +71,64 @@ export function OrganizationsTable() {
           );
         },
         meta: {
-          label: t('organizations.name'),
+          label: t('companies.name'),
           variant: 'text',
+        },
+      },
+      {
+        accessorKey: 'nif',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('companies.table.cif')} />
+        ),
+        cell: ({ row }) => {
+          return (
+            <div className="flex items-center gap-2 min-w-0">
+              <button
+                className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                onClick={() => console.log(row.original.id)}
+              >
+                {row.getValue('nif')}
+              </button>
+            </div>
+          );
+        },
+        meta: {
+          label: t('companies.table.cif'),
+          variant: 'text',
+        },
+      },
+      {
+        accessorKey: 'sector',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('companies.sector')} />
+        ),
+        cell: ({ row }) => {
+          const sectorValue = row.getValue('sector');
+          const sectorOpt = SECTOR_OPTIONS.find((opt) => opt.value === sectorValue);
+
+          return (
+            <div className="flex items-center gap-2 min-w-0">
+              {sectorOpt ? t(`companies.sectors.${sectorOpt.value}`) : t('companies.sectors.none')}
+            </div>
+          );
+        },
+        filterFn: (row, id, value) => {
+          const ct = row.getValue(id) as string;
+          return (value as string[]).some(
+            (v) => SECTOR_OPTIONS.find((opt) => opt.value === v) ?? false
+          );
+        },
+        meta: {
+          label: t('companies.sector'),
+          variant: 'multiSelect',
+          options: SECTOR_OPTIONS.map((opt) => ({
+            ...opt,
+            label: t(`companies.sectors.${opt.value}`),
+          })),
         },
       },
       {
@@ -79,7 +136,7 @@ export function OrganizationsTable() {
         enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('organizations.table.fecha')} />
+          <DataTableColumnHeader column={column} label={t('companies.table.fecha')} />
         ),
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
@@ -87,7 +144,7 @@ export function OrganizationsTable() {
           </span>
         ),
         meta: {
-          label: t('organizations.table.creacion'),
+          label: t('companies.table.creacion'),
           variant: 'dateRange',
           icon: CalendarIcon,
         },
@@ -105,7 +162,7 @@ export function OrganizationsTable() {
     limit,
     handleDelete,
     isPendingActions,
-  } = useOrganizationTable(columns);
+  } = useCompanies(columns);
 
   // Skeleton
   if (isLoading) {
@@ -113,7 +170,7 @@ export function OrganizationsTable() {
       <DataTableSkeleton
         columnCount={columns.length}
         rowCount={limit}
-        filterCount={2}
+        filterCount={4}
         withPagination={true}
       />
     );
@@ -139,7 +196,7 @@ export function OrganizationsTable() {
             table={table}
             actions={[
               {
-                label: t('organizations.delete'),
+                label: t('companies.delete'),
                 icon: <Trash2 className="h-4 w-4" />,
                 variant: 'destructive',
                 disabled: isPendingActions,
