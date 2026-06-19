@@ -13,6 +13,7 @@ import { DataTableFloatingBar } from '@/components/data-table/data-table-floatin
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-desktop';
 import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
@@ -70,6 +71,110 @@ export function UsersTable() {
         meta: {
           label: t('users.name'),
           variant: 'text',
+        },
+      },
+
+      {
+        accessorKey: 'email',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('users.email')} />,
+        cell: ({ row }) => {
+          return (
+            <div className="flex items-center gap-2 min-w-0">
+              <button
+                className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                onClick={() => navigate(`/users/edit/${row.original.id}`)}
+              >
+                {row.getValue('email')}
+              </button>
+            </div>
+          );
+        },
+        meta: {
+          label: t('users.email'),
+          variant: 'text',
+        },
+      },
+
+      {
+        accessorKey: 'isActive',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('users.isActive')} />
+        ),
+        cell: ({ row }) => {
+          const isActive = row.getValue('isActive') as boolean;
+          return (
+            <div className="flex items-center gap-2 min-w-0">
+              <Badge variant={isActive ? 'default' : 'secondary'}>
+                {isActive ? t('users.table.active') : t('users.table.inactive')}
+              </Badge>
+            </div>
+          );
+        },
+        meta: {
+          label: t('users.isActive'),
+          variant: 'boolean',
+          options: [
+            { label: t('users.table.active'), value: 'true' },
+            { label: t('users.table.inactive'), value: 'false' },
+          ],
+        },
+      },
+
+      {
+        accessorKey: 'isSystem',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('users.isSystem')} />
+        ),
+        cell: ({ row }) => {
+          const isSystem = row.getValue('isSystem') as boolean;
+          return (
+            <div className="flex items-center gap-2 min-w-0">
+              <Badge variant={isSystem ? 'default' : 'secondary'}>
+                {isSystem ? t('users.table.isSystem') : t('users.table.isNotSystem')}
+              </Badge>
+            </div>
+          );
+        },
+        meta: {
+          label: t('users.isSystem'),
+          variant: 'boolean',
+          options: [
+            { label: t('users.table.isSystem'), value: 'true' },
+            { label: t('users.table.isNotSystem'), value: 'false' },
+          ],
+        },
+      },
+
+      {
+        accessorKey: 'emailVerified',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('users.emailVerified')} />
+        ),
+        cell: ({ row }) => {
+          const emailVerified = row.getValue('emailVerified') as boolean;
+          return (
+            <div className="flex items-center gap-2 min-w-0">
+              <Badge variant={emailVerified ? 'default' : 'secondary'}>
+                {emailVerified ? t('users.table.emailVerified') : t('users.table.emailNoVerified')}
+              </Badge>
+            </div>
+          );
+        },
+        meta: {
+          label: t('users.emailVerified'),
+          variant: 'boolean',
+          options: [
+            { label: t('users.table.emailVerified'), value: 'true' },
+            { label: t('users.table.emailNoVerified'), value: 'false' },
+          ],
         },
       },
 

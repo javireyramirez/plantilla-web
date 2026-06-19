@@ -77,6 +77,22 @@ export function DataTableToolbarFilter<TData>({
             />
           );
 
+        case 'boolean':
+          return (
+            <DataTableFacetedFilter
+              column={column}
+              title={columnMeta.label ?? column.id}
+              options={
+                columnMeta.options ?? [
+                  { label: 'Sí', value: 'true' },
+                  { label: 'No', value: 'false' },
+                ]
+              }
+              multiple={false}
+              className={className}
+            />
+          );
+
         case 'select':
         case 'multiSelect':
           return (

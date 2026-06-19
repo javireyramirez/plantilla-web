@@ -62,6 +62,12 @@ export const GetUsersQuerySchema = GetPaginatedQueryBaseSchema.extend({
       return v === 'true' || v === true;
     }, z.boolean().optional())
     .optional(),
+  isActive: z
+    .preprocess((v) => {
+      if (v === undefined || v === null || v === '') return undefined;
+      return v === 'true' || v === true;
+    }, z.boolean().optional())
+    .optional(),
   emailVerified: z
     .preprocess((v) => {
       if (v === undefined || v === null || v === '') return undefined;

@@ -247,6 +247,9 @@
     "suspend": "Suspender",
     "unsuspend": "Activar cuenta",
     "resendInvitation": "Reenviar invitación",
+    "isActive": "Activo",
+    "isSystem": "Es del sistema",
+    "emailVerified": "Email verificado",
     "statusName": {
       "suspended": "Suspendido"
     },
@@ -259,7 +262,15 @@
       "status": "Estado",
       "role": "Rol",
       "fecha": "Fecha",
-      "creacion": "Creación"
+      "creacion": "Creación",
+      "active": "Activo",
+      "inactive": "Inactivo",
+
+      "isSystem": "Sistema",
+      "isNotSystem": "No sistema",
+
+      "emailVerified": "Verificado",
+      "emailNoVerified": "No verificado"
     },
     "form": {
       "update": "Usuario actualizado con éxito",

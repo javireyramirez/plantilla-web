@@ -19,7 +19,7 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 
 import { usersQueries } from './users.query';
-import { CreateUsers, GetUsersQuery, Users } from './users.schema';
+import { GetUsersQuery, Users } from './users.schema';
 
 export default function useUsers(columns: ColumnDef<Users>[]) {
   const { t } = useTranslation();
@@ -48,6 +48,24 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
   const nameCol = columnFilters.find((f) => f.id === 'name');
   const name = typeof nameCol?.value === 'string' ? nameCol.value : undefined;
 
+  const emailCol = columnFilters.find((f) => f.id === 'email');
+  const email = typeof emailCol?.value === 'string' ? emailCol.value : undefined;
+
+  const isSystemCol = columnFilters.find((f) => f.id === 'isSystem');
+  const isSystemRaw = Array.isArray(isSystemCol?.value) ? isSystemCol.value[0] : isSystemCol?.value;
+  const isSystem = isSystemRaw === 'true' ? true : isSystemRaw === 'false' ? false : undefined;
+
+  const emailVerifiedCol = columnFilters.find((f) => f.id === 'emailVerified');
+  const emailVerifiedRaw = Array.isArray(emailVerifiedCol?.value)
+    ? emailVerifiedCol.value[0]
+    : emailVerifiedCol?.value;
+  const emailVerified =
+    emailVerifiedRaw === 'true' ? true : emailVerifiedRaw === 'false' ? false : undefined;
+
+  const isActiveCol = columnFilters.find((f) => f.id === 'isActive');
+  const isActiveRaw = Array.isArray(isActiveCol?.value) ? isActiveCol.value[0] : isActiveCol?.value;
+  const isActive = isActiveRaw === 'true' ? true : isActiveRaw === 'false' ? false : undefined;
+
   const createdAtCol = columnFilters.find((f) => f.id === 'createdAt');
   const [createdFrom, createdTo] = Array.isArray(createdAtCol?.value)
     ? createdAtCol.value
@@ -60,6 +78,11 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
     sortBy,
     sortOrder,
     ...(name && { name }),
+    ...(email && { email }),
+    ...(isSystem !== undefined && { isSystem }),
+    ...(isActive !== undefined && { isActive }),
+    ...(emailVerified !== undefined && { emailVerified }),
+
     createdAtFrom: createdFrom ? createdFrom : undefined,
     createdAtTo: createdTo ? createdTo : undefined,
   });
@@ -114,6 +137,8 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
   });
 
   const { mutate: mutateDelete, isPending: isPendingDelete } = usersQueries.useSoftDeleteMany();
+  const { mutate: mutateSuspend, isPending: isSuspending } = usersQueries.useSuspendBulk();
+  const { mutate: mutateUnsuspend, isPending: isUnsuspending } = usersQueries.useUnsuspendBulk();
 
   const handleDelete = (rows: Row<Users>[]) => {
     mutateDelete(
@@ -138,6 +163,6 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
     limit,
 
     handleDelete,
-    isPendingActions: isPendingDelete,
+    isPendingActions: isPendingDelete || isUnsuspending || isSuspending,
   };
 }
