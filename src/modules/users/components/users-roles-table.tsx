@@ -1,5 +1,6 @@
-import { Trash2, Shield, Plus } from 'lucide-react';
+import { Plus, Shield, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import * as React from 'react';
 
@@ -47,6 +48,8 @@ function useRolesOptions(params: {
 }
 
 export function UserRolesTable({ userId }: { userId?: string }) {
+  const navigate = useNavigate();
+
   const { t } = useTranslation();
   const [selectedRoleIds, setSelectedRoleIds] = React.useState<string[]>([]);
 
@@ -85,7 +88,12 @@ export function UserRolesTable({ userId }: { userId?: string }) {
         cell: ({ row }) => (
           <div className="flex items-center gap-2 min-w-0">
             <span className="truncate font-medium max-w-xs text-foreground">
-              {row.getValue('name')}
+              <button
+                className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                onClick={() => navigate(`/roles/edit/${row.original.id}`)}
+              >
+                {row.getValue('name')}
+              </button>
             </span>
           </div>
         ),
