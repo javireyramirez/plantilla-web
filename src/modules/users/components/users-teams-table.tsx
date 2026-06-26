@@ -1,4 +1,4 @@
-import { Plus, Trash2, Users } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,7 @@ import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-des
 import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
 import { AssignmentDrawer, SelectorConfig } from '@/components/selector/assignment-drawer';
 import { Checkbox } from '@/components/ui/checkbox';
+import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { teamsQueries } from '@/modules/teams/model/teams.query';
 import { GetTeamQuery } from '@/modules/teams/model/teams.schema';
@@ -99,6 +100,24 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
         meta: {
           label: t('users.teams.name'),
           variant: 'text',
+        },
+      },
+      {
+        accessorKey: 'joinedAt',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('users.teams.fecha')} />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground tabular-nums text-sm">
+            {formatDate(row.getValue('joinedAt'))}
+          </span>
+        ),
+        meta: {
+          label: t('users.table.creacion'),
+          variant: 'dateRange',
+          icon: CalendarIcon,
         },
       },
     ],

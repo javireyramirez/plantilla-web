@@ -1,4 +1,4 @@
-import { Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
+import { ChevronDown, Download, MoreHorizontal, Plus, Save, Shield, Trash2 } from 'lucide-react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -166,7 +166,7 @@ export default function RoleDetail() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+            <Shield className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             {isEditing ? (
               <span className="truncate">
                 <span className="text-primary">{roleName}</span>

@@ -144,12 +144,12 @@ export const UserAssignmentsResponseSchema = z.object({
 });
 
 export const UserRolesPaginatedResponseSchema = createPaginatedResponseSchema(
-  ResponseTeamRoleSchemaBase
-);
-export const UserTeamsPaginatedResponseSchema = createPaginatedResponseSchema(
-  ResponseTeamRoleSchemaBase
+  ResponseTeamRoleSchemaBase.extend({ assignedAt: z.date() })
 );
 
+export const UserTeamsPaginatedResponseSchema = createPaginatedResponseSchema(
+  ResponseTeamRoleSchemaBase.extend({ joinedAt: z.date() })
+);
 // ==========================================
 // TYPES
 // ==========================================

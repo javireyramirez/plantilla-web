@@ -44,6 +44,11 @@ export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[],
   const nameCol = columnFilters.find((f) => f.id === 'name');
   const name = typeof nameCol?.value === 'string' ? nameCol.value : undefined;
 
+  const createdAtCol = columnFilters.find((f) => f.id === 'assignedAt');
+  const [createdFrom, createdTo] = Array.isArray(createdAtCol?.value)
+    ? createdAtCol.value
+    : [undefined, undefined];
+
   // ── React Query Fetch ──────────────────────────────────────────────────────
   const { data, isLoading, isFetching } = usersQueries.useGetRoleAssignments(userId, {
     page,
@@ -52,6 +57,8 @@ export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[],
     sortBy: 'name',
     sortOrder,
     ...(name && { name }),
+    createdAtFrom: createdFrom ? createdFrom : undefined,
+    createdAtTo: createdTo ? createdTo : undefined,
   });
 
   const roles: ResponseTeamRoleBase[] = data?.data ?? [];

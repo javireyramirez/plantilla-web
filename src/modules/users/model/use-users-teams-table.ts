@@ -44,6 +44,11 @@ export default function useUserTeams(columns: ColumnDef<ResponseTeamRoleBase>[],
   const nameCol = columnFilters.find((f) => f.id === 'name');
   const name = typeof nameCol?.value === 'string' ? nameCol.value : undefined;
 
+  const createdAtCol = columnFilters.find((f) => f.id === 'joinedAt');
+  const [createdFrom, createdTo] = Array.isArray(createdAtCol?.value)
+    ? createdAtCol.value
+    : [undefined, undefined];
+
   // ── React Query Fetch ──────────────────────────────────────────────────────
   const { data, isLoading, isFetching } = usersQueries.useGetTeamAssignments(userId, {
     page,
@@ -53,6 +58,8 @@ export default function useUserTeams(columns: ColumnDef<ResponseTeamRoleBase>[],
 
     sortOrder,
     ...(name && { name }),
+    createdAtFrom: createdFrom ? createdFrom : undefined,
+    createdAtTo: createdTo ? createdTo : undefined,
   });
 
   const teams: ResponseTeamRoleBase[] = data?.data ?? [];

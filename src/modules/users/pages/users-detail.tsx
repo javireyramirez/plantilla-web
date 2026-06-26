@@ -10,6 +10,7 @@ import {
   Save,
   Send,
   Trash2,
+  User,
   UserCheck,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -115,7 +116,7 @@ export default function UsersDetail() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-muted-foreground shrink-0" />
+            <User className="h-5 w-5 text-muted-foreground shrink-0" />
             {isEditing ? (
               <span className="truncate flex items-center gap-2">
                 <span className="text-primary">{userName}</span>

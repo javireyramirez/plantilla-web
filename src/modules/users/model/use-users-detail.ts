@@ -1,11 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { resetPassword } from 'better-auth/api';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { usersQueries } from './users.query';
 import { CreateUsers, CreateUsersBodySchema, UpdateUsers } from './users.schema';
