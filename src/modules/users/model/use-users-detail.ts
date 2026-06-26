@@ -5,9 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useEffect } from 'react';
-
-import { slugify } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 import { usersQueries } from './users.query';
 import { CreateUsers, CreateUsersBodySchema, UpdateUsers } from './users.schema';
@@ -35,7 +33,6 @@ export function useUsersForm(id?: string) {
   ) => {
     const payload = {
       ...formData,
-      slug: slugify(formData.name),
     };
 
     const shouldClose = options?.shouldClose ?? false;
@@ -175,6 +172,7 @@ export function useUsersForm(id?: string) {
     handleSuspend,
     handleUnSuspend,
     handleResendInvitation,
+
     isPending:
       isCreating ||
       isUpdating ||

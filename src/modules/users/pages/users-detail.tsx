@@ -12,13 +12,12 @@ import {
   Trash2,
   UserCheck,
 } from 'lucide-react';
-import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
 import { useState } from 'react';
 
-import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
+import { FormSkeleton } from '@/components/skeleton/form-skeleton';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,11 +44,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { UsersDetailForm } from '../components/users-form';
+import { UserRolesTable } from '../components/users-roles-table';
+import { UsersTeamsTable } from '../components/users-teams-table';
 import { useUsersForm } from '../model/use-users-detail';
 
 export default function UsersDetail() {
@@ -57,7 +57,6 @@ export default function UsersDetail() {
 
   // --- Estados locales ---
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [shouldCloseOnSubmit, setShouldCloseOnSubmit] = useState(false);
   const [activeTab, setActiveTab] = useState('detail');
 
   // --- Hooks de datos y formulario ---
@@ -65,7 +64,6 @@ export default function UsersDetail() {
 
   // Extraemos las nuevas propiedades y funciones desde tu hook
   const {
-    data,
     isEditing,
     userName,
     isActive,
@@ -81,89 +79,15 @@ export default function UsersDetail() {
 
   const tabs = [
     { value: 'detail', label: t('users.detail'), viewAtCreate: true },
+    { value: 'teams', label: t('users.teams'), viewAtCreate: isEditing },
+    { value: 'roles', label: t('users.roles'), viewAtCreate: isEditing },
     { value: 'audit', label: t('users.audit'), viewAtCreate: isEditing },
   ];
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
 
   // --- Estado de Carga (Skeletons) ---
-  if (isLoading) {
-    return (
-      <div className="space-y-6 mx-auto p-4 md:p-6">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-4 w-4 rounded-full" />
-          <Skeleton className="h-4 w-32" />
-        </div>
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
-          <div className="space-y-2 w-full sm:w-auto">
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-5 w-5 rounded-md" />
-              <Skeleton className="h-6 w-48" />
-            </div>
-            <Skeleton className="h-4 w-64 hidden sm:block" />
-          </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Skeleton className="h-10 flex-1 sm:flex-none sm:w-28" />
-            <Skeleton className="h-10 w-10 sm:w-24 hidden sm:block" />
-            <Skeleton className="h-10 w-10 sm:w-24 hidden sm:block" />
-          </div>
-        </div>
-
-        <div className="border-b pb-2 flex gap-6">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-5 w-28" />
-          <Skeleton className="h-5 w-20" />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          <Card className="lg:col-span-1 shadow-sm">
-            <CardHeader className="space-y-2">
-              <Skeleton className="h-5 w-32" />
-              <Skeleton className="h-4 w-48" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-14" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm">
-            <CardHeader className="space-y-2">
-              <Skeleton className="h-5 w-40" />
-              <Skeleton className="h-4 w-36" />
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm">
-            <CardHeader className="space-y-2">
-              <Skeleton className="h-5 w-36" />
-              <Skeleton className="h-4 w-44" />
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-4/5" />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <FormSkeleton />;
 
   // --- Renderizado Principal ---
   return (
@@ -191,7 +115,7 @@ export default function UsersDetail() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+            <Building2 className="h-5 w-5 text-muted-foreground shrink-0" />
             {isEditing ? (
               <span className="truncate flex items-center gap-2">
                 <span className="text-primary">{userName}</span>
@@ -290,11 +214,10 @@ export default function UsersDetail() {
 
           {/* Botón Guardar y Cerrar: Visible a partir de tablets (md) */}
           <Button
-            form="user-form-id"
-            type="submit"
+            type="button"
             variant="outline"
             disabled={isPending || (isEditing && !isActive)}
-            onClick={() => setShouldCloseOnSubmit(true)}
+            onClick={() => form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()}
             className="hidden md:flex gap-2"
           >
             <Save className="h-4 w-4" />
@@ -303,10 +226,9 @@ export default function UsersDetail() {
 
           {/* Acción Principal: Siempre visible en barra principal */}
           <Button
-            form="user-form-id"
-            type="submit"
+            type="button"
             disabled={isPending || (isEditing && !isActive)}
-            onClick={() => setShouldCloseOnSubmit(false)}
+            onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
             className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
           >
             <Save className="h-4 w-4" />
@@ -328,7 +250,6 @@ export default function UsersDetail() {
                 className="md:hidden gap-2"
                 onSelect={(e) => {
                   e.preventDefault();
-                  setShouldCloseOnSubmit(true);
                   form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
                 }}
               >
@@ -434,96 +355,32 @@ export default function UsersDetail() {
 
         {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            {/* CARD FORMULARIO (Quitado el blur-[1.5px], se mantiene opacidad y pointer-events) */}
-            <Card
-              className={`lg:col-span-1 shadow-sm transition-all duration-300 relative ${
-                isEditing && !isActive ? 'pointer-events-none select-none opacity-70' : ''
-              }`}
-            >
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('users.basicData')}</CardTitle>
-                <CardDescription>{t('users.identificationInfo')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form
-                  id="user-form-id"
-                  onSubmit={form.handleSubmit((data) =>
-                    handleSubmit(data, { shouldClose: shouldCloseOnSubmit })
-                  )}
-                  className="space-y-4"
-                >
-                  <FieldGroup className="space-y-4">
-                    <Controller
-                      name="name"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <FormFieldWrapper fieldState={fieldState}>
-                          <FieldLabel
-                            htmlFor="user-name"
-                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                          >
-                            {t('users.name')}
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="user-name"
-                            aria-invalid={fieldState.invalid}
-                            data-invalid={fieldState.invalid}
-                            autoComplete="off"
-                            className="mt-1.5 focus-visible:ring-primary"
-                          />
-                        </FormFieldWrapper>
-                      )}
-                    />
-
-                    <Controller
-                      name="email"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <FormFieldWrapper fieldState={fieldState}>
-                          <FieldLabel
-                            htmlFor="user-email"
-                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                          >
-                            {t('users.email')}
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="user-email"
-                            aria-invalid={fieldState.invalid}
-                            data-invalid={fieldState.invalid}
-                            autoComplete="off"
-                            className="mt-1.5 focus-visible:ring-primary"
-                          />
-                        </FormFieldWrapper>
-                      )}
-                    />
-                  </FieldGroup>
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* Tarjeta Usuarios adicionales */}
-            <Card className="shadow-sm lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('users.users')}</CardTitle>
-                <CardDescription>{t('users.pendingDefine')}</CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.
-              </CardContent>
-            </Card>
-          </div>
+          <UsersDetailForm id={id} />
         </TabsContent>
 
         {isEditing && (
-          <TabsContent
-            value="audit"
-            className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-          >
-            {t('users.auditContent')}
-          </TabsContent>
+          <>
+            <TabsContent
+              value="teams"
+              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
+            >
+              <UsersTeamsTable userId={id} />
+            </TabsContent>
+
+            <TabsContent
+              value="roles"
+              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
+            >
+              <UserRolesTable userId={id} />
+            </TabsContent>
+
+            <TabsContent
+              value="audit"
+              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
+            >
+              {t('users.auditContent')}
+            </TabsContent>
+          </>
         )}
       </Tabs>
 

@@ -4,8 +4,13 @@ import {
   BulkResponse,
   CreateUsers,
   GetListQueryType,
+  GetUserAssignmentsQuery,
   GetUsersQuery,
+  UpdateUserRolesBody,
+  UpdateUserTeamsBody,
   UpdateUsers,
+  UserRolesPaginatedResponse,
+  UserTeamsPaginatedResponse,
   Users,
   UsersListResponse,
   UsersResponse,
@@ -61,6 +66,60 @@ class UsersService extends CrudService<
 
   unsuspendBulk = async (body: BulkIdsBody) => {
     const { data } = await instance.post<BulkResponse>(`users/bulk/unsuspend`, body);
+    return data;
+  };
+
+  // ==========================================
+  // ROLES ENDPOINTS
+  // ==========================================
+
+  getRoleAssignments = async (usersId: string, params?: GetUserAssignmentsQuery) => {
+    const { data } = await instance.get<UserRolesPaginatedResponse>(
+      `${this.getMembersPath(usersId)}/roles`,
+      { params }
+    );
+    return data;
+  };
+
+  addRoleAssignments = async (usersId: string, body: UpdateUserRolesBody) => {
+    const { data } = await instance.post<BulkResponse>(
+      `${this.getMembersPath(usersId)}/roles`,
+      body
+    );
+    return data;
+  };
+
+  removeRoleAssignments = async (usersId: string, body: UpdateUserRolesBody) => {
+    const { data } = await instance.delete<BulkResponse>(`${this.getMembersPath(usersId)}/roles`, {
+      data: body,
+    });
+    return data;
+  };
+
+  // ==========================================
+  // TEAMS ENDPOINTS
+  // ==========================================
+
+  getTeamAssignments = async (usersId: string, params?: GetUserAssignmentsQuery) => {
+    const { data } = await instance.get<UserTeamsPaginatedResponse>(
+      `${this.getMembersPath(usersId)}/teams`,
+      { params }
+    );
+    return data;
+  };
+
+  addTeamAssignments = async (usersId: string, body: UpdateUserTeamsBody) => {
+    const { data } = await instance.post<BulkResponse>(
+      `${this.getMembersPath(usersId)}/teams`,
+      body
+    );
+    return data;
+  };
+
+  removeTeamAssignments = async (usersId: string, body: UpdateUserTeamsBody) => {
+    const { data } = await instance.delete<BulkResponse>(`${this.getMembersPath(usersId)}/teams`, {
+      data: body,
+    });
     return data;
   };
 }

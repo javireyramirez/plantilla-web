@@ -1,4 +1,3 @@
-import { error } from 'better-auth/api';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -19,9 +18,9 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 
 import { usersQueries } from './users.query';
-import { GetUsersQuery, Users } from './users.schema';
+import { ResponseTeamRoleBase } from './users.schema';
 
-export default function useUsers(columns: ColumnDef<Users>[]) {
+export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[], userId: string) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
@@ -37,62 +36,31 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
     if (typeof window === 'undefined') return 10;
     return window.innerWidth < 768 ? 5 : 10;
   }
-
   const [limit, setLimit] = React.useState(getInitialLimit);
 
   const [sort] = sorting;
-
-  const sortBy = (sort ? sort.id : 'createdAt') as GetUsersQuery['sortBy'];
-  const sortOrder = sort ? (sort.desc ? 'desc' : 'asc') : 'desc';
+  const sortOrder = sort ? (sort.desc ? 'desc' : 'asc') : 'asc';
 
   const nameCol = columnFilters.find((f) => f.id === 'name');
   const name = typeof nameCol?.value === 'string' ? nameCol.value : undefined;
 
-  const emailCol = columnFilters.find((f) => f.id === 'email');
-  const email = typeof emailCol?.value === 'string' ? emailCol.value : undefined;
-
-  const isSystemCol = columnFilters.find((f) => f.id === 'isSystem');
-  const isSystemRaw = Array.isArray(isSystemCol?.value) ? isSystemCol.value[0] : isSystemCol?.value;
-  const isSystem = isSystemRaw === 'true' ? true : isSystemRaw === 'false' ? false : undefined;
-
-  const emailVerifiedCol = columnFilters.find((f) => f.id === 'emailVerified');
-  const emailVerifiedRaw = Array.isArray(emailVerifiedCol?.value)
-    ? emailVerifiedCol.value[0]
-    : emailVerifiedCol?.value;
-  const emailVerified =
-    emailVerifiedRaw === 'true' ? true : emailVerifiedRaw === 'false' ? false : undefined;
-
-  const isActiveCol = columnFilters.find((f) => f.id === 'isActive');
-  const isActiveRaw = Array.isArray(isActiveCol?.value) ? isActiveCol.value[0] : isActiveCol?.value;
-  const isActive = isActiveRaw === 'true' ? true : isActiveRaw === 'false' ? false : undefined;
-
-  const createdAtCol = columnFilters.find((f) => f.id === 'createdAt');
-  const [createdFrom, createdTo] = Array.isArray(createdAtCol?.value)
-    ? createdAtCol.value
-    : [undefined, undefined];
-
-  const { data, isLoading, isFetching } = usersQueries.useGetAll({
+  // ── React Query Fetch ──────────────────────────────────────────────────────
+  const { data, isLoading, isFetching } = usersQueries.useGetRoleAssignments(userId, {
     page,
     limit,
     isTrash: false,
-    sortBy,
+    sortBy: 'name',
     sortOrder,
     ...(name && { name }),
-    ...(email && { email }),
-    ...(isSystem !== undefined && { isSystem }),
-    ...(isActive !== undefined && { isActive }),
-    ...(emailVerified !== undefined && { emailVerified }),
-
-    createdAtFrom: createdFrom ? createdFrom : undefined,
-    createdAtTo: createdTo ? createdTo : undefined,
   });
 
-  const users: Users[] = data?.data ?? [];
+  const roles: ResponseTeamRoleBase[] = data?.data ?? [];
   const totalPages: number = data?.meta?.totalPages ?? 1;
   const totalRows: number = data?.meta?.total ?? 0;
 
+  // ── TanStack Table Instance ────────────────────────────────────────────────
   const table = useReactTable({
-    data: users,
+    data: roles,
     columns,
     manualPagination: true,
     manualFiltering: true,
@@ -136,17 +104,43 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
     },
   });
 
-  const { mutate: mutateDelete, isPending: isPendingDelete } = usersQueries.useSoftDeleteMany();
-  const { mutate: mutateSuspend, isPending: isSuspending } = usersQueries.useSuspendBulk();
-  const { mutate: mutateUnsuspend, isPending: isUnsuspending } = usersQueries.useUnsuspendBulk();
+  // ── Mutations ──────────────────────────────────────────────────────────────
+  const { mutate: mutateRemove, isPending: isPendingRemove } =
+    usersQueries.useRemoveRoleAssignments(userId);
+  const { mutate: mutateAdd, isPending: isPendingAdd } = usersQueries.useAddRoleAssignments(userId);
 
-  const handleDelete = (rows: Row<Users>[]) => {
-    mutateDelete(
-      rows.map((item) => item.original.id),
+  const assignedRoleIds = roles.map((r) => r.id);
+
+  const handleRemove = (rows: Row<ResponseTeamRoleBase>[]) => {
+    mutateRemove(
+      { roles: rows.map((item) => item.original.id) },
       {
         onSuccess: () => {
-          setRowSelection([]);
-          toast.success(t('users.table.delete'));
+          setRowSelection({});
+          toast.success(t('roles.table.remove_success'));
+        },
+      }
+    );
+  };
+
+  const handleAdd = (rows: Row<ResponseTeamRoleBase>[]) => {
+    mutateAdd(
+      { roles: rows.map((item) => item.original.id) },
+      {
+        onSuccess: () => {
+          setRowSelection({});
+          toast.success(t('roles.table.add_success'));
+        },
+      }
+    );
+  };
+
+  const handleAddRoles = (roleIds: string[]) => {
+    mutateAdd(
+      { roles: roleIds },
+      {
+        onSuccess: () => {
+          toast.success(t('roles.table.add_success'));
         },
       }
     );
@@ -155,14 +149,15 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
   return {
     table,
     totalRows,
-
     isLoading,
     isFetching,
     isMobile,
-
     limit,
-
-    handleDelete,
-    isPendingActions: isPendingDelete || isUnsuspending || isSuspending,
+    handleRemove,
+    handleAdd,
+    handleAddRoles,
+    assignedRoleIds,
+    isPendingAdd,
+    isPendingActions: isPendingRemove || isPendingAdd,
   };
 }

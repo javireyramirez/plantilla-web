@@ -161,6 +161,7 @@ export function RoleAssignmentsTable({ roleId }: RoleAssignmentsTableProps) {
     isMobile,
     limit,
     assignedUserIds,
+    assignedTeamIds,
     handleRemove,
     isPendingActions,
     handleAddAssignments,
@@ -194,6 +195,7 @@ export function RoleAssignmentsTable({ roleId }: RoleAssignmentsTableProps) {
         </div>
         <AddRoleAssignmentDrawer
           excludeUserIds={assignedUserIds}
+          excludeTeamIds={assignedTeamIds}
           onAddAssignments={handleAddAssignments}
           isAdding={isPendingAdd}
         />
