@@ -3,22 +3,16 @@ import { useTranslation } from 'react-i18next';
 
 import * as React from 'react';
 
-import { Selector } from '@/components/selector/selector';
-import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import { AssignmentDrawer, SelectorConfig } from '@/components/selector/assignment-drawer';
+import { teamsQueries } from '@/modules/teams/model/teams.query';
+import { GetTeamQuery } from '@/modules/teams/model/teams.schema';
 import { usersQueries } from '@/modules/users/model/users.query';
 import { GetUsersQuery } from '@/modules/users/model/users.schema';
 
 interface AddRoleAssignmentDrawerProps {
   excludeUserIds: string[];
-  onAddAssignments: (targets: { userId: string }[]) => void;
+  excludeTeamIds: string[];
+  onAddAssignments: (targets: { userId?: string; teamId?: string }[]) => void;
   isAdding?: boolean;
 }
 
@@ -49,74 +43,89 @@ function useUsersOptions(params: {
   };
 }
 
+function useTeamsOptions(params: {
+  page?: number;
+  limit: number;
+  isTrash?: boolean;
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+  name?: string;
+}) {
+  const { name, ...rest } = params;
+  const { data, isLoading } = teamsQueries.useGetAll({
+    page: rest.page ?? 1,
+    isTrash: rest.isTrash ?? false,
+    ...rest,
+    sortBy: rest.sortBy as GetTeamQuery['sortBy'],
+    name: name,
+  });
+
+  return {
+    data:
+      data?.data?.map((t: { id: string; name: string }) => ({
+        id: t.id,
+        name: t.name,
+      })) ?? [],
+    isLoading,
+  };
+}
+
 export function AddRoleAssignmentDrawer({
   excludeUserIds,
+  excludeTeamIds,
   onAddAssignments,
   isAdding,
 }: AddRoleAssignmentDrawerProps) {
   const { t } = useTranslation();
-  const [open, setOpen] = React.useState(false);
   const [selectedUserIds, setSelectedUserIds] = React.useState<string[]>([]);
-
-  React.useEffect(() => {
-    if (!open) {
-      setSelectedUserIds([]);
-    }
-  }, [open]);
+  const [selectedTeamIds, setSelectedTeamIds] = React.useState<string[]>([]);
 
   const handleApply = React.useCallback(() => {
-    // Mapeamos los IDs planos de los usuarios al formato esperado por el CreateAssignmentBodySchema
-    const targets = selectedUserIds.map((id) => ({ userId: id }));
+    const targets: { userId?: string; teamId?: string }[] = [];
+    selectedUserIds.forEach((id) => targets.push({ userId: id }));
+    selectedTeamIds.forEach((id) => targets.push({ teamId: id }));
     onAddAssignments(targets);
-    setOpen(false);
-  }, [onAddAssignments, selectedUserIds]);
+    setSelectedUserIds([]);
+    setSelectedTeamIds([]);
+  }, [onAddAssignments, selectedUserIds, selectedTeamIds]);
+
+  const selectorsConfig: SelectorConfig[] = [
+    {
+      key: 'users',
+      label: t('roles.assignments.selectUsersLabel', { defaultValue: 'Usuarios' }),
+      placeholder: t('teamMembers.selectUser'),
+      searchPlaceholder: t('teamMembers.searchUser'),
+      emptyMessage: t('teamMembers.noUsersFound'),
+      useGetList: useUsersOptions,
+      excludeIds: excludeUserIds,
+      value: selectedUserIds,
+      onChange: setSelectedUserIds,
+    },
+    {
+      key: 'teams',
+      label: t('roles.assignments.selectTeamsLabel', { defaultValue: 'Equipos' }),
+      placeholder: t('teams.selectTeam', { defaultValue: 'Selecciona un equipo' }),
+      searchPlaceholder: t('teams.searchTeam', { defaultValue: 'Buscar equipo...' }),
+      emptyMessage: t('teams.noTeamsFound', { defaultValue: 'No se encontraron equipos' }),
+      useGetList: useTeamsOptions,
+      excludeIds: excludeTeamIds,
+      value: selectedTeamIds,
+      onChange: setSelectedTeamIds,
+    },
+  ];
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button size="sm" className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          {t('roles.assignments.addBtn', { defaultValue: 'Asignar Miembro' })}
-        </Button>
-      </SheetTrigger>
-
-      <SheetContent side="right" className="flex w-full flex-col gap-4 sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>
-            {t('roles.assignments.addTitle', { defaultValue: 'Asignar miembros al Rol' })}
-          </SheetTitle>
-          <SheetDescription>
-            {t('roles.assignments.addDescription', {
-              defaultValue:
-                'Selecciona los usuarios a los que deseas otorgar los permisos de este rol.',
-            })}
-          </SheetDescription>
-        </SheetHeader>
-
-        <div className="flex-1 min-h-0">
-          <Selector
-            multiple
-            applyButton={false}
-            disabled={isAdding}
-            value={selectedUserIds}
-            onChange={setSelectedUserIds}
-            excludeIds={excludeUserIds}
-            useGetList={useUsersOptions}
-            placeholder={t('teamMembers.selectUser')}
-            searchPlaceholder={t('teamMembers.searchUser')}
-            emptyMessage={t('teamMembers.noUsersFound')}
-          />
-        </div>
-
-        <div className="flex items-center justify-end gap-2 border-t pt-4">
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={isAdding}>
-            {t('teams.cancel')}
-          </Button>
-          <Button onClick={handleApply} disabled={isAdding || selectedUserIds.length === 0}>
-            {t('dataTable.selector.applyLabel')}
-          </Button>
-        </div>
-      </SheetContent>
-    </Sheet>
+    <AssignmentDrawer
+      triggerBtnText={t('roles.assignments.addBtn', { defaultValue: 'Asignar Miembro' })}
+      triggerIcon={<UserPlus className="h-4 w-4" />}
+      drawerTitle={t('roles.assignments.addTitle', { defaultValue: 'Asignar miembros al Rol' })}
+      drawerDescription={t('roles.assignments.addDescription', {
+        defaultValue: 'Selecciona los usuarios y/o equipos a los que deseas otorgar los permisos de este rol.',
+      })}
+      selectors={selectorsConfig}
+      onApply={handleApply}
+      isApplying={isAdding}
+      triggerClassName="gap-2"
+    />
   );
 }

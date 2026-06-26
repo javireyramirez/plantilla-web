@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react';
+import { Trash2, Shield, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import * as React from 'react';
@@ -11,13 +11,44 @@ import { DataTableFloatingBar } from '@/components/data-table/data-table-floatin
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-desktop';
 import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
+import { AssignmentDrawer, SelectorConfig } from '@/components/selector/assignment-drawer';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { rolesQueries } from '@/modules/roles/model/roles.query';
+import { GetRoleQuery } from '@/modules/roles/model/roles.schema';
 import useUserRoles from '@/modules/users/model/use-users-roles-table';
 import { ResponseTeamRoleBase } from '@/modules/users/model/users.schema';
 
+function useRolesOptions(params: {
+  page?: number;
+  limit: number;
+  isTrash?: boolean;
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+  name?: string;
+}) {
+  const { name, ...rest } = params;
+  const { data, isLoading } = rolesQueries.useGetAll({
+    page: rest.page ?? 1,
+    isTrash: rest.isTrash ?? false,
+    ...rest,
+    sortBy: rest.sortBy as GetRoleQuery['sortBy'],
+    name: name,
+  });
+
+  return {
+    data:
+      data?.data?.map((r: { id: string; name: string }) => ({
+        id: r.id,
+        name: r.name,
+      })) ?? [],
+    isLoading,
+  };
+}
+
 export function UserRolesTable({ userId }: { userId?: string }) {
   const { t } = useTranslation();
+  const [selectedRoleIds, setSelectedRoleIds] = React.useState<string[]>([]);
 
   const columns = React.useMemo<ColumnDef<ResponseTeamRoleBase>[]>(
     () => [
@@ -79,8 +110,29 @@ export function UserRolesTable({ userId }: { userId?: string }) {
     isMobile,
     limit,
     handleRemove,
+    handleAddRoles,
+    assignedRoleIds,
+    isPendingAdd,
     isPendingActions,
   } = useUserRoles(columns, userId);
+
+  const handleApply = React.useCallback(() => {
+    handleAddRoles(selectedRoleIds);
+    setSelectedRoleIds([]);
+  }, [handleAddRoles, selectedRoleIds]);
+
+  const selectorsConfig: SelectorConfig[] = [
+    {
+      key: 'roles',
+      placeholder: t('roles.selectRole', { defaultValue: 'Selecciona un rol' }),
+      searchPlaceholder: t('roles.searchRole', { defaultValue: 'Buscar rol...' }),
+      emptyMessage: t('roles.noRolesFound', { defaultValue: 'No se encontraron roles' }),
+      useGetList: useRolesOptions,
+      excludeIds: assignedRoleIds,
+      value: selectedRoleIds,
+      onChange: setSelectedRoleIds,
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -100,6 +152,27 @@ export function UserRolesTable({ userId }: { userId?: string }) {
         isFetching && !isLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'
       )}
     >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-base font-semibold">
+            {t('users.roles.assignedTitle', { defaultValue: 'Roles Asignados' })}
+          </h2>
+        </div>
+        <AssignmentDrawer
+          triggerBtnText={t('users.roles.assignBtn', { defaultValue: 'Asignar Rol' })}
+          triggerIcon={<Plus className="h-4 w-4" />}
+          drawerTitle={t('users.roles.assignTitle', { defaultValue: 'Asignar Roles al Usuario' })}
+          drawerDescription={t('users.roles.assignDescription', {
+            defaultValue: 'Selecciona los roles que deseas asignar a este usuario.',
+          })}
+          selectors={selectorsConfig}
+          onApply={handleApply}
+          isApplying={isPendingAdd}
+          triggerClassName="gap-2"
+        />
+      </div>
+
       <DataTable
         table={table}
         totalCount={totalRows}
@@ -112,7 +185,7 @@ export function UserRolesTable({ userId }: { userId?: string }) {
             table={table}
             actions={[
               {
-                label: t('roles.remove'), // Asegúrate de tener la key de traducción "Remover/Desasignar"
+                label: t('roles.remove'),
                 icon: <Trash2 className="h-4 w-4" />,
                 variant: 'destructive',
                 disabled: isPendingActions,

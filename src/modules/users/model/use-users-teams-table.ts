@@ -110,6 +110,8 @@ export default function useUserTeams(columns: ColumnDef<ResponseTeamRoleBase>[],
     usersQueries.useRemoveTeamAssignments(userId);
   const { mutate: mutateAdd, isPending: isPendingAdd } = usersQueries.useAddTeamAssignments(userId);
 
+  const assignedTeamIds = teams.map((t) => t.id);
+
   const handleRemove = (rows: Row<ResponseTeamRoleBase>[]) => {
     mutateRemove(
       { teams: rows.map((item) => item.original.id) },
@@ -134,6 +136,17 @@ export default function useUserTeams(columns: ColumnDef<ResponseTeamRoleBase>[],
     );
   };
 
+  const handleAddTeams = (teamIds: string[]) => {
+    mutateAdd(
+      { teams: teamIds },
+      {
+        onSuccess: () => {
+          toast.success(t('teams.table.add_success'));
+        },
+      }
+    );
+  };
+
   return {
     table,
     totalRows,
@@ -144,6 +157,9 @@ export default function useUserTeams(columns: ColumnDef<ResponseTeamRoleBase>[],
     mutateAdd,
     handleRemove,
     handleAdd,
+    handleAddTeams,
+    assignedTeamIds,
+    isPendingAdd,
     isPendingActions: isPendingAdd || isPendingRemove,
   };
 }
