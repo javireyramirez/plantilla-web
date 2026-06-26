@@ -379,6 +379,7 @@
     "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
     "cancel": "Cancelar",
     "members": "Miembros del equipo",
+    "roles": "Roles del equipo",
     "table": {
       "delete": "Compañía(s) eliminada(s) con éxito",
       "selectTodo": "Seleccionar todo",

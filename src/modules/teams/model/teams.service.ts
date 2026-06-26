@@ -1,4 +1,9 @@
 import instance from '@/config/api';
+import {
+  GetUserAssignmentsQuery,
+  UpdateUserRolesBody,
+  UserRolesPaginatedResponse,
+} from '@/modules/users/model/users.schema';
 import { CrudService } from '@/services/crud.service';
 
 import {
@@ -68,6 +73,30 @@ class TeamsService extends CrudService<
 
   removeMembersBulk = async (teamId: string, body: BulkUserIdsBody) => {
     const { data } = await instance.delete<BulkResponse>(`${this.getMembersPath(teamId)}/bulk`, {
+      data: body,
+    });
+    return data;
+  };
+
+  // ── Roles ───────────────────────────────────
+  getRoleAssignments = async (teamId: string, params?: GetUserAssignmentsQuery) => {
+    const { data } = await instance.get<UserRolesPaginatedResponse>(
+      `/teams/${teamId}/roles`,
+      { params }
+    );
+    return data;
+  };
+
+  addRoleAssignments = async (teamId: string, body: UpdateUserRolesBody) => {
+    const { data } = await instance.post<BulkResponse>(
+      `/teams/${teamId}/roles`,
+      body
+    );
+    return data;
+  };
+
+  removeRoleAssignments = async (teamId: string, body: UpdateUserRolesBody) => {
+    const { data } = await instance.delete<BulkResponse>(`/teams/${teamId}/roles`, {
       data: body,
     });
     return data;

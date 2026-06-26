@@ -37,6 +37,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MembersTable } from '@/modules/teams/components/members-table';
+import { TeamsRolesTable } from '@/modules/teams/components/teams-roles-table';
 
 import { useTeamForm } from '../model/use-teams-detail';
 
@@ -56,6 +57,7 @@ export default function TeamDetail() {
   const tabs = [
     { value: 'detail', label: t('teams.detail'), viewAtCreate: true },
     { value: 'members', label: t('teams.members'), viewAtCreate: isEditing },
+    { value: 'roles', label: t('teams.roles', { defaultValue: 'Roles' }), viewAtCreate: isEditing },
     { value: 'audit', label: t('teams.audit'), viewAtCreate: isEditing },
   ];
 
@@ -401,6 +403,10 @@ export default function TeamDetail() {
           <>
             <TabsContent value="members" className="outline-none">
               <MembersTable teamId={id as string} />
+            </TabsContent>
+
+            <TabsContent value="roles" className="outline-none">
+              <TeamsRolesTable teamId={id as string} />
             </TabsContent>
 
             <TabsContent

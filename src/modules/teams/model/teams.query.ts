@@ -1,5 +1,11 @@
 import { UseQueryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import {
+  GetUserAssignmentsQuery,
+  UpdateUserRolesBody,
+  UserRolesPaginatedResponse,
+} from '@/modules/users/model/users.schema';
+
 import { createGenericQueries } from '@/hooks/use-crud';
 
 import {
@@ -15,6 +21,8 @@ import { teamsService } from './teams.service';
 const keys = {
   all: (teamId: string) => ['teams', teamId, 'users'] as const,
   list: (teamId: string, query?: GetTeamMembersQuery) => [...keys.all(teamId), query] as const,
+  rolesAll: (teamId: string) => ['teams', teamId, 'roles'] as const,
+  rolesList: (teamId: string, query?: GetUserAssignmentsQuery) => [...keys.rolesAll(teamId), query] as const,
 };
 
 export const teamsQueries = {
@@ -73,6 +81,36 @@ export const teamsQueries = {
       mutationFn: ({ teamId, body }) => teamsService.removeMembersBulk(teamId, body),
       onSuccess: (_, { teamId }) => {
         qc.invalidateQueries({ queryKey: keys.all(teamId) });
+      },
+    });
+  },
+
+  // ── Roles ─────────────────────────────────────────────────────
+
+  useGetRoleAssignments: (teamId: string, params?: GetUserAssignmentsQuery) => {
+    return useQuery<UserRolesPaginatedResponse, Error>({
+      queryKey: keys.rolesList(teamId, params),
+      queryFn: () => teamsService.getRoleAssignments(teamId, params),
+      enabled: !!teamId,
+    });
+  },
+
+  useAddRoleAssignments: (teamId: string) => {
+    const qc = useQueryClient();
+    return useMutation<BulkResponse, Error, UpdateUserRolesBody>({
+      mutationFn: (body) => teamsService.addRoleAssignments(teamId, body),
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: keys.rolesAll(teamId) });
+      },
+    });
+  },
+
+  useRemoveRoleAssignments: (teamId: string) => {
+    const qc = useQueryClient();
+    return useMutation<BulkResponse, Error, UpdateUserRolesBody>({
+      mutationFn: (body) => teamsService.removeRoleAssignments(teamId, body),
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: keys.rolesAll(teamId) });
       },
     });
   },
