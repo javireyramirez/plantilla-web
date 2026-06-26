@@ -1,4 +1,4 @@
-import { Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
@@ -6,11 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
-import { useUsersForm } from '../model/use-users-detail';
+interface UsersDetailFormProps {
+  isEditing: boolean;
+  isActive: boolean;
+}
 
-export function UsersDetailForm({ id }: { id?: string }) {
+export function UsersDetailForm({ isEditing, isActive }: UsersDetailFormProps) {
   const { t } = useTranslation();
-  const { form, isEditing, isActive } = useUsersForm(id);
+  const form = useFormContext();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -78,3 +81,4 @@ export function UsersDetailForm({ id }: { id?: string }) {
     </div>
   );
 }
+

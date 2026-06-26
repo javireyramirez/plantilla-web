@@ -1,11 +1,10 @@
 import { Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
-import { Controller } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
 import { useState } from 'react';
 
-import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,26 +24,17 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DocumentsTable, FileUploadButton } from '@/features/storage';
-import { SECTOR_OPTIONS } from '@/modules/companies/model/companies.types';
+import { CompaniesDetailForm } from '../components/companies-form';
 import { useCompanyForm } from '@/modules/companies/model/use-companies-detail';
 
 export default function CompanyDetail() {
@@ -52,7 +42,6 @@ export default function CompanyDetail() {
 
   // --- Estados locales ---
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [shouldCloseOnSubmit, setShouldCloseOnSubmit] = useState(false);
   const [activeTab, setActiveTab] = useState('detail');
 
   // --- Hooks de datos y formulario ---
@@ -228,11 +217,10 @@ export default function CompanyDetail() {
 
           {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
           <Button
-            form="company-form-id"
-            type="submit"
+            type="button"
             variant="outline"
             disabled={isPending}
-            onClick={() => setShouldCloseOnSubmit(true)}
+            onClick={() => form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()}
             className="hidden md:flex gap-2"
           >
             <Save className="h-4 w-4" />
@@ -241,10 +229,9 @@ export default function CompanyDetail() {
 
           {/* Acción Principal: Siempre visible */}
           <Button
-            form="company-form-id"
-            type="submit"
+            type="button"
             disabled={isPending}
-            onClick={() => setShouldCloseOnSubmit(false)}
+            onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
             className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
           >
             <Save className="h-4 w-4" />
@@ -266,7 +253,6 @@ export default function CompanyDetail() {
                 className="md:hidden gap-2"
                 onSelect={(e) => {
                   e.preventDefault();
-                  setShouldCloseOnSubmit(true);
                   form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
                 }}
               >
@@ -346,133 +332,9 @@ export default function CompanyDetail() {
 
         {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            {/* Formulario de Datos Básicos */}
-            <Card className="lg:col-span-1 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  {t('companies.basicData')}
-                </CardTitle>
-                <CardDescription>{t('companies.identificationInfo')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form
-                  id="company-form-id"
-                  onSubmit={form.handleSubmit((data) =>
-                    handleSubmit(data, { shouldClose: shouldCloseOnSubmit })
-                  )}
-                  className="space-y-4"
-                >
-                  <FieldGroup className="space-y-4">
-                    <Controller
-                      name="name"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <FormFieldWrapper fieldState={fieldState}>
-                          <FieldLabel
-                            htmlFor="company-name"
-                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                          >
-                            {t('companies.name')}
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="company-name"
-                            aria-invalid={fieldState.invalid}
-                            data-invalid={fieldState.invalid}
-                            placeholder={t('companies.namePlaceholder')}
-                            autoComplete="off"
-                            className="mt-1.5 focus-visible:ring-primary"
-                          />
-                        </FormFieldWrapper>
-                      )}
-                    />
-
-                    <Controller
-                      name="nif"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <FormFieldWrapper fieldState={fieldState}>
-                          <FieldLabel
-                            htmlFor="company-nif"
-                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                          >
-                            {t('companies.cifNif')}
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="company-nif"
-                            aria-invalid={fieldState.invalid}
-                            data-invalid={fieldState.invalid}
-                            placeholder="A1234567B"
-                            autoComplete="off"
-                            className="mt-1.5 focus-visible:ring-primary"
-                          />
-                        </FormFieldWrapper>
-                      )}
-                    />
-
-                    <Controller
-                      name="sector"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <FormFieldWrapper fieldState={fieldState}>
-                          <FieldLabel
-                            htmlFor="company-sector"
-                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                          >
-                            {t('companies.sector')}
-                          </FieldLabel>
-                          <Select value={field.value ?? undefined} onValueChange={field.onChange}>
-                            <SelectTrigger
-                              id="company-sector"
-                              className="mt-1.5 focus-visible:ring-primary w-full"
-                              aria-invalid={fieldState.invalid}
-                              data-invalid={fieldState.invalid}
-                            >
-                              <SelectValue placeholder={t('companies.selectSector')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {SECTOR_OPTIONS.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {t(`companies.sectors.${option.value}`)}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormFieldWrapper>
-                      )}
-                    />
-                  </FieldGroup>
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* Tarjetas Secundarias Estatales */}
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  {t('companies.additionalInfo')}
-                </CardTitle>
-                <CardDescription>{t('companies.pendingDefine')}</CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  {t('companies.metricsSummary')}
-                </CardTitle>
-                <CardDescription>{t('companies.entityStats')}</CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget elit nec.
-              </CardContent>
-            </Card>
-          </div>
+          <FormProvider {...form}>
+            <CompaniesDetailForm isEditing={isEditing} />
+          </FormProvider>
         </TabsContent>
 
         {isEditing && (

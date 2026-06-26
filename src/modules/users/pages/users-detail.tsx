@@ -13,6 +13,7 @@ import {
   User,
   UserCheck,
 } from 'lucide-react';
+import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
@@ -356,7 +357,9 @@ export default function UsersDetail() {
 
         {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
-          <UsersDetailForm id={id} />
+          <FormProvider {...form}>
+            <UsersDetailForm isEditing={isEditing} isActive={isActive} />
+          </FormProvider>
         </TabsContent>
 
         {isEditing && (
