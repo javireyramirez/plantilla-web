@@ -1,5 +1,6 @@
-import { Trash2, Users, Plus } from 'lucide-react';
+import { Plus, Trash2, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import * as React from 'react';
 
@@ -48,6 +49,7 @@ function useTeamsOptions(params: {
 }
 
 export function UsersTeamsTable({ userId }: { userId?: string }) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [selectedTeamIds, setSelectedTeamIds] = React.useState<string[]>([]);
 
@@ -84,7 +86,16 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} label={t('users.teams.name')} />
         ),
-        cell: ({ row }) => <span className="font-medium">{row.getValue('name')}</span>,
+        cell: ({ row }) => (
+          <span className="font-medium">
+            <button
+              className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+              onClick={() => navigate(`/teams/edit/${row.original.id}`)}
+            >
+              {row.getValue('name')}
+            </button>
+          </span>
+        ),
         meta: {
           label: t('users.teams.name'),
           variant: 'text',
