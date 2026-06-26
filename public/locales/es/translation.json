@@ -276,10 +276,16 @@
       "update": "Usuario actualizado con éxito",
       "create": "Usuario creado con éxito",
       "delete": "Usuario eliminado con éxito",
+      "suspend": "Usuario suspendido con éxito",
+      "unsuspend": "Usuario activado con éxito",
+      "resendInvitation": "Invitación reenviada con éxito",
       "errors": {
         "update": "Error al actualizar el usuario",
         "create": "Error al crear el usuario",
-        "delete": "Error al eliminar el usuario"
+        "delete": "Error al eliminar el usuario",
+        "suspend": "Error al suspender el usuario",
+        "unsuspend": "Error al activar el usuario",
+        "resendInvitation": "Error al reenviar la invitación"
       }
     }
   },

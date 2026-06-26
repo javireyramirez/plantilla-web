@@ -139,6 +139,8 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
   const { mutate: mutateDelete, isPending: isPendingDelete } = usersQueries.useSoftDeleteMany();
   const { mutate: mutateSuspend, isPending: isSuspending } = usersQueries.useSuspendBulk();
   const { mutate: mutateUnsuspend, isPending: isUnsuspending } = usersQueries.useUnsuspendBulk();
+  const { mutateAsync: mutateResendInvitation } = usersQueries.useResendInvitation();
+  const [isResending, setIsResending] = React.useState(false);
 
   const handleDelete = (rows: Row<Users>[]) => {
     mutateDelete(
@@ -152,6 +154,49 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
     );
   };
 
+  const handleSuspend = (rows: Row<Users>[]) => {
+    mutateSuspend(
+      { ids: rows.map((item) => item.original.id) },
+      {
+        onSuccess: () => {
+          setRowSelection([]);
+          toast.success(t('users.form.suspend'));
+        },
+        onError: (err: any) => {
+          toast.error(err.message || t('users.form.errors.suspend'));
+        },
+      }
+    );
+  };
+
+  const handleUnsuspend = (rows: Row<Users>[]) => {
+    mutateUnsuspend(
+      { ids: rows.map((item) => item.original.id) },
+      {
+        onSuccess: () => {
+          setRowSelection([]);
+          toast.success(t('users.form.unsuspend'));
+        },
+        onError: (err: any) => {
+          toast.error(err.message || t('users.form.errors.unsuspend'));
+        },
+      }
+    );
+  };
+
+  const handleResendInvitation = async (rows: Row<Users>[]) => {
+    setIsResending(true);
+    try {
+      await Promise.all(rows.map((item) => mutateResendInvitation(item.original.id)));
+      setRowSelection([]);
+      toast.success(t('users.form.resendInvitation'));
+    } catch (err: any) {
+      toast.error(err.message || t('users.form.errors.resendInvitation'));
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   return {
     table,
     totalRows,
@@ -163,6 +208,9 @@ export default function useUsers(columns: ColumnDef<Users>[]) {
     limit,
 
     handleDelete,
-    isPendingActions: isPendingDelete || isUnsuspending || isSuspending,
+    handleSuspend,
+    handleUnsuspend,
+    handleResendInvitation,
+    isPendingActions: isPendingDelete || isUnsuspending || isSuspending || isResending,
   };
 }

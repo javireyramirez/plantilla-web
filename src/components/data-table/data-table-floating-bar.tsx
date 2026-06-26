@@ -14,6 +14,7 @@ import {
 import { Kbd } from '@/components/ui/kbd';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 export interface FloatingBarAction<TData> {
   label: string;
@@ -21,8 +22,9 @@ export interface FloatingBarAction<TData> {
   onClick: (rows: Row<TData>[]) => void;
   variant?: 'ghost' | 'destructive';
   disabled?: boolean;
+  className?: string;
+  hideOnMobile?: boolean;
 }
-
 export interface DataTableFloatingBarProps<TData> {
   table: Table<TData>;
   actions?: FloatingBarAction<TData>[];
@@ -32,9 +34,11 @@ export function DataTableFloatingBar<TData>({ table, actions }: DataTableFloatin
   const rows = table.getFilteredSelectedRowModel().rows;
   const isMobile = useIsMobile();
 
+  const filteredActions = actions?.filter((action) => !isMobile || !action.hideOnMobile) ?? [];
+
   const MAX_VISIBLE = isMobile ? 2 : 4;
-  const visibleActions = actions?.slice(0, MAX_VISIBLE) ?? [];
-  const overflowActions = actions?.slice(MAX_VISIBLE) ?? [];
+  const visibleActions = filteredActions.slice(0, MAX_VISIBLE);
+  const overflowActions = filteredActions.slice(MAX_VISIBLE);
 
   const onClearSelection = React.useCallback(() => {
     table.toggleAllRowsSelected(false);
@@ -68,7 +72,7 @@ export function DataTableFloatingBar<TData>({ table, actions }: DataTableFloatin
               key={action.label}
               variant={action.variant ?? 'ghost'}
               size="sm"
-              className={isMobile ? 'h-8 w-8 p-0' : 'h-8'}
+              className={cn(isMobile ? 'h-8 w-8 p-0' : 'h-8', action.className)}
               onClick={() => action.onClick(rows)}
               title={action.label}
               disabled={action.disabled}
@@ -91,7 +95,10 @@ export function DataTableFloatingBar<TData>({ table, actions }: DataTableFloatin
                   <DropdownMenuItem
                     key={action.label}
                     onClick={() => action.onClick(rows)}
-                    className={action.variant === 'destructive' ? 'text-destructive' : ''}
+                    className={cn(
+                      action.variant === 'destructive' ? 'text-destructive' : '',
+                      action.className
+                    )}
                   >
                     {action.icon}
                     <span className="ml-2">{action.label}</span>
