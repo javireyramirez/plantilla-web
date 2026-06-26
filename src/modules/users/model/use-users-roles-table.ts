@@ -107,6 +107,7 @@ export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[],
   // ── Mutations ──────────────────────────────────────────────────────────────
   const { mutate: mutateRemove, isPending: isPendingRemove } =
     usersQueries.useRemoveRoleAssignments(userId);
+  const { mutate: mutateAdd, isPending: isPendingAdd } = usersQueries.useAddRoleAssignments(userId);
 
   const handleRemove = (rows: Row<ResponseTeamRoleBase>[]) => {
     mutateRemove(
@@ -120,6 +121,18 @@ export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[],
     );
   };
 
+  const handleAdd = (rows: Row<ResponseTeamRoleBase>[]) => {
+    mutateAdd(
+      { roles: rows.map((item) => item.original.id) },
+      {
+        onSuccess: () => {
+          setRowSelection({});
+          toast.success(t('roles.table.add_success'));
+        },
+      }
+    );
+  };
+
   return {
     table,
     totalRows,
@@ -128,6 +141,7 @@ export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[],
     isMobile,
     limit,
     handleRemove,
+    handleAdd,
     isPendingActions: isPendingRemove,
   };
 }

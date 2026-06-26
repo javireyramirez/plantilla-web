@@ -67,10 +67,8 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
     return <div>Error.</div>;
   }
 
-  const { table, isLoading, isFetching, isMobile, handleRemove, isPendingActions } = useTableTeams(
-    columns,
-    userId
-  );
+  const { table, isLoading, isFetching, isMobile, handleRemove, handleAdd, isPendingActions } =
+    useTableTeams(columns, userId);
 
   if (isLoading) {
     return <DataTableSkeleton columnCount={columns.length} rowCount={5} withPagination={false} />;

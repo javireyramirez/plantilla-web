@@ -143,6 +143,7 @@ export default function useUserTeams(columns: ColumnDef<ResponseTeamRoleBase>[],
     limit,
     mutateAdd,
     handleRemove,
+    handleAdd,
     isPendingActions: isPendingAdd || isPendingRemove,
   };
 }
