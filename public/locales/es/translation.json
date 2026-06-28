@@ -511,6 +511,36 @@
       "uploadError": "Error al subir el documento"
     }
   },
+  "audit": {
+    "title": "Auditoría",
+    "subtitle": "Visualiza el registro de actividades y auditorías del sistema.",
+    "date": "Fecha y hora",
+    "action": "Acción",
+    "entity": "Entidad",
+    "description": "Descripción",
+    "user": "Usuario",
+    "ipAddress": "Dirección IP",
+    "userAgent": "Agente de usuario",
+    "module": "Módulo",
+    "detail": "Detalle de Auditoría",
+    "details": "Detalles",
+    "detailsDescription": "Información general del registro de auditoría.",
+    "metadata": "Metadatos / Datos adicionales",
+    "metadataDescription": "Cambios y payload JSON del evento.",
+    "noMetadata": "No hay metadatos registrados para este evento.",
+    "back": "Volver",
+    "notFoundTitle": "Registro no encontrado",
+    "notFoundDesc": "El registro de auditoría solicitado no existe o no tiene permisos para verlo.",
+    "actions": {
+      "CREATE": "Crear",
+      "UPDATE": "Actualizar",
+      "SOFT_DELETE": "Eliminar (Papelera)",
+      "RESTORE": "Restaurar",
+      "HARD_DELETE": "Eliminar Permanente",
+      "LOGIN": "Iniciar Sesión",
+      "LOGOUT": "Cerrar Sesión"
+    }
+  },
   "redirecting_message_one": "Redirigiendo al dashboard en {{count}} segundo...",
   "redirecting_message_other": "Redirigiendo al dashboard en {{count}} segundos..."
 }
