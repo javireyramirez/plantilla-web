@@ -32,7 +32,6 @@ export function getModuleOptions(t: (key: string) => string): SelectOption[] {
     { value: 'teams', label: t('sidebar.nav.teams') },
     { value: 'roles', label: t('sidebar.nav.roles') },
     { value: 'audit', label: t('sidebar.nav.audit') },
-    { value: 'recovery', label: t('sidebar.nav.recovery') },
     { value: 'documents', label: t('sidebar.nav.documents') },
   ];
 }
