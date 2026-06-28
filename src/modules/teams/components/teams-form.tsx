@@ -51,17 +51,6 @@ export function TeamsDetailForm({ isEditing }: TeamsDetailFormProps) {
           </form>
         </CardContent>
       </Card>
-
-      {/* Tarjeta Usuarios */}
-      <Card className="shadow-sm lg:col-span-2">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">{t('teams.users')}</CardTitle>
-          <CardDescription>{t('teams.pendingDefine')}</CardDescription>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground leading-relaxed">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.
-        </CardContent>
-      </Card>
     </div>
   );
 }
