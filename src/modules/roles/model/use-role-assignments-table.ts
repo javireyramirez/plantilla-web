@@ -59,8 +59,8 @@ export default function useRoleAssignments(
     limit,
     sortBy,
     sortOrder,
-    assignedFrom: assignedFrom ? assignedFrom.toISOString() : undefined,
-    assignedTo: assignedTo ? assignedTo.toISOString() : undefined,
+    assignedFrom: assignedFrom ? assignedFrom : undefined,
+    assignedTo: assignedTo ? assignedTo : undefined,
   });
 
   const assignments: RoleAssignmentResponse[] = data?.data ?? [];

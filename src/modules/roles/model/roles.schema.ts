@@ -156,8 +156,8 @@ export const GetAssignmentsQuerySchema = z.object({
   userId: z.string().optional(),
   teamId: z.string().optional(),
 
-  assignedFrom: z.string().datetime().optional(),
-  assignedTo: z.string().datetime().optional(),
+  assignedFrom: z.date().optional(),
+  assignedTo: z.date().optional(),
 });
 
 // ==========================================
