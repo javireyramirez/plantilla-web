@@ -500,6 +500,36 @@
       "uploadError": "Error uploading document"
     }
   },
+  "audit": {
+    "title": "Audit Trail",
+    "subtitle": "View the system activity log and audits.",
+    "date": "Date & Time",
+    "action": "Action",
+    "entity": "Entity",
+    "description": "Description",
+    "user": "User",
+    "ipAddress": "IP Address",
+    "userAgent": "User Agent",
+    "module": "Module",
+    "detail": "Audit Detail",
+    "details": "Details",
+    "detailsDescription": "General information of the audit log.",
+    "metadata": "Metadata / Additional Data",
+    "metadataDescription": "Changes and JSON payload of the event.",
+    "noMetadata": "No metadata recorded for this event.",
+    "back": "Back",
+    "notFoundTitle": "Log Not Found",
+    "notFoundDesc": "The requested audit log does not exist or you do not have permission to view it.",
+    "actions": {
+      "CREATE": "Create",
+      "UPDATE": "Update",
+      "SOFT_DELETE": "Soft Delete (Trash)",
+      "RESTORE": "Restore",
+      "HARD_DELETE": "Hard Delete (Permanent)",
+      "LOGIN": "Login",
+      "LOGOUT": "Logout"
+    }
+  },
   "redirecting_message_one": "Redirecting to dashboard in {{count}} second...",
   "redirecting_message_other": "Redirecting to dashboard in {{count}} seconds..."
 }

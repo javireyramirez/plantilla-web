@@ -36,6 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DocumentsTable, FileUploadButton } from '@/features/storage';
 import { CompaniesDetailForm } from '../components/companies-form';
 import { useCompanyForm } from '@/modules/companies/model/use-companies-detail';
+import { AuditTable } from '@/modules/audit/components/audit-table';
 
 export default function CompanyDetail() {
   const { t } = useTranslation();
@@ -354,7 +355,7 @@ export default function CompanyDetail() {
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
             >
-              {t('companies.auditContent')}
+              <AuditTable moduleSlug="companies" entityId={id} />
             </TabsContent>
           </>
         )}

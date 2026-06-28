@@ -1,0 +1,38 @@
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+export const NAVIGATABLE_MODULES = ['companies', 'users', 'teams', 'roles'];
+
+export function getEntityLink(
+  moduleSlug: string | null | undefined,
+  entityId: string | null | undefined
+) {
+  if (!moduleSlug || !entityId || !NAVIGATABLE_MODULES.includes(moduleSlug)) return null;
+  return `/${moduleSlug}/edit/${entityId}`;
+}
+
+export function getActionOptions(t: (key: string) => string): SelectOption[] {
+  return [
+    { value: 'CREATE', label: t('audit.actions.CREATE') },
+    { value: 'UPDATE', label: t('audit.actions.UPDATE') },
+    { value: 'SOFT_DELETE', label: t('audit.actions.SOFT_DELETE') },
+    { value: 'RESTORE', label: t('audit.actions.RESTORE') },
+    { value: 'HARD_DELETE', label: t('audit.actions.HARD_DELETE') },
+    { value: 'LOGIN', label: t('audit.actions.LOGIN') },
+    { value: 'LOGOUT', label: t('audit.actions.LOGOUT') },
+  ];
+}
+
+export function getModuleOptions(t: (key: string) => string): SelectOption[] {
+  return [
+    { value: 'companies', label: t('sidebar.nav.companies') },
+    { value: 'users', label: t('sidebar.nav.users') },
+    { value: 'teams', label: t('sidebar.nav.teams') },
+    { value: 'roles', label: t('sidebar.nav.roles') },
+    { value: 'audit', label: t('sidebar.nav.audit') },
+    { value: 'recovery', label: t('sidebar.nav.recovery') },
+    { value: 'documents', label: t('sidebar.nav.documents') },
+  ];
+}

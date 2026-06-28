@@ -14,6 +14,8 @@ import SignUp from '@/modules/auth/pages/sign-up';
 import VerifyEmail from '@/modules/auth/pages/verify-email';
 import CompanyDetail from '@/modules/companies/pages/companies-detail';
 import CompaniesView from '@/modules/companies/pages/companies-view';
+import AuditView from '@/modules/audit/pages/audit-view';
+import AuditDetail from '@/modules/audit/pages/audit-detail';
 import Profile from '@/modules/profile/profile-page';
 import RoleDetail from '@/modules/roles/pages/roles-detail';
 import RolesView from '@/modules/roles/pages/roles-view';
@@ -71,6 +73,9 @@ export default function Router() {
           <Route path="/roles" element={<RolesView />} />
           <Route path="/roles/new" element={<RoleDetail />} />
           <Route path="/roles/edit/:id" element={<RoleDetail />} />
+
+          <Route path="/audit" element={<AuditView />} />
+          <Route path="/audit/:id" element={<AuditDetail />} />
         </Route>
       </Route>
 
