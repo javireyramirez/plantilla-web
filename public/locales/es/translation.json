@@ -8,6 +8,10 @@
       "applyLabel": "Aplicar"
     }
   },
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar"
+  },
   "auth": {
     "orContinueWith": "O continúa con",
     "signInWithGoogle": "Iniciar sesión con Google",
@@ -156,8 +160,8 @@
     "new": "Nueva organización",
     "moreActions": "Más acciones",
     "createTitle": "Crear nueva organización",
-    "editDescription": "Datos de la empresa en el sistema.",
-    "createDescription": "Introduce los datos para registrar la empresa.",
+    "editDescription": "Datos de la organización en el sistema.",
+    "createDescription": "Introduce los datos para registrar la organización.",
     "save": "Guardar",
     "saveAndClose": "Guardar y cerrar",
     "delete": "Eliminar",
@@ -168,7 +172,7 @@
     "basicData": "Datos básicos",
     "identificationInfo": "Información principal de identificación.",
     "name": "Organización",
-    "namePlaceholder": "Nombre de la empresa",
+    "namePlaceholder": "Nombre de la organización",
     "cifNif": "CIF / NIF",
     "sector": "Sector",
     "selectSector": "Selecciona un sector",
@@ -176,8 +180,8 @@
     "pendingDefine": "Sección pendiente de definir.",
     "metricsSummary": "Métricas / Resumen",
     "entityStats": "Datos estadísticos de la entidad.",
-    "deleteConfirmTitle": "¿Eliminar esta compañía?",
-    "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
+    "deleteConfirmTitle": "¿Eliminar esta organización?",
+    "deleteConfirmDesc": "Esta acción no se puede deshacer. La organización será eliminada permanentemente del sistema.",
     "cancel": "Cancelar",
     "users": "Usuarios de la organización",
     "sectors": {
@@ -187,7 +191,7 @@
       "none": "Sin sector"
     },
     "table": {
-      "delete": "Compañía(s) eliminada(s) con éxito",
+      "delete": "Organización(es) eliminada(s) con éxito",
       "selectTodo": "Seleccionar todo",
       "selectFila": "Seleccionar fila",
       "cif": "CIF",
@@ -196,13 +200,13 @@
       "name": "Organización"
     },
     "form": {
-      "update": "Compañía actualizada con éxito",
-      "create": "Compañía creada con éxito",
-      "delete": "Compañía eliminada con éxito",
+      "update": "Organización actualizada con éxito",
+      "create": "Organización creada con éxito",
+      "delete": "Organización eliminada con éxito",
       "errors": {
-        "update": "Error al actualizar la compañía",
-        "create": "Error al crear la compañía",
-        "delete": "Error al eliminar la compañía"
+        "update": "Error al actualizar la organización",
+        "create": "Error al crear la organización",
+        "delete": "Error al eliminar la organización"
       }
     }
   },
@@ -276,10 +280,16 @@
       "update": "Usuario actualizado con éxito",
       "create": "Usuario creado con éxito",
       "delete": "Usuario eliminado con éxito",
+      "suspend": "Usuario suspendido con éxito",
+      "unsuspend": "Usuario activado con éxito",
+      "resendInvitation": "Invitación reenviada con éxito",
       "errors": {
         "update": "Error al actualizar el usuario",
         "create": "Error al crear el usuario",
-        "delete": "Error al eliminar el usuario"
+        "delete": "Error al eliminar el usuario",
+        "suspend": "Error al suspender el usuario",
+        "unsuspend": "Error al activar el usuario",
+        "resendInvitation": "Error al reenviar la invitación"
       }
     }
   },
@@ -307,7 +317,7 @@
     "namePlaceholder": "Nombre del rol",
     "description": "Descripción",
     "descriptionPlaceholder": "Descripción del rol y su propósito",
-    "permissions": "Permisos",
+    "permissionsTab": "Permisos",
     "selectPermissions": "Selecciona los permisos",
     "searchPermissions": "Buscar permisos...",
     "additionalInfo": "Información Adicional",
@@ -338,6 +348,22 @@
         "create": "Error al crear el rol",
         "delete": "Error al eliminar el rol"
       }
+    },
+    "permissions": {
+      "loading": "Cargando matriz de permisos...",
+      "matrixTitle": "Matriz de Permisos",
+      "matrixDesc": "Asigna el nivel de acceso para cada acción sobre los recursos del sistema.",
+      "saving": "Guardando...",
+      "syncing": "Sincronizando...",
+      "moduleCol": "Módulo / Recurso",
+      "noModules": "No se encontraron módulos disponibles.",
+      "unknownModule": "Módulo desconocido"
+    },
+    "scopes": {
+      "none": "Ninguno",
+      "own": "Usuario",
+      "team": "Equipo",
+      "global": "Global"
     }
   },
 
@@ -349,8 +375,8 @@
     "new": "Nuevo equipo",
     "moreActions": "Más acciones",
     "createTitle": "Crear nuevo equipo",
-    "editDescription": "Datos de la empresa en el sistema.",
-    "createDescription": "Introduce los datos para registrar la empresa.",
+    "editDescription": "Datos del equipo en el sistema.",
+    "createDescription": "Introduce los datos para registrar el equipo.",
     "save": "Guardar",
     "saveAndClose": "Guardar y cerrar",
     "delete": "Eliminar",
@@ -361,7 +387,9 @@
     "basicData": "Datos básicos",
     "identificationInfo": "Información principal de identificación.",
     "name": "Equipo",
-    "namePlaceholder": "Nombre de la empresa",
+    "namePlaceholder": "Nombre del equipo",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Descripción del equipo",
     "cifNif": "CIF / NIF",
     "sector": "Sector",
     "selectSector": "Selecciona un sector",
@@ -369,12 +397,13 @@
     "pendingDefine": "Sección pendiente de definir.",
     "metricsSummary": "Métricas / Resumen",
     "entityStats": "Datos estadísticos de la entidad.",
-    "deleteConfirmTitle": "¿Eliminar esta compañía?",
-    "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
+    "deleteConfirmTitle": "¿Eliminar este equipo?",
+    "deleteConfirmDesc": "Esta acción no se puede deshacer. El equipo será eliminado permanentemente del sistema.",
     "cancel": "Cancelar",
     "members": "Miembros del equipo",
+    "roles": "Roles del equipo",
     "table": {
-      "delete": "Compañía(s) eliminada(s) con éxito",
+      "delete": "Equipo(s) eliminado(s) con éxito",
       "selectTodo": "Seleccionar todo",
       "selectFila": "Seleccionar fila",
       "organization": "Organización",
@@ -384,13 +413,13 @@
     },
 
     "form": {
-      "update": "Compañía actualizada con éxito",
-      "create": "Compañía creada con éxito",
-      "delete": "Compañía eliminada con éxito",
+      "update": "Equipo actualizado con éxito",
+      "create": "Equipo creado con éxito",
+      "delete": "Equipo eliminado con éxito",
       "errors": {
-        "update": "Error al actualizar la compañía",
-        "create": "Error al crear la compañía",
-        "delete": "Error al eliminar la compañía"
+        "update": "Error al actualizar el equipo",
+        "create": "Error al crear el equipo",
+        "delete": "Error al eliminar el equipo"
       }
     }
   },
@@ -407,6 +436,7 @@
     "addedMany": "Miembros añadidos con Ã©xito",
     "addError": "Error al añadir miembros",
     "remove": "Eliminar",
+    "team": "Equipo",
     "table": {
       "removed": "Miembros eliminados con Ã©xito",
       "removeError": "Error al eliminar los miembros",

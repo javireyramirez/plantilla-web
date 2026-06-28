@@ -91,7 +91,7 @@ export function RoleAssignmentsTable({ roleId }: RoleAssignmentsTableProps) {
                     >
                       {displayName}
                     </button>{' '}
-                    <span className="text-xs text-muted-foreground">(Equipo)</span>
+                    <span className="text-xs text-muted-foreground">({t('teamMembers.team')})</span>
                   </span>
                 ) : (
                   <button

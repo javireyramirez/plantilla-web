@@ -1,11 +1,10 @@
-import { Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
-import { Controller } from 'react-hook-form';
+import { ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2, Users } from 'lucide-react';
+import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 
 import { useState } from 'react';
 
-import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,18 +24,18 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MembersTable } from '@/modules/teams/components/members-table';
+import { TeamsRolesTable } from '@/modules/teams/components/teams-roles-table';
+import { TeamsDetailForm } from '../components/teams-form';
 
 import { useTeamForm } from '../model/use-teams-detail';
 
@@ -45,7 +44,6 @@ export default function TeamDetail() {
 
   // --- Estados locales ---
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [shouldCloseOnSubmit, setShouldCloseOnSubmit] = useState(false);
   const [activeTab, setActiveTab] = useState('detail');
 
   // --- Hooks de datos y formulario ---
@@ -56,6 +54,7 @@ export default function TeamDetail() {
   const tabs = [
     { value: 'detail', label: t('teams.detail'), viewAtCreate: true },
     { value: 'members', label: t('teams.members'), viewAtCreate: isEditing },
+    { value: 'roles', label: t('teams.roles', { defaultValue: 'Roles' }), viewAtCreate: isEditing },
     { value: 'audit', label: t('teams.audit'), viewAtCreate: isEditing },
   ];
 
@@ -166,7 +165,7 @@ export default function TeamDetail() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+            <Users className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             {isEditing ? (
               <span className="truncate">
                 <span className="text-primary">{teamName}</span>
@@ -223,11 +222,10 @@ export default function TeamDetail() {
 
           {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
           <Button
-            form="team-form-id"
-            type="submit"
+            type="button"
             variant="outline"
             disabled={isPending}
-            onClick={() => setShouldCloseOnSubmit(true)}
+            onClick={() => form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()}
             className="hidden md:flex gap-2"
           >
             <Save className="h-4 w-4" />
@@ -236,10 +234,9 @@ export default function TeamDetail() {
 
           {/* Acción Principal: Siempre visible */}
           <Button
-            form="team-form-id"
-            type="submit"
+            type="button"
             disabled={isPending}
-            onClick={() => setShouldCloseOnSubmit(false)}
+            onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
             className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
           >
             <Save className="h-4 w-4" />
@@ -261,7 +258,6 @@ export default function TeamDetail() {
                 className="md:hidden gap-2"
                 onSelect={(e) => {
                   e.preventDefault();
-                  setShouldCloseOnSubmit(true);
                   form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
                 }}
               >
@@ -341,66 +337,19 @@ export default function TeamDetail() {
 
         {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            {/* Formulario de Datos Básicos */}
-            <Card className="lg:col-span-1 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('teams.basicData')}</CardTitle>
-                <CardDescription>{t('teams.identificationInfo')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form
-                  id="team-form-id"
-                  onSubmit={form.handleSubmit((data) =>
-                    handleSubmit(data, { shouldClose: shouldCloseOnSubmit })
-                  )}
-                  className="space-y-4"
-                >
-                  <FieldGroup className="space-y-4">
-                    <Controller
-                      name="name"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <FormFieldWrapper fieldState={fieldState}>
-                          <FieldLabel
-                            htmlFor="team-name"
-                            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                          >
-                            {t('teams.name')}
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="team-name"
-                            aria-invalid={fieldState.invalid}
-                            data-invalid={fieldState.invalid}
-                            autoComplete="off"
-                            className="mt-1.5 focus-visible:ring-primary"
-                          />
-                        </FormFieldWrapper>
-                      )}
-                    />
-                  </FieldGroup>
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* Tarjeta Usuarios */}
-            <Card className="shadow-sm lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">{t('teams.users')}</CardTitle>
-                <CardDescription>{t('teams.pendingDefine')}</CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.
-              </CardContent>
-            </Card>
-          </div>
+          <FormProvider {...form}>
+            <TeamsDetailForm isEditing={isEditing} />
+          </FormProvider>
         </TabsContent>
 
         {isEditing && (
           <>
             <TabsContent value="members" className="outline-none">
               <MembersTable teamId={id as string} />
+            </TabsContent>
+
+            <TabsContent value="roles" className="outline-none">
+              <TeamsRolesTable teamId={id as string} />
             </TabsContent>
 
             <TabsContent

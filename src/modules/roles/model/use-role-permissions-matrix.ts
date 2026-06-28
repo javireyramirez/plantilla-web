@@ -42,63 +42,101 @@ export function useRolePermissionsMatrix(roleId: string) {
     [currentPermissions]
   );
 
-  // Manejador del cambio de Scope en el Dropdown
-  const handleScopeChange = async (
-    moduleId: string,
-    action: string,
-    newScope: PermissionScopeType | 'NONE'
-  ) => {
-    const existingPermission = getPermissionCell(moduleId, action);
+  // Pending selection state
+  const [pendingEdits, setPendingEdits] = React.useState<Record<string, PermissionScopeType | 'NONE'>>({});
+  const [isSaving, setIsSaving] = React.useState(false);
 
-    try {
-      // CASO 1: Se selecciona 'NONE' -> Se revoca/elimina el permiso
-      if (newScope === 'NONE') {
-        if (existingPermission) {
-          await revokePermissionMutation.mutateAsync(existingPermission.id);
-          toast.success(
-            t('roles.permissions.revoked', { defaultValue: 'Permiso revocado correctamente' })
-          );
+
+  const getEffectiveScope = React.useCallback(
+    (moduleId: string, action: string) => {
+      const key = `${moduleId}::${action}`;
+      if (key in pendingEdits) {
+        return pendingEdits[key];
+      }
+      const existing = getPermissionCell(moduleId, action);
+      return existing ? existing.scope : 'NONE';
+    },
+    [pendingEdits, getPermissionCell]
+  );
+
+  const setPendingScope = React.useCallback(
+    (moduleId: string, action: string, newScope: PermissionScopeType | 'NONE') => {
+      const key = `${moduleId}::${action}`;
+      const existing = getPermissionCell(moduleId, action);
+      const originalScope = existing ? existing.scope : 'NONE';
+
+      setPendingEdits((prev) => {
+        const next = { ...prev };
+        if (newScope === originalScope) {
+          delete next[key];
+        } else {
+          next[key] = newScope;
         }
-        return;
-      }
+        return next;
+      });
+    },
+    [getPermissionCell]
+  );
 
-      // CASO 2: No existía el permiso -> Se crea con el scope seleccionado
-      if (!existingPermission) {
-        await addPermissionMutation.mutateAsync({
-          moduleId,
-          action,
-          scope: newScope,
-        });
-        toast.success(t('roles.permissions.granted', { defaultValue: 'Permiso concedido' }));
-        return;
-      }
+  const handleCancel = React.useCallback(() => {
+    setPendingEdits({});
+  }, []);
 
-      // CASO 3: Ya existía -> Se actualiza el scope (GLOBAL, TEAM, OWN)
-      if (existingPermission.scope !== newScope) {
-        await updateScopeMutation.mutateAsync({
-          ...existingPermission,
-          id: existingPermission.id,
-          scope: newScope,
-          moduleId,
-          action,
-        } as any);
-        toast.success(t('roles.permissions.updated', { defaultValue: 'Alcance actualizado' }));
-      }
+  const handleSave = React.useCallback(async () => {
+    setIsSaving(true);
+    try {
+      const keys = Object.keys(pendingEdits);
+      
+      // Perform all mutations in parallel
+      const promises = keys.map(async (key) => {
+        const [moduleId, action] = key.split('::');
+        const newScope = pendingEdits[key];
+        const existingPermission = getPermissionCell(moduleId, action);
+
+        if (newScope === 'NONE') {
+          if (existingPermission) {
+            await revokePermissionMutation.mutateAsync(existingPermission.id);
+          }
+        } else if (!existingPermission) {
+          await addPermissionMutation.mutateAsync({
+            moduleId,
+            action,
+            scope: newScope,
+          });
+        } else if (existingPermission.scope !== newScope) {
+          await updateScopeMutation.mutateAsync({
+            ...existingPermission,
+            id: existingPermission.id,
+            scope: newScope,
+            moduleId,
+            action,
+          } as any);
+        }
+      });
+
+      await Promise.all(promises);
+      setPendingEdits({});
+      toast.success(t('roles.permissions.savedAll', { defaultValue: 'Matriz de permisos guardada correctamente' }));
     } catch (error) {
-      toast.error(
-        t('roles.permissions.error', { defaultValue: 'Error al modificar los permisos' })
-      );
+      toast.error(t('roles.permissions.error', { defaultValue: 'Error al modificar los permisos' }));
+    } finally {
+      setIsSaving(false);
     }
-  };
+  }, [pendingEdits, getPermissionCell, addPermissionMutation, revokePermissionMutation, updateScopeMutation, t]);
 
   return {
     modules,
     isLoading,
-    getPermissionCell,
-    handleScopeChange,
+    getEffectiveScope,
+    setPendingScope,
+    handleSave,
+    handleCancel,
+    hasChanges: Object.keys(pendingEdits).length > 0,
+    isSaving,
     isMutating:
       addPermissionMutation.isPending ||
       revokePermissionMutation.isPending ||
-      updateScopeMutation.isPending,
+      updateScopeMutation.isPending ||
+      isSaving,
   };
 }

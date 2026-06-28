@@ -1,4 +1,4 @@
-import { CalendarIcon, Trash2 } from 'lucide-react';
+import { Ban, CalendarIcon, Send, Trash2, UserCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -208,6 +208,9 @@ export function UsersTable() {
     isMobile,
     limit,
     handleDelete,
+    handleSuspend,
+    handleUnsuspend,
+    handleResendInvitation,
     isPendingActions,
   } = useUsers(columns);
 
@@ -243,11 +246,34 @@ export function UsersTable() {
             table={table}
             actions={[
               {
+                label: t('users.resendInvitation'),
+                icon: <Send className="h-4 w-4" />,
+                disabled: isPendingActions,
+                onClick: (rows) => handleResendInvitation(rows),
+              },
+              {
+                label: t('users.suspend'),
+                icon: <Ban className="h-4 w-4" />,
+                disabled: isPendingActions,
+                onClick: (rows) => handleSuspend(rows),
+                className: 'border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white',
+              },
+              {
+                label: t('users.unsuspend'),
+                icon: <UserCheck className="h-4 w-4" />,
+                disabled: isPendingActions,
+                onClick: (rows) => handleUnsuspend(rows),
+                className:
+                  'border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white',
+              },
+
+              {
                 label: t('users.delete'),
                 icon: <Trash2 className="h-4 w-4" />,
-                variant: 'destructive',
                 disabled: isPendingActions,
                 onClick: (rows) => handleDelete(rows),
+                className:
+                  'border-destructive text-destructive hover:bg-destructive hover:text-white',
               },
             ]}
           />

@@ -5,29 +5,26 @@ import FormFieldWrapper from '@/components/form/form-field-wrapper.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
-interface UsersDetailFormProps {
+interface TeamsDetailFormProps {
   isEditing: boolean;
-  isActive: boolean;
 }
 
-export function UsersDetailForm({ isEditing, isActive }: UsersDetailFormProps) {
+export function TeamsDetailForm({ isEditing }: TeamsDetailFormProps) {
   const { t } = useTranslation();
   const form = useFormContext();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-      <Card
-        className={`lg:col-span-1 shadow-sm transition-all duration-300 relative ${
-          isEditing && !isActive ? 'pointer-events-none select-none opacity-70' : ''
-        }`}
-      >
+      {/* Formulario de Datos Básicos */}
+      <Card className="lg:col-span-1 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">{t('users.basicData')}</CardTitle>
-          <CardDescription>{t('users.identificationInfo')}</CardDescription>
+          <CardTitle className="text-base font-semibold">{t('teams.basicData')}</CardTitle>
+          <CardDescription>{t('teams.identificationInfo')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form id="user-form-id" className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <form id="team-form-id" className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             <FieldGroup className="space-y-4">
               <Controller
                 name="name"
@@ -35,16 +32,17 @@ export function UsersDetailForm({ isEditing, isActive }: UsersDetailFormProps) {
                 render={({ field, fieldState }) => (
                   <FormFieldWrapper fieldState={fieldState}>
                     <FieldLabel
-                      htmlFor="user-name"
+                      htmlFor="team-name"
                       className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                     >
-                      {t('users.name')}
+                      {t('teams.name')}
                     </FieldLabel>
                     <Input
                       {...field}
-                      id="user-name"
+                      id="team-name"
                       aria-invalid={fieldState.invalid}
                       data-invalid={fieldState.invalid}
+                      placeholder={t('teams.namePlaceholder')}
                       autoComplete="off"
                       className="mt-1.5 focus-visible:ring-primary"
                     />
@@ -53,24 +51,25 @@ export function UsersDetailForm({ isEditing, isActive }: UsersDetailFormProps) {
               />
 
               <Controller
-                name="email"
+                name="description"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <FormFieldWrapper fieldState={fieldState}>
                     <FieldLabel
-                      htmlFor="user-email"
+                      htmlFor="team-description"
                       className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                     >
-                      {t('users.email')}
+                      {t('teams.description')}
                     </FieldLabel>
-                    <Input
+                    <Textarea
                       {...field}
-                      id="user-email"
-                      disabled={isEditing}
+                      id="team-description"
+                      value={field.value ?? ''}
+                      placeholder={t('teams.descriptionPlaceholder')}
                       aria-invalid={fieldState.invalid}
                       data-invalid={fieldState.invalid}
                       autoComplete="off"
-                      className="mt-1.5 focus-visible:ring-primary"
+                      className="mt-1.5 focus-visible:ring-primary min-h-[100px]"
                     />
                   </FormFieldWrapper>
                 )}
@@ -82,4 +81,3 @@ export function UsersDetailForm({ isEditing, isActive }: UsersDetailFormProps) {
     </div>
   );
 }
-

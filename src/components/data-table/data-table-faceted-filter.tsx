@@ -26,6 +26,7 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   title?: string;
   options: Option[];
   multiple?: boolean;
+  applyButton?: boolean;
   className?: string;
 }
 
@@ -34,6 +35,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   title,
   options,
   multiple,
+  applyButton,
   className,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const [open, setOpen] = React.useState(false);
@@ -42,26 +44,57 @@ export function DataTableFacetedFilter<TData, TValue>({
   const columnFilterValue = column?.getFilterValue();
   const selectedValues = new Set(Array.isArray(columnFilterValue) ? columnFilterValue : []);
 
+  // Pending selection state — only used when applyButton is true
+  const [pendingValues, setPendingValues] = React.useState<Set<any>>(new Set());
+
+  // Sync pendingValues when popover opens
+  React.useEffect(() => {
+    if (open && multiple && applyButton) {
+      setPendingValues(new Set(Array.isArray(columnFilterValue) ? columnFilterValue : []));
+    }
+  }, [open, columnFilterValue, multiple, applyButton]);
+
+  const activeValues = multiple && applyButton ? pendingValues : selectedValues;
+
   const onItemSelect = React.useCallback(
     (option: Option, isSelected: boolean) => {
       if (!column) return;
 
       if (multiple) {
-        const newSelectedValues = new Set(selectedValues);
-        if (isSelected) {
-          newSelectedValues.delete(option.value);
+        if (applyButton) {
+          setPendingValues((prev) => {
+            const next = new Set(prev);
+            if (isSelected) {
+              next.delete(option.value);
+            } else {
+              next.add(option.value);
+            }
+            return next;
+          });
         } else {
-          newSelectedValues.add(option.value);
+          const newSelectedValues = new Set(selectedValues);
+          if (isSelected) {
+            newSelectedValues.delete(option.value);
+          } else {
+            newSelectedValues.add(option.value);
+          }
+          const filterValues = Array.from(newSelectedValues);
+          column.setFilterValue(filterValues.length ? filterValues : undefined);
         }
-        const filterValues = Array.from(newSelectedValues);
-        column.setFilterValue(filterValues.length ? filterValues : undefined);
       } else {
         column.setFilterValue(isSelected ? undefined : [option.value]);
         setOpen(false);
       }
     },
-    [column, multiple, selectedValues]
+    [column, multiple, applyButton, selectedValues]
   );
+
+  const handleApply = React.useCallback(() => {
+    if (!column) return;
+    const filterValues = Array.from(pendingValues);
+    column.setFilterValue(filterValues.length ? filterValues : undefined);
+    setOpen(false);
+  }, [column, pendingValues]);
 
   const onReset = React.useCallback(
     (event?: React.MouseEvent) => {
@@ -132,7 +165,7 @@ export function DataTableFacetedFilter<TData, TValue>({
             <CommandEmpty>{i18n.facetedFilter.emptyMessage}</CommandEmpty>
             <CommandGroup className="max-h-[300px] scroll-py-1 overflow-y-auto overflow-x-hidden">
               {options.map((option) => {
-                const isSelected = selectedValues.has(option.value);
+                const isSelected = activeValues.has(option.value);
 
                 return (
                   <CommandItem key={option.value} onSelect={() => onItemSelect(option, isSelected)}>
@@ -164,6 +197,13 @@ export function DataTableFacetedFilter<TData, TValue>({
               </>
             )}
           </CommandList>
+          {multiple && applyButton && (
+            <div className="border-t p-2">
+              <Button size="sm" className="w-full" onClick={handleApply}>
+                {i18n.selector.applyLabel}
+              </Button>
+            </div>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

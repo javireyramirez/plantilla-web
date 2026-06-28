@@ -1,4 +1,4 @@
-import { CalendarIcon, Plus, Trash2, Users } from 'lucide-react';
+import { CalendarIcon, Plus, Shield, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,13 +16,13 @@ import { AssignmentDrawer, SelectorConfig } from '@/components/selector/assignme
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { teamsQueries } from '@/modules/teams/model/teams.query';
-import { GetTeamQuery } from '@/modules/teams/model/teams.schema';
+import { rolesQueries } from '@/modules/roles/model/roles.query';
+import { GetRoleQuery } from '@/modules/roles/model/roles.schema';
+import { ResponseTeamRoleBase } from '@/modules/users/model/users.schema';
 
-import useTableTeams from '../model/use-users-teams-table';
-import { ResponseTeamRoleBase } from '../model/users.schema';
+import useTeamRoles from '../model/use-teams-roles-table';
 
-function useTeamsOptions(params: {
+function useRolesOptions(params: {
   page?: number;
   limit: number;
   isTrash?: boolean;
@@ -31,28 +31,29 @@ function useTeamsOptions(params: {
   name?: string;
 }) {
   const { name, ...rest } = params;
-  const { data, isLoading } = teamsQueries.useGetAll({
+  const { data, isLoading } = rolesQueries.useGetAll({
     page: rest.page ?? 1,
     isTrash: rest.isTrash ?? false,
     ...rest,
-    sortBy: rest.sortBy as GetTeamQuery['sortBy'],
+    sortBy: rest.sortBy as GetRoleQuery['sortBy'],
     name: name,
   });
 
   return {
     data:
-      data?.data?.map((t: { id: string; name: string }) => ({
-        id: t.id,
-        name: t.name,
+      data?.data?.map((r: { id: string; name: string }) => ({
+        id: r.id,
+        name: r.name,
       })) ?? [],
     isLoading,
   };
 }
 
-export function UsersTeamsTable({ userId }: { userId?: string }) {
+export function TeamsRolesTable({ teamId }: { teamId?: string }) {
   const navigate = useNavigate();
+
   const { t } = useTranslation();
-  const [selectedTeamIds, setSelectedTeamIds] = React.useState<string[]>([]);
+  const [selectedRoleIds, setSelectedRoleIds] = React.useState<string[]>([]);
 
   const columns = React.useMemo<ColumnDef<ResponseTeamRoleBase>[]>(
     () => [
@@ -66,7 +67,7 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
               (table.getIsSomePageRowsSelected() && 'indeterminate')
             }
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label={t('users.teams.selectAll')}
+            aria-label={t('users.table.selectTodo')}
             className="translate-y-0.5"
           />
         ),
@@ -74,7 +75,7 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label={t('users.teams.selectRow')}
+            aria-label={t('users.table.selectFila')}
             className="translate-y-0.5"
           />
         ),
@@ -83,27 +84,28 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
       },
       {
         accessorKey: 'name',
+        enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('users.teams.name')} />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('roles.name')} />,
         cell: ({ row }) => (
-          <span className="font-medium">
-            <button
-              className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
-              onClick={() => navigate(`/teams/edit/${row.original.id}`)}
-            >
-              {row.getValue('name')}
-            </button>
-          </span>
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="truncate font-medium max-w-xs text-foreground">
+              <button
+                className="truncate font-medium max-w-xs text-blue-500 hover:text-blue-700 hover:underline text-left"
+                onClick={() => navigate(`/roles/edit/${row.original.id}`)}
+              >
+                {row.getValue('name')}
+              </button>
+            </span>
+          </div>
         ),
         meta: {
-          label: t('users.teams.name'),
+          label: t('roles.name'),
           variant: 'text',
         },
       },
       {
-        accessorKey: 'joinedAt',
+        accessorKey: 'assignedAt',
         enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => (
@@ -111,7 +113,7 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
         ),
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
-            {formatDate(row.getValue('joinedAt'))}
+            {formatDate(row.getValue('assignedAt'))}
           </span>
         ),
         meta: {
@@ -121,45 +123,54 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
         },
       },
     ],
-    [t]
+    [t, navigate]
   );
 
-  if (!userId) {
+  if (!teamId) {
     return <div>Error.</div>;
   }
 
   const {
     table,
+    totalRows,
     isLoading,
     isFetching,
     isMobile,
+    limit,
     handleRemove,
-    handleAddTeams,
-    assignedTeamIds,
+    handleAddRoles,
+    assignedRoleIds,
     isPendingAdd,
     isPendingActions,
-  } = useTableTeams(columns, userId);
+  } = useTeamRoles(columns, teamId);
 
   const handleApply = React.useCallback(() => {
-    handleAddTeams(selectedTeamIds);
-    setSelectedTeamIds([]);
-  }, [handleAddTeams, selectedTeamIds]);
+    handleAddRoles(selectedRoleIds);
+    setSelectedRoleIds([]);
+  }, [handleAddRoles, selectedRoleIds]);
 
   const selectorsConfig: SelectorConfig[] = [
     {
-      key: 'teams',
-      placeholder: t('teams.selectTeam', { defaultValue: 'Selecciona un equipo' }),
-      searchPlaceholder: t('teams.searchTeam', { defaultValue: 'Buscar equipo...' }),
-      emptyMessage: t('teams.noTeamsFound', { defaultValue: 'No se encontraron equipos' }),
-      useGetList: useTeamsOptions,
-      excludeIds: assignedTeamIds,
-      value: selectedTeamIds,
-      onChange: setSelectedTeamIds,
+      key: 'roles',
+      placeholder: t('roles.selectRole', { defaultValue: 'Selecciona un rol' }),
+      searchPlaceholder: t('roles.searchRole', { defaultValue: 'Buscar rol...' }),
+      emptyMessage: t('roles.noRolesFound', { defaultValue: 'No se encontraron roles' }),
+      useGetList: useRolesOptions,
+      excludeIds: assignedRoleIds,
+      value: selectedRoleIds,
+      onChange: setSelectedRoleIds,
     },
   ];
 
   if (isLoading) {
-    return <DataTableSkeleton columnCount={columns.length} rowCount={5} withPagination={false} />;
+    return (
+      <DataTableSkeleton
+        columnCount={columns.length}
+        rowCount={limit}
+        filterCount={1}
+        withPagination={true}
+      />
+    );
   }
 
   return (
@@ -171,17 +182,17 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Users className="h-4 w-4 text-muted-foreground" />
+          <Shield className="h-4 w-4 text-muted-foreground" />
           <h2 className="text-base font-semibold">
-            {t('users.teams.assignedTitle', { defaultValue: 'Equipos Asignados' })}
+            {t('teams.roles.assignedTitle', { defaultValue: 'Roles Asignados' })}
           </h2>
         </div>
         <AssignmentDrawer
-          triggerBtnText={t('users.teams.assignBtn', { defaultValue: 'Asignar Equipo' })}
+          triggerBtnText={t('teams.roles.assignBtn', { defaultValue: 'Asignar Rol' })}
           triggerIcon={<Plus className="h-4 w-4" />}
-          drawerTitle={t('users.teams.assignTitle', { defaultValue: 'Asignar Equipos al Usuario' })}
-          drawerDescription={t('users.teams.assignDescription', {
-            defaultValue: 'Selecciona los equipos a los que deseas agregar este usuario.',
+          drawerTitle={t('teams.roles.assignTitle', { defaultValue: 'Asignar Roles al Equipo' })}
+          drawerDescription={t('teams.roles.assignDescription', {
+            defaultValue: 'Selecciona los roles que deseas asignar a este equipo.',
           })}
           selectors={selectorsConfig}
           onApply={handleApply}
@@ -192,13 +203,17 @@ export function UsersTeamsTable({ userId }: { userId?: string }) {
 
       <DataTable
         table={table}
-        mobileConfig={{ primaryColumn: 'name', stackedColumns: [] }}
+        totalCount={totalRows}
+        mobileConfig={{
+          primaryColumn: 'name',
+          stackedColumns: [],
+        }}
         actionBar={
           <DataTableFloatingBar
             table={table}
             actions={[
               {
-                label: t('users.teams.remove'),
+                label: t('roles.remove'),
                 icon: <Trash2 className="h-4 w-4" />,
                 variant: 'destructive',
                 disabled: isPendingActions,

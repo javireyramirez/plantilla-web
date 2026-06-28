@@ -16,11 +16,11 @@ import {
 } from '@tanstack/react-table';
 
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ResponseTeamRoleBase } from '@/modules/users/model/users.schema';
 
-import { usersQueries } from './users.query';
-import { ResponseTeamRoleBase } from './users.schema';
+import { teamsQueries } from './teams.query';
 
-export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[], userId: string) {
+export default function useTeamRoles(columns: ColumnDef<ResponseTeamRoleBase>[], teamId: string) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
@@ -50,7 +50,7 @@ export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[],
     : [undefined, undefined];
 
   // ── React Query Fetch ──────────────────────────────────────────────────────
-  const { data, isLoading, isFetching } = usersQueries.useGetRoleAssignments(userId, {
+  const { data, isLoading, isFetching } = teamsQueries.useGetRoleAssignments(teamId, {
     page,
     limit,
     isTrash: false,
@@ -113,8 +113,8 @@ export default function useUserRoles(columns: ColumnDef<ResponseTeamRoleBase>[],
 
   // ── Mutations ──────────────────────────────────────────────────────────────
   const { mutate: mutateRemove, isPending: isPendingRemove } =
-    usersQueries.useRemoveRoleAssignments(userId);
-  const { mutate: mutateAdd, isPending: isPendingAdd } = usersQueries.useAddRoleAssignments(userId);
+    teamsQueries.useRemoveRoleAssignments(teamId);
+  const { mutate: mutateAdd, isPending: isPendingAdd } = teamsQueries.useAddRoleAssignments(teamId);
 
   const assignedRoleIds = roles.map((r) => r.id);
 

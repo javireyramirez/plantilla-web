@@ -85,17 +85,23 @@ export function useRoleForm(id?: string) {
   const form = useForm<CreateRole>({
     resolver: zodResolver(CreateRoleBodySchema),
     mode: 'onBlur',
-    defaultValues: data ?? { name: '' },
+    defaultValues: {
+      name: data?.name ?? '',
+      description: data?.description ?? '',
+    },
   });
 
   // --- Sincronización del formulario con el backend ---
   useEffect(() => {
     if (isEditing) {
       if (!isLoading && !isFetching && data) {
-        form.reset(data);
+        form.reset({
+          name: data?.name ?? '',
+          description: data?.description ?? '',
+        });
       }
     } else {
-      form.reset({ name: '' });
+      form.reset({ name: '', description: '' });
     }
   }, [isEditing, data, isLoading, isFetching, form]);
 

@@ -1,4 +1,4 @@
-import { Plus, Shield, Trash2 } from 'lucide-react';
+import { CalendarIcon, Plus, Shield, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,6 +14,7 @@ import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-des
 import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
 import { AssignmentDrawer, SelectorConfig } from '@/components/selector/assignment-drawer';
 import { Checkbox } from '@/components/ui/checkbox';
+import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { rolesQueries } from '@/modules/roles/model/roles.query';
 import { GetRoleQuery } from '@/modules/roles/model/roles.schema';
@@ -100,6 +101,24 @@ export function UserRolesTable({ userId }: { userId?: string }) {
         meta: {
           label: t('roles.name'),
           variant: 'text',
+        },
+      },
+      {
+        accessorKey: 'assignedAt',
+        enableColumnFilter: true,
+        enableSorting: true,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('users.teams.fecha')} />
+        ),
+        cell: ({ row }) => (
+          <span className="text-muted-foreground tabular-nums text-sm">
+            {formatDate(row.getValue('assignedAt'))}
+          </span>
+        ),
+        meta: {
+          label: t('users.table.creacion'),
+          variant: 'dateRange',
+          icon: CalendarIcon,
         },
       },
     ],
