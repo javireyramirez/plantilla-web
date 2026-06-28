@@ -8,6 +8,10 @@
       "applyLabel": "Aplicar"
     }
   },
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar"
+  },
   "auth": {
     "orContinueWith": "O continúa con",
     "signInWithGoogle": "Iniciar sesión con Google",
@@ -313,7 +317,7 @@
     "namePlaceholder": "Nombre del rol",
     "description": "Descripción",
     "descriptionPlaceholder": "Descripción del rol y su propósito",
-    "permissions": "Permisos",
+    "permissionsTab": "Permisos",
     "selectPermissions": "Selecciona los permisos",
     "searchPermissions": "Buscar permisos...",
     "additionalInfo": "Información Adicional",
@@ -344,6 +348,22 @@
         "create": "Error al crear el rol",
         "delete": "Error al eliminar el rol"
       }
+    },
+    "permissions": {
+      "loading": "Cargando matriz de permisos...",
+      "matrixTitle": "Matriz de Permisos",
+      "matrixDesc": "Asigna el nivel de acceso para cada acción sobre los recursos del sistema.",
+      "saving": "Guardando...",
+      "syncing": "Sincronizando...",
+      "moduleCol": "Módulo / Recurso",
+      "noModules": "No se encontraron módulos disponibles.",
+      "unknownModule": "Módulo desconocido"
+    },
+    "scopes": {
+      "none": "Ninguno",
+      "own": "Usuario",
+      "team": "Equipo",
+      "global": "Global"
     }
   },
 
@@ -416,6 +436,7 @@
     "addedMany": "Miembros añadidos con Ã©xito",
     "addError": "Error al añadir miembros",
     "remove": "Eliminar",
+    "team": "Equipo",
     "table": {
       "removed": "Miembros eliminados con Ã©xito",
       "removeError": "Error al eliminar los miembros",

@@ -1,5 +1,5 @@
 // @/modules/roles/components/role-permissions-matrix.tsx
-import { Loader2, Shield, ShieldAlert } from 'lucide-react';
+import { Globe, Loader2, Shield, ShieldAlert, User, Users, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
@@ -35,11 +35,7 @@ const ACTIONS = [
   'SETTINGS',
 ] as const;
 
-interface RolePermissionsMatrixProps {
-  roleId: string;
-}
-
-export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
+export function RolePermissionsMatrix({ roleId }: { roleId: string }) {
   const { t } = useTranslation();
   const {
     modules,
@@ -57,9 +53,7 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
     return (
       <div className="flex h-60 flex-col items-center justify-center gap-2">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">
-          {t('roles.permissions.loading', { defaultValue: 'Cargando matriz de permisos...' })}
-        </p>
+        <p className="text-sm text-muted-foreground">{t('roles.permissions.loading')}</p>
       </div>
     );
   }
@@ -70,15 +64,8 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
         <div className="flex items-center gap-2">
           <Shield className="h-4 w-4 text-primary" />
           <div>
-            <h3 className="text-sm font-semibold">
-              {t('roles.permissions.matrixTitle', { defaultValue: 'Matriz de Permisos' })}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t('roles.permissions.matrixDesc', {
-                defaultValue:
-                  'Asigna el nivel de acceso para cada acción sobre los recursos del sistema.',
-              })}
-            </p>
+            <h3 className="text-sm font-semibold">{t('roles.permissions.matrixTitle')}</h3>
+            <p className="text-xs text-muted-foreground">{t('roles.permissions.matrixDesc')}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -91,7 +78,7 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
                 disabled={isSaving}
                 className="text-xs h-8"
               >
-                {t('common.cancel', { defaultValue: 'Cancelar' })}
+                {t('common.cancel')}
               </Button>
               <Button
                 size="sm"
@@ -100,16 +87,14 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
                 className="text-xs h-8 gap-1.5"
               >
                 {isSaving && <Loader2 className="h-3 w-3 animate-spin" />}
-                {t('common.save', { defaultValue: 'Guardar' })}
+                {t('common.save')}
               </Button>
             </>
           )}
           {isMutating && !hasChanges && (
             <Badge variant="secondary" className="gap-1.5 px-2.5 py-0.5 text-xs animate-pulse">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-              {isSaving
-                ? t('roles.permissions.saving', { defaultValue: 'Guardando...' })
-                : t('roles.permissions.saving', { defaultValue: 'Sincronizando...' })}
+              {isSaving ? t('roles.permissions.saving') : t('roles.permissions.syncing')}
             </Badge>
           )}
         </div>
@@ -120,7 +105,7 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">
               <TableHead className="w-[220px] font-bold text-foreground">
-                {t('roles.permissions.moduleCol', { defaultValue: 'Módulo / Recurso' })}
+                {t('roles.permissions.moduleCol')}
               </TableHead>
               {ACTIONS.map((action) => (
                 <TableHead key={action} className="text-center min-w-[120px] font-medium text-xs">
@@ -135,11 +120,7 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
                 <TableCell colSpan={ACTIONS.length + 1} className="h-24 text-center">
                   <div className="flex flex-col items-center justify-center gap-1 text-muted-foreground">
                     <ShieldAlert className="h-4 w-4" />
-                    <span className="text-sm">
-                      {t('roles.permissions.noModules', {
-                        defaultValue: 'No se encontraron módulos disponibles.',
-                      })}
-                    </span>
+                    <span className="text-sm">{t('roles.permissions.noModules')}</span>
                   </div>
                 </TableCell>
               </TableRow>
@@ -187,16 +168,16 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
                                 value="NONE"
                                 className="text-xs text-muted-foreground focus:text-destructive"
                               >
-                                ✕ {t('roles.scopes.none', { defaultValue: 'Ninguno' })}
+                                <X /> {t('roles.scopes.none')}
                               </SelectItem>
                               <SelectItem value="OWN" className="text-xs text-blue-600">
-                                🔒 {t('roles.scopes.own', { defaultValue: 'Usuario' })}
+                                <User /> {t('roles.scopes.own')}
                               </SelectItem>
                               <SelectItem value="TEAM" className="text-xs text-purple-600">
-                                👥 {t('roles.scopes.team', { defaultValue: 'Equipo' })}
+                                <Users /> {t('roles.scopes.team')}
                               </SelectItem>
                               <SelectItem value="GLOBAL" className="text-xs text-emerald-600">
-                                🌐 {t('roles.scopes.global', { defaultValue: 'Global' })}
+                                <Globe /> {t('roles.scopes.global')}
                               </SelectItem>
                             </SelectContent>
                           </Select>

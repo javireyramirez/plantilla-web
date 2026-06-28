@@ -54,7 +54,7 @@ export default function RoleDetail() {
   const tabs = [
     { value: 'detail', label: t('roles.detail'), viewAtCreate: true },
     { value: 'members', label: t('roles.members'), viewAtCreate: isEditing },
-    { value: 'permissions', label: t('roles.permissions'), viewAtCreate: isEditing },
+    { value: 'permissions', label: t('roles.permissionsTab'), viewAtCreate: isEditing },
     { value: 'audit', label: t('roles.audit'), viewAtCreate: isEditing },
   ];
 

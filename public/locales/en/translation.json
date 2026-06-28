@@ -8,6 +8,10 @@
       "applyLabel": "Apply"
     }
   },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
   "auth": {
     "orContinueWith": "Or continue with",
     "signInWithGoogle": "Sign in with Google",
@@ -308,7 +312,7 @@
     "namePlaceholder": "Role name",
     "description": "Description",
     "descriptionPlaceholder": "Description of the role and its purpose",
-    "permissions": "Permissions",
+    "permissionsTab": "Permissions",
     "selectPermissions": "Select permissions",
     "searchPermissions": "Search permissions...",
     "additionalInfo": "Additional Information",
@@ -339,6 +343,22 @@
         "create": "Error creating the role",
         "delete": "Error deleting the role"
       }
+    },
+    "permissions": {
+      "loading": "Loading permissions matrix...",
+      "matrixTitle": "Permissions Matrix",
+      "matrixDesc": "Assign access levels for each action on system resources.",
+      "saving": "Saving...",
+      "syncing": "Syncing...",
+      "moduleCol": "Module / Resource",
+      "noModules": "No modules found.",
+      "unknownModule": "Unknown module"
+    },
+    "scopes": {
+      "none": "None",
+      "own": "User",
+      "team": "Team",
+      "global": "Global"
     }
   },
   "teams": {
@@ -405,6 +425,7 @@
     "addedMany": "Members added successfully",
     "addError": "Error adding members",
     "remove": "Remove",
+    "team": "Team",
     "table": {
       "removed": "Members removed successfully",
       "removeError": "Error removing members",
