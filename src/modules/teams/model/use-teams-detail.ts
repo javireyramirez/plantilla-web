@@ -85,17 +85,23 @@ export function useTeamForm(id?: string) {
   const form = useForm<CreateTeam>({
     resolver: zodResolver(CreateTeamBodySchema),
     mode: 'onBlur',
-    defaultValues: data ?? { name: '' },
+    defaultValues: {
+      name: data?.name ?? '',
+      description: data?.description ?? '',
+    },
   });
 
   // --- Sincronización del formulario con el backend ---
   useEffect(() => {
     if (isEditing) {
       if (!isLoading && !isFetching && data) {
-        form.reset(data);
+        form.reset({
+          name: data?.name ?? '',
+          description: data?.description ?? '',
+        });
       }
     } else {
-      form.reset({ name: '' });
+      form.reset({ name: '', description: '' });
     }
   }, [isEditing, data, isLoading, isFetching, form]);
 

@@ -66,6 +66,7 @@ export function UsersDetailForm({ isEditing, isActive }: UsersDetailFormProps) {
                     <Input
                       {...field}
                       id="user-email"
+                      disabled={isEditing}
                       aria-invalid={fieldState.invalid}
                       data-invalid={fieldState.invalid}
                       autoComplete="off"

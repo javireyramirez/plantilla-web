@@ -156,8 +156,8 @@
     "new": "Nueva organización",
     "moreActions": "Más acciones",
     "createTitle": "Crear nueva organización",
-    "editDescription": "Datos de la empresa en el sistema.",
-    "createDescription": "Introduce los datos para registrar la empresa.",
+    "editDescription": "Datos de la organización en el sistema.",
+    "createDescription": "Introduce los datos para registrar la organización.",
     "save": "Guardar",
     "saveAndClose": "Guardar y cerrar",
     "delete": "Eliminar",
@@ -168,7 +168,7 @@
     "basicData": "Datos básicos",
     "identificationInfo": "Información principal de identificación.",
     "name": "Organización",
-    "namePlaceholder": "Nombre de la empresa",
+    "namePlaceholder": "Nombre de la organización",
     "cifNif": "CIF / NIF",
     "sector": "Sector",
     "selectSector": "Selecciona un sector",
@@ -176,8 +176,8 @@
     "pendingDefine": "Sección pendiente de definir.",
     "metricsSummary": "Métricas / Resumen",
     "entityStats": "Datos estadísticos de la entidad.",
-    "deleteConfirmTitle": "¿Eliminar esta compañía?",
-    "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
+    "deleteConfirmTitle": "¿Eliminar esta organización?",
+    "deleteConfirmDesc": "Esta acción no se puede deshacer. La organización será eliminada permanentemente del sistema.",
     "cancel": "Cancelar",
     "users": "Usuarios de la organización",
     "sectors": {
@@ -187,7 +187,7 @@
       "none": "Sin sector"
     },
     "table": {
-      "delete": "Compañía(s) eliminada(s) con éxito",
+      "delete": "Organización(es) eliminada(s) con éxito",
       "selectTodo": "Seleccionar todo",
       "selectFila": "Seleccionar fila",
       "cif": "CIF",
@@ -196,13 +196,13 @@
       "name": "Organización"
     },
     "form": {
-      "update": "Compañía actualizada con éxito",
-      "create": "Compañía creada con éxito",
-      "delete": "Compañía eliminada con éxito",
+      "update": "Organización actualizada con éxito",
+      "create": "Organización creada con éxito",
+      "delete": "Organización eliminada con éxito",
       "errors": {
-        "update": "Error al actualizar la compañía",
-        "create": "Error al crear la compañía",
-        "delete": "Error al eliminar la compañía"
+        "update": "Error al actualizar la organización",
+        "create": "Error al crear la organización",
+        "delete": "Error al eliminar la organización"
       }
     }
   },
@@ -355,8 +355,8 @@
     "new": "Nuevo equipo",
     "moreActions": "Más acciones",
     "createTitle": "Crear nuevo equipo",
-    "editDescription": "Datos de la empresa en el sistema.",
-    "createDescription": "Introduce los datos para registrar la empresa.",
+    "editDescription": "Datos del equipo en el sistema.",
+    "createDescription": "Introduce los datos para registrar el equipo.",
     "save": "Guardar",
     "saveAndClose": "Guardar y cerrar",
     "delete": "Eliminar",
@@ -367,7 +367,9 @@
     "basicData": "Datos básicos",
     "identificationInfo": "Información principal de identificación.",
     "name": "Equipo",
-    "namePlaceholder": "Nombre de la empresa",
+    "namePlaceholder": "Nombre del equipo",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Descripción del equipo",
     "cifNif": "CIF / NIF",
     "sector": "Sector",
     "selectSector": "Selecciona un sector",
@@ -375,13 +377,13 @@
     "pendingDefine": "Sección pendiente de definir.",
     "metricsSummary": "Métricas / Resumen",
     "entityStats": "Datos estadísticos de la entidad.",
-    "deleteConfirmTitle": "¿Eliminar esta compañía?",
-    "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
+    "deleteConfirmTitle": "¿Eliminar este equipo?",
+    "deleteConfirmDesc": "Esta acción no se puede deshacer. El equipo será eliminado permanentemente del sistema.",
     "cancel": "Cancelar",
     "members": "Miembros del equipo",
     "roles": "Roles del equipo",
     "table": {
-      "delete": "Compañía(s) eliminada(s) con éxito",
+      "delete": "Equipo(s) eliminado(s) con éxito",
       "selectTodo": "Seleccionar todo",
       "selectFila": "Seleccionar fila",
       "organization": "Organización",
@@ -391,13 +393,13 @@
     },
 
     "form": {
-      "update": "Compañía actualizada con éxito",
-      "create": "Compañía creada con éxito",
-      "delete": "Compañía eliminada con éxito",
+      "update": "Equipo actualizado con éxito",
+      "create": "Equipo creado con éxito",
+      "delete": "Equipo eliminado con éxito",
       "errors": {
-        "update": "Error al actualizar la compañía",
-        "create": "Error al crear la compañía",
-        "delete": "Error al eliminar la compañía"
+        "update": "Error al actualizar el equipo",
+        "create": "Error al crear el equipo",
+        "delete": "Error al eliminar el equipo"
       }
     }
   },
