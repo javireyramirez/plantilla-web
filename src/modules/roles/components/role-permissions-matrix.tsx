@@ -3,6 +3,7 @@ import { Loader2, Shield, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -40,8 +41,17 @@ interface RolePermissionsMatrixProps {
 
 export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
   const { t } = useTranslation();
-  const { modules, isLoading, getPermissionCell, handleScopeChange, isMutating } =
-    useRolePermissionsMatrix(roleId);
+  const {
+    modules,
+    isLoading,
+    getEffectiveScope,
+    setPendingScope,
+    handleSave,
+    handleCancel,
+    hasChanges,
+    isSaving,
+    isMutating,
+  } = useRolePermissionsMatrix(roleId);
 
   if (isLoading) {
     return (
@@ -71,12 +81,38 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
             </p>
           </div>
         </div>
-        {isMutating && (
-          <Badge variant="secondary" className="gap-1.5 px-2.5 py-0.5 text-xs animate-pulse">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-            {t('roles.permissions.saving', { defaultValue: 'Sincronizando...' })}
-          </Badge>
-        )}
+        <div className="flex items-center gap-2">
+          {hasChanges && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancel}
+                disabled={isSaving}
+                className="text-xs h-8"
+              >
+                {t('common.cancel', { defaultValue: 'Cancelar' })}
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleSave}
+                disabled={isSaving}
+                className="text-xs h-8 gap-1.5"
+              >
+                {isSaving && <Loader2 className="h-3 w-3 animate-spin" />}
+                {t('common.save', { defaultValue: 'Guardar' })}
+              </Button>
+            </>
+          )}
+          {isMutating && !hasChanges && (
+            <Badge variant="secondary" className="gap-1.5 px-2.5 py-0.5 text-xs animate-pulse">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+              {isSaving
+                ? t('roles.permissions.saving', { defaultValue: 'Guardando...' })
+                : t('roles.permissions.saving', { defaultValue: 'Sincronizando...' })}
+            </Badge>
+          )}
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -109,7 +145,6 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
               </TableRow>
             ) : (
               modules.map((mod: any) => {
-                // Soportamos mod.label del esquema o mod.name si el getList genérico lo mapeó así
                 const moduleName = mod.name || t('roles.permissions.unknownModule');
 
                 return (
@@ -121,16 +156,15 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
                     </TableCell>
 
                     {ACTIONS.map((action) => {
-                      const permission = getPermissionCell(mod.id, action);
-                      const currentValue = permission ? permission.scope : 'NONE';
+                      const currentValue = getEffectiveScope(mod.id, action);
 
                       return (
                         <TableCell key={action} className="p-2 text-center">
                           <Select
-                            disabled={isMutating}
+                            disabled={isSaving}
                             value={currentValue}
                             onValueChange={(val) =>
-                              handleScopeChange(mod.id, action, val as PermissionScopeType | 'NONE')
+                              setPendingScope(mod.id, action, val as PermissionScopeType | 'NONE')
                             }
                           >
                             <SelectTrigger
@@ -156,13 +190,13 @@ export function RolePermissionsMatrix({ roleId }: RolePermissionsMatrixProps) {
                                 ✕ {t('roles.scopes.none', { defaultValue: 'Ninguno' })}
                               </SelectItem>
                               <SelectItem value="OWN" className="text-xs text-blue-600">
-                                🔒 {t('roles.scopes.own', { defaultValue: 'Propio (OWN)' })}
+                                🔒 {t('roles.scopes.own', { defaultValue: 'Usuario' })}
                               </SelectItem>
                               <SelectItem value="TEAM" className="text-xs text-purple-600">
-                                👥 {t('roles.scopes.team', { defaultValue: 'Equipo (TEAM)' })}
+                                👥 {t('roles.scopes.team', { defaultValue: 'Equipo' })}
                               </SelectItem>
                               <SelectItem value="GLOBAL" className="text-xs text-emerald-600">
-                                🌐 {t('roles.scopes.global', { defaultValue: 'Global (GLOBAL)' })}
+                                🌐 {t('roles.scopes.global', { defaultValue: 'Global' })}
                               </SelectItem>
                             </SelectContent>
                           </Select>

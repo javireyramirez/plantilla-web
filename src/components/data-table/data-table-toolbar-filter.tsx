@@ -73,6 +73,7 @@ export function DataTableToolbarFilter<TData>({
               column={column}
               title={columnMeta.label ?? column.id}
               multiple={columnMeta.variant === 'dateRange'}
+              applyButton={columnMeta.variant === 'dateRange'}
               className={className}
             />
           );
@@ -101,6 +102,7 @@ export function DataTableToolbarFilter<TData>({
               title={columnMeta.label ?? column.id}
               options={columnMeta.options ?? []}
               multiple={columnMeta.variant === 'multiSelect'}
+              applyButton={columnMeta.variant === 'multiSelect'}
               className={className}
             />
           );

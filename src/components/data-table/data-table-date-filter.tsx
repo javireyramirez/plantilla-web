@@ -51,6 +51,7 @@ interface DataTableDateFilterProps<TData> {
   column: Column<TData, unknown>;
   title?: string;
   multiple?: boolean;
+  applyButton?: boolean;
   className?: string;
 }
 
@@ -58,8 +59,10 @@ export function DataTableDateFilter<TData>({
   column,
   title,
   multiple,
+  applyButton,
   className,
 }: DataTableDateFilterProps<TData>) {
+  const [open, setOpen] = React.useState(false);
   const columnFilterValue = column.getFilterValue();
   const i18n = useDataTableI18n();
 
@@ -81,23 +84,54 @@ export function DataTableDateFilter<TData>({
     return date ? [date] : [];
   }, [columnFilterValue, multiple]);
 
-  const onSelect = React.useCallback(
-    (date: Date | DateRange | undefined) => {
-      if (!date) {
-        column.setFilterValue(undefined);
-        return;
-      }
+  // Pending selection state — only used when applyButton is true
+  const [pendingDates, setPendingDates] = React.useState<DateSelection>(
+    multiple ? { from: undefined, to: undefined } : []
+  );
 
-      if (multiple && !('getTime' in date)) {
-        const from = date.from?.getTime();
-        const to = date.to?.getTime();
-        column.setFilterValue(from || to ? [from, to] : undefined);
-      } else if (!multiple && 'getTime' in date) {
-        column.setFilterValue(date.getTime());
+  // Sync pendingDates when popover opens
+  React.useEffect(() => {
+    if (open && multiple && applyButton) {
+      setPendingDates(selectedDates);
+    }
+  }, [open, selectedDates, multiple, applyButton]);
+
+  const activeDates = multiple && applyButton ? pendingDates : selectedDates;
+
+  const handleSelect = React.useCallback(
+    (date: Date | DateRange | undefined) => {
+      if (multiple && applyButton) {
+        if (!date) {
+          setPendingDates({ from: undefined, to: undefined });
+        } else if (!('getTime' in date)) {
+          setPendingDates(date);
+        }
+      } else {
+        if (!date) {
+          column.setFilterValue(undefined);
+          return;
+        }
+
+        if (multiple && !('getTime' in date)) {
+          const from = date.from?.getTime();
+          const to = date.to?.getTime();
+          column.setFilterValue(from || to ? [from, to] : undefined);
+        } else if (!multiple && 'getTime' in date) {
+          column.setFilterValue(date.getTime());
+        }
       }
     },
-    [column, multiple]
+    [column, multiple, applyButton]
   );
+
+  const handleApply = React.useCallback(() => {
+    if (multiple && getIsDateRange(pendingDates)) {
+      const from = pendingDates.from?.getTime();
+      const to = pendingDates.to?.getTime();
+      column.setFilterValue(from || to ? [from, to] : undefined);
+    }
+    setOpen(false);
+  }, [column, multiple, pendingDates]);
 
   const onReset = React.useCallback(
     (event: React.MouseEvent) => {
@@ -168,7 +202,7 @@ export function DataTableDateFilter<TData>({
   }, [selectedDates, multiple, formatDateRange, title]);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -198,17 +232,24 @@ export function DataTableDateFilter<TData>({
             captionLayout="dropdown"
             mode="range"
             selected={
-              getIsDateRange(selectedDates) ? selectedDates : { from: undefined, to: undefined }
+              getIsDateRange(activeDates) ? activeDates : { from: undefined, to: undefined }
             }
-            onSelect={onSelect}
+            onSelect={handleSelect}
           />
         ) : (
           <Calendar
             captionLayout="dropdown"
             mode="single"
-            selected={!getIsDateRange(selectedDates) ? selectedDates[0] : undefined}
-            onSelect={onSelect}
+            selected={!getIsDateRange(activeDates) ? activeDates[0] : undefined}
+            onSelect={handleSelect}
           />
+        )}
+        {multiple && applyButton && (
+          <div className="border-t p-2">
+            <Button size="sm" className="w-full" onClick={handleApply}>
+              {i18n.dateFilter.apply}
+            </Button>
+          </div>
         )}
       </PopoverContent>
     </Popover>
