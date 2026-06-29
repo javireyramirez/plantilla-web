@@ -1,5 +1,6 @@
 import {
   // Símbolo de candado
+  ArrowLeft,
   Ban,
   Building2,
   ChevronDown,
@@ -15,7 +16,7 @@ import {
 } from 'lucide-react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { useState } from 'react';
 
@@ -53,9 +54,11 @@ import { UsersDetailForm } from '../components/users-form';
 import { UserRolesTable } from '../components/users-roles-table';
 import { UsersTeamsTable } from '../components/users-teams-table';
 import { useUsersForm } from '../model/use-users-detail';
+import { AuditTable } from '@/modules/audit/components/audit-table';
 
 export default function UsersDetail() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // --- Estados locales ---
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -95,23 +98,28 @@ export default function UsersDetail() {
   return (
     <div className="space-y-6 mx-auto p-4 md:p-6">
       {/* SECCIÓN: Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
-              <Link to="/users">{t('users.title')}</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="font-medium text-foreground flex items-center gap-1.5">
-              {/* Candado en el Breadcrumb si está inactivo */}
-              {isEditing && !isActive && <Lock className="h-3.5 w-3.5 text-destructive" />}
-              {isEditing ? `${userName}` : t('users.createTitle')}
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
+                <Link to="/users">{t('users.title')}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="font-medium text-foreground flex items-center gap-1.5">
+                {/* Candado en el Breadcrumb si está inactivo */}
+                {isEditing && !isActive && <Lock className="h-3.5 w-3.5 text-destructive" />}
+                {isEditing ? `${userName}` : t('users.createTitle')}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Button onClick={() => navigate(-1)} variant="outline" className="w-full sm:w-auto">
+          <ArrowLeft className="mr-2 h-4 w-4" /> {t('audit.back')}
+        </Button>
+      </div>
 
       {/* SECCIÓN: Barra de Acciones Adaptativa Global */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
@@ -382,7 +390,7 @@ export default function UsersDetail() {
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
             >
-              {t('users.auditContent')}
+              <AuditTable moduleSlug="users" entityId={id} />
             </TabsContent>
           </>
         )}

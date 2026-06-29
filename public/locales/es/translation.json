@@ -355,9 +355,10 @@
       "matrixDesc": "Asigna el nivel de acceso para cada acción sobre los recursos del sistema.",
       "saving": "Guardando...",
       "syncing": "Sincronizando...",
-      "moduleCol": "Módulo / Recurso",
+      "moduleCol": "Módulo",
       "noModules": "No se encontraron módulos disponibles.",
-      "unknownModule": "Módulo desconocido"
+      "unknownModule": "Módulo desconocido",
+      "searchPlaceholder": "Buscar módulo..."
     },
     "scopes": {
       "none": "Ninguno",
@@ -542,5 +543,23 @@
     }
   },
   "redirecting_message_one": "Redirigiendo al dashboard en {{count}} segundo...",
-  "redirecting_message_other": "Redirigiendo al dashboard en {{count}} segundos..."
+  "redirecting_message_other": "Redirigiendo al dashboard en {{count}} segundos...",
+  "modules": {
+    "categories": {
+      "system": "Sistema",
+      "business": "Negocio",
+      "files": "Archivos",
+      "security": "Seguridad"
+    },
+    "names": {
+      "audit": "Auditoría",
+      "companies": "Compañías",
+      "documents": "Documentos",
+      "roles": "Roles",
+      "storage": "Almacenamiento",
+      "teams": "Equipos",
+      "trash": "Papelera",
+      "users": "Usuarios"
+    }
+  }
 }

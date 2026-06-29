@@ -1,7 +1,7 @@
-import { ChevronDown, Download, MoreHorizontal, Plus, Save, Shield, Trash2 } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Download, MoreHorizontal, Plus, Save, Shield, Trash2 } from 'lucide-react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { useState } from 'react';
 
@@ -38,9 +38,11 @@ import { RoleAssignmentsTable } from '../components/role-assignments-table';
 import { RolePermissionsMatrix } from '../components/role-permissions-matrix';
 import { RolesDetailForm } from '../components/roles-form';
 import { useRoleForm } from '../model/use-roles-detail';
+import { AuditTable } from '@/modules/audit/components/audit-table';
 
 export default function RoleDetail() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // --- Estados locales ---
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -143,21 +145,26 @@ export default function RoleDetail() {
   return (
     <div className="space-y-6 mx-auto p-4 md:p-6">
       {/* SECCIÓN: Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
-              <Link to="/roles">{t('roles.title')}</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="font-medium text-foreground">
-              {isEditing ? `${roleName}` : t('roles.createTitle')}
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
+                <Link to="/roles">{t('roles.title')}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="font-medium text-foreground">
+                {isEditing ? `${roleName}` : t('roles.createTitle')}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Button onClick={() => navigate(-1)} variant="outline" className="w-full sm:w-auto">
+          <ArrowLeft className="mr-2 h-4 w-4" /> {t('audit.back')}
+        </Button>
+      </div>
 
       {/* SECCIÓN: Barra de Acciones Adaptativa Global */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
@@ -354,7 +361,7 @@ export default function RoleDetail() {
               value="audit"
               className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
             >
-              {t('roles.auditContent')}
+              <AuditTable moduleSlug="roles" entityId={id} />
             </TabsContent>
           </>
         )}

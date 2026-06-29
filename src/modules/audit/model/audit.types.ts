@@ -24,14 +24,13 @@ export function getActionOptions(t: (key: string) => string): SelectOption[] {
     { value: 'LOGOUT', label: t('audit.actions.LOGOUT') },
   ];
 }
-
 export function getModuleOptions(t: (key: string) => string): SelectOption[] {
   return [
-    { value: 'companies', label: t('sidebar.nav.companies') },
-    { value: 'users', label: t('sidebar.nav.users') },
-    { value: 'teams', label: t('sidebar.nav.teams') },
-    { value: 'roles', label: t('sidebar.nav.roles') },
-    { value: 'audit', label: t('sidebar.nav.audit') },
-    { value: 'documents', label: t('sidebar.nav.documents') },
+    { value: 'companies', label: t('modules.names.companies') },
+    { value: 'users', label: t('modules.names.users') },
+    { value: 'teams', label: t('modules.names.teams') },
+    { value: 'roles', label: t('modules.names.roles') },
+    { value: 'audit', label: t('modules.names.audit') },
+    { value: 'documents', label: t('modules.names.documents') },
   ];
 }

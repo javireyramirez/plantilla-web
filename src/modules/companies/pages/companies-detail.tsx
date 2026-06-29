@@ -1,7 +1,7 @@
-import { Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { useState } from 'react';
 
@@ -40,6 +40,7 @@ import { AuditTable } from '@/modules/audit/components/audit-table';
 
 export default function CompanyDetail() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // --- Estados locales ---
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -141,21 +142,26 @@ export default function CompanyDetail() {
   return (
     <div className="space-y-6 mx-auto p-4 md:p-6">
       {/* SECCIÓN: Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
-              <Link to="/companies">{t('companies.title')}</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="font-medium text-foreground">
-              {isEditing ? `${companyName}` : t('companies.createTitle')}
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
+                <Link to="/companies">{t('companies.title')}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="font-medium text-foreground">
+                {isEditing ? `${companyName}` : t('companies.createTitle')}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Button onClick={() => navigate(-1)} variant="outline" className="w-full sm:w-auto">
+          <ArrowLeft className="mr-2 h-4 w-4" /> {t('audit.back')}
+        </Button>
+      </div>
 
       {/* SECCIÓN: Barra de Acciones Adaptativa Global */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
