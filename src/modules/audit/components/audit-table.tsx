@@ -14,8 +14,12 @@ import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolb
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { AuditLogType } from '@/modules/audit/model/audit.schema';
+import {
+  getActionOptions,
+  getEntityLink,
+  getModuleOptions,
+} from '@/modules/audit/model/audit.types';
 import useAuditTable from '@/modules/audit/model/use-audit-table';
-import { getActionOptions, getEntityLink, getModuleOptions } from '@/modules/audit/model/audit.types';
 import { usersQueries } from '@/modules/users/model/users.query';
 import { GetUsersQuery } from '@/modules/users/model/users.schema';
 
@@ -59,9 +63,7 @@ export function AuditTable({ moduleSlug, entityId }: AuditTableProps) {
         accessorKey: 'createdAt',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('audit.date')} />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('audit.date')} />,
         cell: ({ row }) => {
           const dateVal = row.getValue('createdAt');
           if (!dateVal) return '';
@@ -85,14 +87,18 @@ export function AuditTable({ moduleSlug, entityId }: AuditTableProps) {
         accessorKey: 'action',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('audit.action')} />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('audit.action')} />,
         cell: ({ row }) => {
           const action = row.getValue('action') as string;
           return (
             <span className="font-medium text-foreground">
-              {t(`audit.actions.${action}`) || action}
+              <Link
+                to={`/audit/${row.original.id}`}
+                className="font-medium text-blue-500 hover:text-blue-700 hover:underline block truncate max-w-[200px]"
+              >
+                {' '}
+                {t(`audit.actions.${action}`) || action}
+              </Link>
             </span>
           );
         },
@@ -106,13 +112,11 @@ export function AuditTable({ moduleSlug, entityId }: AuditTableProps) {
         accessorKey: 'moduleSlug',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('audit.module')} />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('audit.module')} />,
         cell: ({ row }) => {
           const slug = row.getValue('moduleSlug') as string;
           if (!slug) return '-';
-          const translationKey = `sidebar.nav.${slug}`;
+          const translationKey = `modules.names.${slug}`;
           const translated = t(translationKey);
           return (
             <span className="text-foreground font-medium capitalize">
@@ -130,15 +134,14 @@ export function AuditTable({ moduleSlug, entityId }: AuditTableProps) {
         accessorKey: 'displayName',
         enableColumnFilter: false,
         enableSorting: false,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('audit.entity')} />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('audit.entity')} />,
         cell: ({ row }) => {
           const slug = row.original.moduleSlug;
           const entityId = row.original.entityId;
           const action = row.original.action;
           const displayName = (row.getValue('displayName') as string) || '-';
-          const link = action !== 'LOGIN' && action !== 'LOGOUT' ? getEntityLink(slug, entityId) : null;
+          const link =
+            action !== 'LOGIN' && action !== 'LOGOUT' ? getEntityLink(slug, entityId) : null;
 
           return link ? (
             <Link
@@ -171,9 +174,7 @@ export function AuditTable({ moduleSlug, entityId }: AuditTableProps) {
         accessorKey: 'userId',
         enableColumnFilter: true,
         enableSorting: false,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('audit.user')} />
-        ),
+        header: ({ column }) => <DataTableColumnHeader column={column} label={t('audit.user')} />,
         cell: ({ row }) => {
           const userObj = row.original.user;
           const userName = userObj?.name || userObj?.email || row.original.userId || '-';
@@ -224,14 +225,10 @@ export function AuditTable({ moduleSlug, entityId }: AuditTableProps) {
     [t]
   );
 
-  const {
-    table,
-    totalRows,
-    isLoading,
-    isFetching,
-    isMobile,
-    limit,
-  } = useAuditTable(columns, { moduleSlug, entityId });
+  const { table, totalRows, isLoading, isFetching, isMobile, limit } = useAuditTable(columns, {
+    moduleSlug,
+    entityId,
+  });
 
   if (isLoading) {
     return (

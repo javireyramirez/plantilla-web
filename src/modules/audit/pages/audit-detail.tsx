@@ -82,21 +82,26 @@ export default function AuditDetail() {
   return (
     <div className="space-y-6 mx-auto p-4 md:p-6">
       {/* SECCIÓN: Breadcrumb */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
-              <Link to="/audit">{t('audit.title')}</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="font-medium text-foreground">
-              {t('audit.detail')}
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild className="transition-colors hover:text-foreground">
+                <Link to="/audit">{t('audit.title')}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="font-medium text-foreground">
+                {t('audit.detail')}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Button onClick={() => navigate(-1)} variant="outline" className="w-full sm:w-auto">
+          <ArrowLeft className="mr-2 h-4 w-4" /> {t('audit.back')}
+        </Button>
+      </div>
 
       {/* SECCIÓN: Header Card */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-card p-4 rounded-xl border shadow-sm">
@@ -116,12 +121,6 @@ export default function AuditDetail() {
           <p className="text-sm text-muted-foreground">
             {auditLog.description || t('audit.subtitle')}
           </p>
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <Button onClick={() => navigate(-1)} variant="outline" className="w-full sm:w-auto">
-            <ArrowLeft className="mr-2 h-4 w-4" /> {t('audit.back')}
-          </Button>
         </div>
       </div>
 
@@ -185,7 +184,7 @@ export default function AuditDetail() {
                 {(() => {
                   const slug = auditLog.moduleSlug;
                   if (!slug) return '-';
-                  const translationKey = `sidebar.nav.${slug}`;
+                  const translationKey = `modules.names.${slug}`;
                   const translated = t(translationKey);
                   return translated !== translationKey ? translated : slug;
                 })()}

@@ -350,9 +350,10 @@
       "matrixDesc": "Assign access levels for each action on system resources.",
       "saving": "Saving...",
       "syncing": "Syncing...",
-      "moduleCol": "Module / Resource",
+      "moduleCol": "Module",
       "noModules": "No modules found.",
-      "unknownModule": "Unknown module"
+      "unknownModule": "Unknown module",
+      "searchPlaceholder": "Search module..."
     },
     "scopes": {
       "none": "None",
@@ -531,5 +532,23 @@
     }
   },
   "redirecting_message_one": "Redirecting to dashboard in {{count}} second...",
-  "redirecting_message_other": "Redirecting to dashboard in {{count}} seconds..."
+  "redirecting_message_other": "Redirecting to dashboard in {{count}} seconds...",
+  "modules": {
+    "categories": {
+      "system": "System",
+      "business": "Business",
+      "files": "Files",
+      "security": "Security"
+    },
+    "names": {
+      "audit": "Audit",
+      "companies": "Companies",
+      "documents": "Documents",
+      "roles": "Roles",
+      "storage": "Storage",
+      "teams": "Teams",
+      "trash": "Trash",
+      "users": "Users"
+    }
+  }
 }
