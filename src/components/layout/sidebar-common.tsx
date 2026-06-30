@@ -45,7 +45,7 @@ export default function LayoutSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{t('sidebar.group1')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('sidebar.groups.group1')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {commonItems.map((item) => (

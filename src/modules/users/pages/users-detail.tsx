@@ -8,6 +8,7 @@ import {
   Lock,
   MoreHorizontal,
   Plus,
+  RotateCcw,
   Save,
   Send,
   Trash2,
@@ -17,6 +18,7 @@ import {
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useState } from 'react';
 
@@ -49,12 +51,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AuditTable } from '@/modules/audit/components/audit-table';
+import { usersQueries } from '@/modules/users/model/users.query';
 
 import { UsersDetailForm } from '../components/users-form';
 import { UserRolesTable } from '../components/users-roles-table';
 import { UsersTeamsTable } from '../components/users-teams-table';
 import { useUsersForm } from '../model/use-users-detail';
-import { AuditTable } from '@/modules/audit/components/audit-table';
 
 export default function UsersDetail() {
   const { t } = useTranslation();
@@ -69,6 +72,7 @@ export default function UsersDetail() {
 
   // Extraemos las nuevas propiedades y funciones desde tu hook
   const {
+    data,
     isEditing,
     userName,
     isActive,
@@ -82,10 +86,29 @@ export default function UsersDetail() {
     isPending,
   } = useUsersForm(id);
 
+  const { mutate: restore, isPending: isRestoring } = usersQueries.useRestore();
+
+  const handleRestore = () => {
+    if (!id) return;
+    restore(id, {
+      onSuccess: () => {
+        toast.success(t('trash.toast.restoreSuccess') || 'Usuario restaurado con éxito');
+      },
+      onError: (error: any) => {
+        const serverMessage = error?.response?.data?.message || error?.message;
+        toast.error(
+          serverMessage || t('trash.toast.restoreError') || 'Error al restaurar el usuario'
+        );
+      },
+    });
+  };
+
+  const isTrashed = (data as any)?.status === 'TRASHED';
+
   const tabs = [
     { value: 'detail', label: t('users.detail'), viewAtCreate: true },
-    { value: 'teams', label: t('users.teams'), viewAtCreate: isEditing },
-    { value: 'roles', label: t('users.roles'), viewAtCreate: isEditing },
+    { value: 'teams', label: t('users.teams.label'), viewAtCreate: isEditing },
+    { value: 'roles', label: t('users.roles.label'), viewAtCreate: isEditing },
     { value: 'audit', label: t('users.audit'), viewAtCreate: isEditing },
   ];
 
@@ -130,12 +153,17 @@ export default function UsersDetail() {
               <span className="truncate flex items-center gap-2">
                 <span className="text-primary">{userName}</span>
                 {/* Candado / Tag indicador visual al lado del nombre principal */}
-                {!isActive && (
+                {isTrashed ? (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
+                    <Trash2 className="h-3 w-3" />
+                    {t('trash.table.expired') || 'Eliminado'}
+                  </span>
+                ) : !isActive ? (
                   <span className="inline-flex items-center gap-1 rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
                     <Lock className="h-3 w-3" />
                     {t('users.statusName.suspended')}
                   </span>
-                )}
+                ) : null}
               </span>
             ) : (
               t('users.createTitle')
@@ -148,190 +176,212 @@ export default function UsersDetail() {
 
         {/* Contenedor Único de Botones (con flex-wrap para pantallas intermedias) */}
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
-          {isEditing && (
+          {isTrashed ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white gap-2"
+              disabled={isPending || isRestoring}
+              onClick={handleRestore}
+            >
+              <RotateCcw className="h-4 w-4" />
+              {t('trash.actions.restoreSelected') || 'Restaurar'}
+            </Button>
+          ) : (
             <>
-              {/* Ocultos en tablets/portátiles (< lg), visibles en pantallas grandes */}
-              <Button
-                type="button"
-                variant="outline"
-                className="hidden lg:flex gap-2"
-                disabled={isPending}
-                onClick={handleResendInvitation}
-              >
-                <Send className="h-4 w-4" />
-                {t('users.resendInvitation')}
-              </Button>
-
-              {isActive ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="hidden lg:flex border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white gap-2"
-                  disabled={isPending}
-                  onClick={handleSuspend}
-                >
-                  <Ban className="h-4 w-4" />
-                  {t('users.suspend')}
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="hidden lg:flex border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white gap-2"
-                  disabled={isPending}
-                  onClick={handleUnSuspend}
-                >
-                  <UserCheck className="h-4 w-4" />
-                  {t('users.unsuspend')}
-                </Button>
-              )}
-
-              <Button
-                type="button"
-                variant="outline"
-                className="hidden lg:flex gap-2"
-                disabled={isPending}
-              >
-                <Download className="h-4 w-4" />
-                {t('users.export')}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="hidden lg:flex border-destructive text-destructive hover:bg-destructive hover:text-white gap-2"
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                <Trash2 className="h-4 w-4" />
-                {t('users.delete')}
-              </Button>
-
-              {/* Solo visible en pantallas muy grandes (xl) */}
-              <Button
-                type="button"
-                variant="outline"
-                className="hidden xl:flex gap-2"
-                disabled={isPending}
-                asChild
-              >
-                <Link to="/users/new">
-                  <Plus className="h-4 w-4" />
-                  {t('users.new')}
-                </Link>
-              </Button>
-            </>
-          )}
-
-          {/* Botón Guardar y Cerrar: Visible a partir de tablets (md) */}
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isPending || (isEditing && !isActive)}
-            onClick={() => form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()}
-            className="hidden md:flex gap-2"
-          >
-            <Save className="h-4 w-4" />
-            {t('users.saveAndClose')}
-          </Button>
-
-          {/* Acción Principal: Siempre visible en barra principal */}
-          <Button
-            type="button"
-            disabled={isPending || (isEditing && !isActive)}
-            onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
-            className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
-          >
-            <Save className="h-4 w-4" />
-            {t('users.save')}
-          </Button>
-
-          {/* Menú Desplegable Adaptativo Móvil / Tablet / Portátil */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className={`px-3 ${isEditing ? 'xl:hidden' : 'md:hidden'}`}>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-52">
-              {/* Aparece aquí en móviles (< md) */}
-              <DropdownMenuItem
-                disabled={isPending || (isEditing && !isActive)}
-                className="md:hidden gap-2"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
-                }}
-              >
-                <Save className="h-4 w-4" />
-                {t('users.saveAndClose')}
-              </DropdownMenuItem>
-
               {isEditing && (
                 <>
-                  {/* Aparecen aquí si la pantalla es menor que LG (portátiles pequeños/tablets) */}
-                  <DropdownMenuItem
+                  {/* Ocultos en tablets/portátiles (< lg), visibles en pantallas grandes */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden lg:flex gap-2"
                     disabled={isPending}
-                    className="lg:hidden gap-2"
-                    onSelect={handleResendInvitation}
+                    onClick={handleResendInvitation}
                   >
                     <Send className="h-4 w-4" />
                     {t('users.resendInvitation')}
-                  </DropdownMenuItem>
+                  </Button>
 
                   {isActive ? (
-                    <DropdownMenuItem
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="hidden lg:flex border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white gap-2"
                       disabled={isPending}
-                      className="lg:hidden gap-2 text-amber-600 focus:text-amber-700"
-                      onSelect={handleSuspend}
+                      onClick={handleSuspend}
                     >
                       <Ban className="h-4 w-4" />
                       {t('users.suspend')}
-                    </DropdownMenuItem>
+                    </Button>
                   ) : (
-                    <DropdownMenuItem
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="hidden lg:flex border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white gap-2"
                       disabled={isPending}
-                      className="lg:hidden gap-2 text-emerald-600 focus:text-emerald-700"
-                      onSelect={handleUnSuspend}
+                      onClick={handleUnSuspend}
                     >
                       <UserCheck className="h-4 w-4" />
                       {t('users.unsuspend')}
-                    </DropdownMenuItem>
+                    </Button>
                   )}
 
-                  <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden lg:flex gap-2"
+                    disabled={isPending}
+                  >
                     <Download className="h-4 w-4" />
                     {t('users.export')}
-                  </DropdownMenuItem>
+                  </Button>
 
-                  {/* Aparece aquí si la pantalla es menor que XL */}
-                  <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden lg:flex border-destructive text-destructive hover:bg-destructive hover:text-white gap-2"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t('users.delete')}
+                  </Button>
+
+                  {/* Solo visible en pantallas muy grandes (xl) */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden xl:flex gap-2"
+                    disabled={isPending}
+                    asChild
+                  >
                     <Link to="/users/new">
                       <Plus className="h-4 w-4" />
                       {t('users.new')}
                     </Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem
-                    disabled={isPending}
-                    className="lg:hidden gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      setDeleteDialogOpen(true);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                    {t('users.delete')}
-                  </DropdownMenuItem>
+                  </Button>
                 </>
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+              {/* Botón Guardar y Cerrar: Visible a partir de tablets (md) */}
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isPending || (isEditing && !isActive)}
+                onClick={() =>
+                  form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()
+                }
+                className="hidden md:flex gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {t('users.saveAndClose')}
+              </Button>
+
+              {/* Acción Principal: Siempre visible en barra principal */}
+              <Button
+                type="button"
+                disabled={isPending || (isEditing && !isActive)}
+                onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
+                className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
+              >
+                <Save className="h-4 w-4" />
+                {t('users.save')}
+              </Button>
+
+              {/* Menú Desplegable Adaptativo Móvil / Tablet / Portátil */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`px-3 ${isEditing ? 'xl:hidden' : 'md:hidden'}`}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-52">
+                  {/* Aparece aquí en móviles (< md) */}
+                  <DropdownMenuItem
+                    disabled={isPending || (isEditing && !isActive)}
+                    className="md:hidden gap-2"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
+                    }}
+                  >
+                    <Save className="h-4 w-4" />
+                    {t('users.saveAndClose')}
+                  </DropdownMenuItem>
+
+                  {isEditing && (
+                    <>
+                      {/* Aparecen aquí si la pantalla es menor que LG (portátiles pequeños/tablets) */}
+                      <DropdownMenuItem
+                        disabled={isPending}
+                        className="lg:hidden gap-2"
+                        onSelect={handleResendInvitation}
+                      >
+                        <Send className="h-4 w-4" />
+                        {t('users.resendInvitation')}
+                      </DropdownMenuItem>
+
+                      {isActive ? (
+                        <DropdownMenuItem
+                          disabled={isPending}
+                          className="lg:hidden gap-2 text-amber-600 focus:text-amber-700"
+                          onSelect={handleSuspend}
+                        >
+                          <Ban className="h-4 w-4" />
+                          {t('users.suspend')}
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem
+                          disabled={isPending}
+                          className="lg:hidden gap-2 text-emerald-600 focus:text-emerald-700"
+                          onSelect={handleUnSuspend}
+                        >
+                          <UserCheck className="h-4 w-4" />
+                          {t('users.unsuspend')}
+                        </DropdownMenuItem>
+                      )}
+
+                      {/* Exportar y Eliminar: Se muestran en el dropdown si es menor a lg */}
+                      <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
+                        <Download className="h-4 w-4" />
+                        {t('users.export')}
+                      </DropdownMenuItem>
+
+                      {/* Se muestra en el menú si la pantalla es menor a xl */}
+                      <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
+                        <Link to="/users/new">
+                          <Plus className="h-4 w-4" />
+                          {t('users.new')}
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        disabled={isPending}
+                        className="lg:hidden gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setDeleteDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        {t('users.delete')}
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
         </div>
       </div>
 
       {/* SECCIÓN: Navegación por Pestañas (Tabs) */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
+        {/* Vista Escritorio */}
         <TabsList
           variant="line"
           className="hidden md:flex h-auto w-fit justify-start gap-6 rounded-none border-b bg-transparent p-0"
@@ -345,6 +395,7 @@ export default function UsersDetail() {
             ))}
         </TabsList>
 
+        {/* Vista Móvil */}
         <div className="border-b md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -365,38 +416,31 @@ export default function UsersDetail() {
 
         {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
-          <FormProvider {...form}>
-            <UsersDetailForm isEditing={isEditing} isActive={isActive} />
-          </FormProvider>
+          <div className={isTrashed ? 'pointer-events-none select-none opacity-70' : ''}>
+            <FormProvider {...form}>
+              <UsersDetailForm isEditing={isEditing} isActive={isActive && !isTrashed} />
+            </FormProvider>
+          </div>
         </TabsContent>
 
         {isEditing && (
           <>
-            <TabsContent
-              value="teams"
-              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-            >
-              <UsersTeamsTable userId={id} />
+            <TabsContent value="teams" className="outline-none">
+              <UsersTeamsTable userId={id!} />
             </TabsContent>
 
-            <TabsContent
-              value="roles"
-              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-            >
-              <UserRolesTable userId={id} />
+            <TabsContent value="roles" className="outline-none">
+              <UserRolesTable userId={id!} />
             </TabsContent>
 
-            <TabsContent
-              value="audit"
-              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-            >
+            <TabsContent value="audit" className="outline-none">
               <AuditTable moduleSlug="users" entityId={id} />
             </TabsContent>
           </>
         )}
       </Tabs>
 
-      {/* SECCIÓN: Diálogo de Confirmación de Borrado */}
+      {/* SECCIÓN: Dialogo de Confirmación de Borrado */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -404,8 +448,8 @@ export default function UsersDetail() {
             <AlertDialogDescription>{t('users.deleteConfirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('users.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} variant="destructive">
+            <AlertDialogCancel disabled={isPending}>{t('users.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isPending} variant="destructive">
               {t('users.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>

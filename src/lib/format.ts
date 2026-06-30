@@ -3,11 +3,10 @@ export function formatDate(
   opts: Intl.DateTimeFormatOptions = {}
 ) {
   if (!date) return '';
-
   try {
-    return new Intl.DateTimeFormat('en-US', {
-      month: opts.month ?? 'long',
-      day: opts.day ?? 'numeric',
+    return new Intl.DateTimeFormat('es-ES', {
+      day: opts.day ?? '2-digit',
+      month: opts.month ?? '2-digit',
       year: opts.year ?? 'numeric',
       ...opts,
     }).format(new Date(date));
@@ -15,6 +14,7 @@ export function formatDate(
     return '';
   }
 }
+
 export function formatBytes(bytes: number) {
   if (bytes === 0) return '0 B';
   const k = 1024;

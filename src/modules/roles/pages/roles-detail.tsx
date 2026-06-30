@@ -1,7 +1,18 @@
-import { ArrowLeft, ChevronDown, Download, MoreHorizontal, Plus, Save, Shield, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  ChevronDown,
+  Download,
+  MoreHorizontal,
+  Plus,
+  RotateCcw,
+  Save,
+  Shield,
+  Trash2,
+} from 'lucide-react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useState } from 'react';
 
@@ -33,12 +44,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AuditTable } from '@/modules/audit/components/audit-table';
+import { rolesQueries } from '@/modules/roles/model/roles.query';
 
 import { RoleAssignmentsTable } from '../components/role-assignments-table';
 import { RolePermissionsMatrix } from '../components/role-permissions-matrix';
 import { RolesDetailForm } from '../components/roles-form';
 import { useRoleForm } from '../model/use-roles-detail';
-import { AuditTable } from '@/modules/audit/components/audit-table';
 
 export default function RoleDetail() {
   const { t } = useTranslation();
@@ -53,10 +65,27 @@ export default function RoleDetail() {
   const { data, isEditing, roleName, isLoading, form, handleSubmit, handleDelete, isPending } =
     useRoleForm(id);
 
+  const { mutate: restore, isPending: isRestoring } = rolesQueries.useRestore();
+
+  const handleRestore = () => {
+    if (!id) return;
+    restore(id, {
+      onSuccess: () => {
+        toast.success(t('trash.toast.restoreSuccess') || 'Rol restaurado con éxito');
+      },
+      onError: (error: any) => {
+        const serverMessage = error?.response?.data?.message || error?.message;
+        toast.error(serverMessage || t('trash.toast.restoreError') || 'Error al restaurar el rol');
+      },
+    });
+  };
+
+  const isTrashed = data?.status === 'TRASHED';
+
   const tabs = [
     { value: 'detail', label: t('roles.detail'), viewAtCreate: true },
-    { value: 'members', label: t('roles.members'), viewAtCreate: isEditing },
-    { value: 'permissions', label: t('roles.permissionsTab'), viewAtCreate: isEditing },
+    { value: 'permissions', label: t('roles.permissions'), viewAtCreate: isEditing },
+    { value: 'users', label: t('roles.users'), viewAtCreate: isEditing },
     { value: 'audit', label: t('roles.audit'), viewAtCreate: isEditing },
   ];
 
@@ -186,122 +215,142 @@ export default function RoleDetail() {
 
         {/* Contenedor Único de Botones (Control de responsividad fluido) */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          {isEditing && (
+          {isTrashed ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white gap-2"
+              disabled={isPending || isRestoring}
+              onClick={handleRestore}
+            >
+              <RotateCcw className="h-4 w-4" />
+              {t('trash.actions.restoreSelected') || 'Restaurar'}
+            </Button>
+          ) : (
             <>
-              {/* Exportar y Eliminar: Visibles a partir de pantallas grandes (lg) */}
+              {isEditing && (
+                <>
+                  {/* Exportar y Eliminar: Visibles a partir de pantallas grandes (lg) */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden lg:flex gap-2"
+                    disabled={isPending}
+                  >
+                    <Download className="h-4 w-4" />
+                    {t('roles.export')}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden lg:flex border-destructive text-destructive hover:bg-destructive hover:text-white gap-2"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t('roles.delete')}
+                  </Button>
+
+                  {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden xl:flex gap-2"
+                    disabled={isPending}
+                    asChild
+                  >
+                    <Link to="/roles/new">
+                      <Plus className="h-4 w-4" />
+                      {t('roles.new')}
+                    </Link>
+                  </Button>
+                </>
+              )}
+
+              {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
               <Button
                 type="button"
                 variant="outline"
-                className="hidden lg:flex gap-2"
                 disabled={isPending}
-              >
-                <Download className="h-4 w-4" />
-                {t('roles.export')}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="hidden lg:flex border-destructive text-destructive hover:bg-destructive hover:text-white gap-2"
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                <Trash2 className="h-4 w-4" />
-                {t('roles.delete')}
-              </Button>
-
-              {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
-              <Button
-                type="button"
-                variant="outline"
-                className="hidden xl:flex gap-2"
-                disabled={isPending}
-                asChild
-              >
-                <Link to="/roles/new">
-                  <Plus className="h-4 w-4" />
-                  {t('roles.new')}
-                </Link>
-              </Button>
-            </>
-          )}
-
-          {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isPending}
-            onClick={() => form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()}
-            className="hidden md:flex gap-2"
-          >
-            <Save className="h-4 w-4" />
-            {t('roles.saveAndClose')}
-          </Button>
-
-          {/* Acción Principal: Siempre visible */}
-          <Button
-            type="button"
-            disabled={isPending}
-            onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
-            className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
-          >
-            <Save className="h-4 w-4" />
-            {t('roles.save')}
-          </Button>
-
-          {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className={`px-3 ${isEditing ? 'xl:hidden' : 'md:hidden'}`}>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-48">
-              {/* Se muestra en el menú si la pantalla es menor a md */}
-              <DropdownMenuItem
-                disabled={isPending}
-                className="md:hidden gap-2"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
-                }}
+                onClick={() =>
+                  form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()
+                }
+                className="hidden md:flex gap-2"
               >
                 <Save className="h-4 w-4" />
                 {t('roles.saveAndClose')}
-              </DropdownMenuItem>
+              </Button>
 
-              {isEditing && (
-                <>
-                  {/* Se muestra en el menú si la pantalla es menor a lg */}
-                  <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
-                    <Download className="h-4 w-4" />
-                    {t('roles.export')}
-                  </DropdownMenuItem>
+              {/* Acción Principal: Siempre visible */}
+              <Button
+                type="button"
+                disabled={isPending}
+                onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
+                className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
+              >
+                <Save className="h-4 w-4" />
+                {t('roles.save')}
+              </Button>
 
-                  {/* Se muestra en el menú si la pantalla es menor a xl */}
-                  <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
-                    <Link to="/roles/new">
-                      <Download className="h-4 w-4" />
-                      {t('roles.new')}
-                    </Link>
-                  </DropdownMenuItem>
+              {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`px-3 ${isEditing ? 'xl:hidden' : 'md:hidden'}`}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-                  {/* Se muestra en el menú si la pantalla es menor a lg */}
+                <DropdownMenuContent align="end" className="w-48">
+                  {/* Se muestra en el menú si la pantalla es menor a md */}
                   <DropdownMenuItem
                     disabled={isPending}
-                    className="lg:hidden gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                    className="md:hidden gap-2"
                     onSelect={(e) => {
                       e.preventDefault();
-                      setDeleteDialogOpen(true);
+                      form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
                     }}
                   >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                    {t('roles.delete')}
+                    <Save className="h-4 w-4" />
+                    {t('roles.saveAndClose')}
                   </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+                  {isEditing && (
+                    <>
+                      {/* Se muestra en el menú si la pantalla es menor a lg */}
+                      <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
+                        <Download className="h-4 w-4" />
+                        {t('roles.export')}
+                      </DropdownMenuItem>
+
+                      {/* Se muestra en el menú si la pantalla es menor a xl */}
+                      <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
+                        <Link to="/roles/new">
+                          <Download className="h-4 w-4" />
+                          {t('roles.new')}
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* Se muestra en el menú si la pantalla es menor a lg */}
+                      <DropdownMenuItem
+                        disabled={isPending}
+                        className="lg:hidden gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setDeleteDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        {t('roles.delete')}
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
         </div>
       </div>
 
@@ -342,32 +391,31 @@ export default function RoleDetail() {
 
         {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
-          <FormProvider {...form}>
-            <RolesDetailForm isEditing={isEditing} />
-          </FormProvider>
+          <div className={isTrashed ? 'pointer-events-none select-none opacity-70' : ''}>
+            <FormProvider {...form}>
+              <RolesDetailForm isEditing={isEditing} />
+            </FormProvider>
+          </div>
         </TabsContent>
 
         {isEditing && (
           <>
-            <TabsContent value="members" className="outline-none">
-              <RoleAssignmentsTable roleId={id as string} />
-            </TabsContent>
-
             <TabsContent value="permissions" className="outline-none">
-              <RolePermissionsMatrix roleId={id as string} />
+              <RolePermissionsMatrix roleId={id!} />
             </TabsContent>
 
-            <TabsContent
-              value="audit"
-              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-            >
+            <TabsContent value="users" className="outline-none">
+              <RoleAssignmentsTable roleId={id!} />
+            </TabsContent>
+
+            <TabsContent value="audit" className="outline-none">
               <AuditTable moduleSlug="roles" entityId={id} />
             </TabsContent>
           </>
         )}
       </Tabs>
 
-      {/* SECCIÓN: Diálogo de Confirmación de Borrado Único (Centralizado) */}
+      {/* SECCIÓN: Dialogo de Confirmación de Borrado */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -375,8 +423,8 @@ export default function RoleDetail() {
             <AlertDialogDescription>{t('roles.deleteConfirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('roles.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} variant="destructive">
+            <AlertDialogCancel disabled={isPending}>{t('roles.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isPending} variant="destructive">
               {t('roles.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>

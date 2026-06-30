@@ -126,6 +126,8 @@
     "deleteConfirmTitle": "Delete this company?",
     "deleteConfirmDesc": "This action cannot be undone. The company will be permanently deleted from the system.",
     "cancel": "Cancel",
+    "docsTitle": "Documents",
+    "docsDescription": "Company documents",
     "sectors": {
       "tecnologia": "Technology",
       "banca": "Banking",
@@ -255,6 +257,25 @@
     "statusName": {
       "suspended": "Suspended"
     },
+    "teams": {
+      "label": "Teams",
+      "assignedTitle": "Assigned Teams",
+      "assignBtn": "Assign Team",
+      "assignTitle": "Assign Teams to User",
+      "assignDescription": "Select the teams you want to add this user to.",
+      "name": "Team",
+      "fecha": "Date",
+      "remove": "Remove",
+      "selectAll": "Select all",
+      "selectRow": "Select row"
+    },
+    "roles": {
+      "label": "Roles",
+      "assignedTitle": "Assigned Roles",
+      "assignBtn": "Assign Role",
+      "assignTitle": "Assign Roles to User",
+      "assignDescription": "Select the roles you want to assign to this user."
+    },
     "table": {
       "delete": "User(s) successfully deleted",
       "selectTodo": "Select all",
@@ -322,10 +343,16 @@
     "deleteConfirmTitle": "Delete this role?",
     "deleteConfirmDesc": "This action cannot be undone. The role will be permanently deleted from the system.",
     "cancel": "Cancel",
+    "selectRole": "Select a role",
+    "searchRole": "Search role...",
+    "noRolesFound": "No roles found",
+    "remove": "Remove",
     "usersWithRole": "Users with this role",
     "members": "Role members",
     "table": {
       "delete": "Role(s) successfully deleted",
+      "remove_success": "Role(s) successfully unassigned",
+      "add_success": "Role(s) successfully assigned",
       "selectTodo": "Select all",
       "selectFila": "Select row",
       "name": "Role",
@@ -392,10 +419,15 @@
     "deleteConfirmTitle": "Delete this team?",
     "deleteConfirmDesc": "This action cannot be undone. The team will be permanently deleted from the system.",
     "cancel": "Cancel",
+    "selectTeam": "Select a team",
+    "searchTeam": "Search team...",
+    "noTeamsFound": "No teams found",
     "members": "Team members",
     "roles": "Team roles",
     "table": {
       "delete": "Team(s) successfully deleted",
+      "remove_success": "Team(s) successfully unassigned",
+      "add_success": "Team(s) successfully assigned",
       "selectTodo": "Select all",
       "selectFila": "Select row",
       "organization": "Organization",
@@ -529,6 +561,44 @@
       "HARD_DELETE": "Hard Delete (Permanent)",
       "LOGIN": "Login",
       "LOGOUT": "Logout"
+    }
+  },
+  "trash": {
+    "title": "Recycle Bin",
+    "subtitle": "Manage items that have been deleted from the system. You can restore them or delete them permanently.",
+    "subtitleDocuments": "Manage documents that have been deleted from the system. You can restore them, download them or delete them permanently.",
+    "tabs": {
+      "entities": "Entities",
+      "documents": "Documents"
+    },
+    "table": {
+      "selectTodo": "Select all",
+      "selectFila": "Select row",
+      "displayName": "Name",
+      "module": "Module",
+      "deletedAt": "Deleted At",
+      "deletedBy": "Deleted By",
+      "expiresAt": "Expires At",
+      "expired": "expired",
+      "today": "today",
+      "daysLeft": "days left",
+      "parentModule": "Entity Module",
+      "parentEntity": "Entity"
+    },
+    "actions": {
+      "restoreSelected": "Restore",
+      "deleteSelectedPermanent": "Delete permanently",
+      "deletePermanent": "Delete permanently"
+    },
+    "dialog": {
+      "deleteTitle": "Permanently delete?",
+      "deleteDescription": "This action is irreversible and will permanently delete the selected items. They cannot be recovered in any way."
+    },
+    "toast": {
+      "restoreSuccess": "Items successfully restored.",
+      "restoreError": "Error restoring items.",
+      "deleteSuccess": "Items permanently deleted.",
+      "deleteError": "Error deleting items."
     }
   },
   "redirecting_message_one": "Redirecting to dashboard in {{count}} second...",

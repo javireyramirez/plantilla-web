@@ -23,6 +23,7 @@ import TeamDetail from '@/modules/teams/pages/teams-detail';
 import TeamsView from '@/modules/teams/pages/teams-view';
 import UsersDetail from '@/modules/users/pages/users-detail';
 import UsersView from '@/modules/users/pages/users-view';
+import RecoveryView from '@/modules/trash/pages/recovery-view';
 import Admin from '@/pages/Admin';
 import Home from '@/pages/Home';
 
@@ -76,6 +77,9 @@ export default function Router() {
 
           <Route path="/audit" element={<AuditView />} />
           <Route path="/audit/:id" element={<AuditDetail />} />
+
+          <Route path="/recovery" element={<RecoveryView />} />
+          <Route path="/documents" element={<RecoveryView />} />
         </Route>
       </Route>
 

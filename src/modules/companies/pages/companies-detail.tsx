@@ -1,7 +1,18 @@
-import { ArrowLeft, Building2, ChevronDown, Download, MoreHorizontal, Plus, Save, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Building2,
+  ChevronDown,
+  Download,
+  MoreHorizontal,
+  Plus,
+  RotateCcw,
+  Save,
+  Trash2,
+} from 'lucide-react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useState } from 'react';
 
@@ -34,9 +45,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DocumentsTable, FileUploadButton } from '@/features/storage';
-import { CompaniesDetailForm } from '../components/companies-form';
-import { useCompanyForm } from '@/modules/companies/model/use-companies-detail';
 import { AuditTable } from '@/modules/audit/components/audit-table';
+import { companiesQueries } from '@/modules/companies/model/companies.query';
+import { useCompanyForm } from '@/modules/companies/model/use-companies-detail';
+
+import { CompaniesDetailForm } from '../components/companies-form';
 
 export default function CompanyDetail() {
   const { t } = useTranslation();
@@ -48,8 +61,25 @@ export default function CompanyDetail() {
 
   // --- Hooks de datos y formulario ---
   const { id } = useParams<{ id: string }>();
-  const { isEditing, companyName, isLoading, form, handleSubmit, handleDelete, isPending } =
+  const { data, isEditing, companyName, isLoading, form, handleSubmit, handleDelete, isPending } =
     useCompanyForm(id);
+
+  const { mutate: restore, isPending: isRestoring } = companiesQueries.useRestore();
+
+  const handleRestore = () => {
+    if (!id) return;
+    restore(id, {
+      onSuccess: () => {
+        toast.success(t('trash.toast.restoreSuccess') || 'Restaurado con éxito');
+      },
+      onError: (error: any) => {
+        const serverMessage = error?.response?.data?.message || error?.message;
+        toast.error(serverMessage || t('trash.toast.restoreError') || 'Error al restaurar');
+      },
+    });
+  };
+
+  const isTrashed = data?.status === 'TRASHED';
 
   const tabs = [
     { value: 'detail', label: t('companies.detail'), viewAtCreate: true },
@@ -183,122 +213,142 @@ export default function CompanyDetail() {
 
         {/* Contenedor Único de Botones (Control de responsividad fluido) */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          {isEditing && (
+          {isTrashed ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white gap-2"
+              disabled={isPending || isRestoring}
+              onClick={handleRestore}
+            >
+              <RotateCcw className="h-4 w-4" />
+              {t('trash.actions.restoreSelected') || 'Restaurar'}
+            </Button>
+          ) : (
             <>
-              {/* Exportar y Eliminar: Visibles a partir de pantallas grandes (lg) */}
+              {isEditing && (
+                <>
+                  {/* Exportar y Eliminar: Visibles a partir de pantallas grandes (lg) */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden lg:flex gap-2"
+                    disabled={isPending}
+                  >
+                    <Download className="h-4 w-4" />
+                    {t('companies.export')}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden lg:flex border-destructive text-destructive hover:bg-destructive hover:text-white gap-2"
+                    onClick={() => setDeleteDialogOpen(true)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t('companies.delete')}
+                  </Button>
+
+                  {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="hidden xl:flex gap-2"
+                    disabled={isPending}
+                    asChild
+                  >
+                    <Link to="/companies/new">
+                      <Plus className="h-4 w-4" />
+                      {t('companies.new')}
+                    </Link>
+                  </Button>
+                </>
+              )}
+
+              {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
               <Button
                 type="button"
                 variant="outline"
-                className="hidden lg:flex gap-2"
                 disabled={isPending}
-              >
-                <Download className="h-4 w-4" />
-                {t('companies.export')}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="hidden lg:flex border-destructive text-destructive hover:bg-destructive hover:text-white gap-2"
-                onClick={() => setDeleteDialogOpen(true)}
-              >
-                <Trash2 className="h-4 w-4" />
-                {t('companies.delete')}
-              </Button>
-
-              {/* Nueva Compañía: Visible solo en pantallas muy grandes (xl) */}
-              <Button
-                type="button"
-                variant="outline"
-                className="hidden xl:flex gap-2"
-                disabled={isPending}
-                asChild
-              >
-                <Link to="/companies/new">
-                  <Plus className="h-4 w-4" />
-                  {t('companies.new')}
-                </Link>
-              </Button>
-            </>
-          )}
-
-          {/* Botón Guardar y Cerrar: Visible a partir de pantallas medianas (md) */}
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isPending}
-            onClick={() => form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()}
-            className="hidden md:flex gap-2"
-          >
-            <Save className="h-4 w-4" />
-            {t('companies.saveAndClose')}
-          </Button>
-
-          {/* Acción Principal: Siempre visible */}
-          <Button
-            type="button"
-            disabled={isPending}
-            onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
-            className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
-          >
-            <Save className="h-4 w-4" />
-            {t('companies.save')}
-          </Button>
-
-          {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className={`px-3 ${isEditing ? 'xl:hidden' : 'md:hidden'}`}>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-48">
-              {/* Se muestra en el menú si la pantalla es menor a md */}
-              <DropdownMenuItem
-                disabled={isPending}
-                className="md:hidden gap-2"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
-                }}
+                onClick={() =>
+                  form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))()
+                }
+                className="hidden md:flex gap-2"
               >
                 <Save className="h-4 w-4" />
                 {t('companies.saveAndClose')}
-              </DropdownMenuItem>
+              </Button>
 
-              {isEditing && (
-                <>
-                  {/* Se muestra en el menú si la pantalla es menor a lg */}
-                  <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
-                    <Download className="h-4 w-4" />
-                    {t('companies.export')}
-                  </DropdownMenuItem>
+              {/* Acción Principal: Siempre visible */}
+              <Button
+                type="button"
+                disabled={isPending}
+                onClick={() => form.handleSubmit((data) => handleSubmit(data))()}
+                className="gap-2 shadow-sm flex-1 sm:flex-none justify-center"
+              >
+                <Save className="h-4 w-4" />
+                {t('companies.save')}
+              </Button>
 
-                  {/* Se muestra en el menú si la pantalla es menor a xl */}
-                  <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
-                    <Link to="/companies/new">
-                      <Download className="h-4 w-4" />
-                      {t('companies.new')}
-                    </Link>
-                  </DropdownMenuItem>
+              {/* Menú Desplegable Adaptativo: Captura los botones que desaparecen según el breakpoint */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`px-3 ${isEditing ? 'xl:hidden' : 'md:hidden'}`}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-                  {/* Se muestra en el menú si la pantalla es menor a lg */}
+                <DropdownMenuContent align="end" className="w-48">
+                  {/* Se muestra en el menú si la pantalla es menor a md */}
                   <DropdownMenuItem
                     disabled={isPending}
-                    className="lg:hidden gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                    className="md:hidden gap-2"
                     onSelect={(e) => {
                       e.preventDefault();
-                      setDeleteDialogOpen(true);
+                      form.handleSubmit((data) => handleSubmit(data, { shouldClose: true }))();
                     }}
                   >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                    {t('companies.delete')}
+                    <Save className="h-4 w-4" />
+                    {t('companies.saveAndClose')}
                   </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+                  {isEditing && (
+                    <>
+                      {/* Se muestra en el menú si la pantalla es menor a lg */}
+                      <DropdownMenuItem disabled={isPending} className="lg:hidden gap-2">
+                        <Download className="h-4 w-4" />
+                        {t('companies.export')}
+                      </DropdownMenuItem>
+
+                      {/* Se muestra en el menú si la pantalla es menor a xl */}
+                      <DropdownMenuItem disabled={isPending} className="xl:hidden gap-2" asChild>
+                        <Link to="/companies/new">
+                          <Download className="h-4 w-4" />
+                          {t('companies.new')}
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* Se muestra en el menú si la pantalla es menor a lg */}
+                      <DropdownMenuItem
+                        disabled={isPending}
+                        className="lg:hidden gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setDeleteDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        {t('companies.delete')}
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
         </div>
       </div>
 
@@ -339,28 +389,30 @@ export default function CompanyDetail() {
 
         {/* CONTENIDO DE LAS PESTAÑAS */}
         <TabsContent value="detail" className="outline-none">
-          <FormProvider {...form}>
-            <CompaniesDetailForm isEditing={isEditing} />
-          </FormProvider>
+          <div className={isTrashed ? 'pointer-events-none select-none opacity-70' : ''}>
+            <FormProvider {...form}>
+              <CompaniesDetailForm isEditing={isEditing} />
+            </FormProvider>
+          </div>
         </TabsContent>
 
         {isEditing && (
           <>
             <TabsContent
               value="docs"
-              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm flex flex-col gap-6"
+              className="outline-none rounded-xl border bg-card p-6 shadow-sm space-y-4"
             >
-              <div className="flex justify-end">
-                <FileUploadButton entityType="companies" entityId={id!} multiple={true} />
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-medium">{t('companies.docsTitle')}</h3>
+                  <p className="text-sm text-muted-foreground">{t('companies.docsDescription')}</p>
+                </div>
+                <FileUploadButton entityType="companies" entityId={id!} />
               </div>
-
               <DocumentsTable entityType="companies" entityId={id!} />
             </TabsContent>
 
-            <TabsContent
-              value="audit"
-              className="p-4 border rounded-xl bg-card text-muted-foreground text-sm"
-            >
+            <TabsContent value="audit" className="outline-none">
               <AuditTable moduleSlug="companies" entityId={id} />
             </TabsContent>
           </>
@@ -375,8 +427,8 @@ export default function CompanyDetail() {
             <AlertDialogDescription>{t('companies.deleteConfirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('companies.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} variant="destructive">
+            <AlertDialogCancel disabled={isPending}>{t('companies.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isPending} variant="destructive">
               {t('companies.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
