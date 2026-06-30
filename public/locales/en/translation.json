@@ -107,10 +107,11 @@
     "createDescription": "Enter the details to register the company.",
     "save": "Save",
     "saveAndClose": "Save and close",
-    "delete": "Delete",
-    "detail": "Detail",
-    "docs": "Documentation",
-    "audit": "Audit",
+    "tabs": {
+      "detail": "Detail",
+      "docs": "Documentation",
+      "audit": "Audit"
+    },
     "auditContent": "Audit log goes here...",
     "basicData": "Basic data",
     "identificationInfo": "Main identification info.",
@@ -224,9 +225,13 @@
     "save": "Save",
     "saveAndClose": "Save and close",
     "delete": "Delete",
-    "detail": "Detail",
+    "tabs": {
+      "detail": "Detail",
+      "teams": "Teams",
+      "roles": "Roles",
+      "audit": "Audit"
+    },
     "docs": "Documentation",
-    "audit": "Audit",
     "auditContent": "Audit log goes here...",
     "basicData": "Basic data",
     "identificationInfo": "Main identification info.",
@@ -323,9 +328,13 @@
     "save": "Save",
     "saveAndClose": "Save and close",
     "delete": "Delete",
-    "detail": "Detail",
+    "tabs": {
+      "detail": "Detail",
+      "permissions": "Permissions",
+      "users": "Users",
+      "audit": "Audit"
+    },
     "docs": "Documentation",
-    "audit": "Audit",
     "auditContent": "Audit log goes here...",
     "basicData": "Basic data",
     "identificationInfo": "Main identification info.",
@@ -402,9 +411,13 @@
     "save": "Save",
     "saveAndClose": "Save and close",
     "delete": "Delete",
-    "detail": "Detail",
+    "tabs": {
+      "detail": "Detail",
+      "members": "Members",
+      "roles": "Roles",
+      "audit": "Audit"
+    },
     "docs": "Documentation",
-    "audit": "Audit",
     "auditContent": "Audit log goes here...",
     "basicData": "Basic data",
     "identificationInfo": "Main identification info.",

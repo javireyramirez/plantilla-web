@@ -106,10 +106,10 @@ export default function UsersDetail() {
   const isTrashed = (data as any)?.status === 'TRASHED';
 
   const tabs = [
-    { value: 'detail', label: t('users.detail'), viewAtCreate: true },
-    { value: 'teams', label: t('users.teams.label'), viewAtCreate: isEditing },
-    { value: 'roles', label: t('users.roles.label'), viewAtCreate: isEditing },
-    { value: 'audit', label: t('users.audit'), viewAtCreate: isEditing },
+    { value: 'detail', label: t('users.tabs.detail'), viewAtCreate: true },
+    { value: 'teams', label: t('users.tabs.teams'), viewAtCreate: isEditing },
+    { value: 'roles', label: t('users.tabs.roles'), viewAtCreate: isEditing },
+    { value: 'audit', label: t('users.tabs.audit'), viewAtCreate: isEditing },
   ];
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
