@@ -99,6 +99,7 @@ export function useCompanyForm(id?: string) {
   const companyName = useWatch({ control: form.control, name: 'name' });
 
   return {
+    data,
     isEditing,
     companyName,
     isLoading,

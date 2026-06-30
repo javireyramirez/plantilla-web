@@ -126,6 +126,8 @@
     "deleteConfirmTitle": "¿Eliminar esta compañía?",
     "deleteConfirmDesc": "Esta acción no se puede deshacer. La compañía será eliminada permanentemente del sistema.",
     "cancel": "Cancelar",
+    "docsTitle": "Documentos",
+    "docsDescription": "Documentos de la compañía",
     "sectors": {
       "tecnologia": "Tecnología",
       "banca": "Banca",
@@ -257,6 +259,25 @@
     "statusName": {
       "suspended": "Suspendido"
     },
+    "teams": {
+      "label": "Equipos",
+      "assignedTitle": "Equipos Asignados",
+      "assignBtn": "Asignar Equipo",
+      "assignTitle": "Asignar Equipos al Usuario",
+      "assignDescription": "Selecciona los equipos a los que deseas agregar este usuario.",
+      "name": "Equipo",
+      "fecha": "Fecha",
+      "remove": "Eliminar",
+      "selectAll": "Seleccionar todo",
+      "selectRow": "Seleccionar fila"
+    },
+    "roles": {
+      "label": "Roles",
+      "assignedTitle": "Roles Asignados",
+      "assignBtn": "Asignar Rol",
+      "assignTitle": "Asignar Roles al Usuario",
+      "assignDescription": "Selecciona los roles que deseas asignar a este usuario."
+    },
     "table": {
       "delete": "Usuario(s) eliminado(s) con éxito",
       "selectTodo": "Seleccionar todo",
@@ -327,10 +348,16 @@
     "deleteConfirmTitle": "¿Eliminar este rol?",
     "deleteConfirmDesc": "Esta acción no se puede deshacer. El rol será eliminado permanentemente del sistema.",
     "cancel": "Cancelar",
+    "selectRole": "Selecciona un rol",
+    "searchRole": "Buscar rol...",
+    "noRolesFound": "No se encontraron roles",
+    "remove": "Eliminar",
     "usersWithRole": "Usuarios con este rol",
     "members": "Miembros del rol",
     "table": {
       "delete": "Rol(es) eliminado(s) con éxito",
+      "remove_success": "Rol(es) desasignado(s) con éxito",
+      "add_success": "Rol(es) asignado(s) con éxito",
       "selectTodo": "Seleccionar todo",
       "selectFila": "Seleccionar fila",
       "name": "Rol",
@@ -401,10 +428,15 @@
     "deleteConfirmTitle": "¿Eliminar este equipo?",
     "deleteConfirmDesc": "Esta acción no se puede deshacer. El equipo será eliminado permanentemente del sistema.",
     "cancel": "Cancelar",
+    "selectTeam": "Selecciona un equipo",
+    "searchTeam": "Buscar equipo...",
+    "noTeamsFound": "No se encontraron equipos",
     "members": "Miembros del equipo",
     "roles": "Roles del equipo",
     "table": {
       "delete": "Equipo(s) eliminado(s) con éxito",
+      "remove_success": "Equipo(s) desasignado(s) con éxito",
+      "add_success": "Equipo(s) asignado(s) con éxito",
       "selectTodo": "Seleccionar todo",
       "selectFila": "Seleccionar fila",
       "organization": "Organización",
@@ -565,7 +597,7 @@
       "parentEntity": "Entidad"
     },
     "actions": {
-      "restoreSelected": "Restaurar seleccionados",
+      "restoreSelected": "Restaurar",
       "deleteSelectedPermanent": "Eliminar permanentemente",
       "deletePermanent": "Eliminar de forma permanente"
     },

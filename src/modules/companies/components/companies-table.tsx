@@ -198,9 +198,10 @@ export function CompaniesTable() {
               {
                 label: t('companies.delete'),
                 icon: <Trash2 className="h-4 w-4" />,
-                variant: 'destructive',
                 disabled: isPendingActions,
                 onClick: (rows) => handleDelete(rows),
+                className:
+                  'border-destructive text-destructive hover:bg-destructive hover:text-white',
               },
             ]}
           />

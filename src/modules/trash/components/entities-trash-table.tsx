@@ -12,7 +12,6 @@ import { DataTableFloatingBar } from '@/components/data-table/data-table-floatin
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar-desktop';
 import { DataTableToolbarMobile } from '@/components/data-table/data-table-toolbar-mobile';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,12 +22,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 import { formatDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { getEntityLink } from '@/modules/audit/model/audit.types';
 import { modulesQueries } from '@/modules/modules/model/modules.query';
-import useTrashTable from '../model/use-trash-table';
+
 import { TrashBinItemS } from '../model/trash.schema';
+import useTrashTable from '../model/use-trash-table';
 
 function useModulesOptions() {
   const { data, isLoading } = modulesQueries.useGetList();
@@ -79,10 +80,12 @@ export function EntitiesTrashTable() {
         accessorKey: 'displayName',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('trash.table.displayName')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('trash.table.displayName')} />
+        ),
         cell: ({ row }) => {
           const link = getEntityLink(row.original.moduleSlug, row.original.entityId);
-          const name = row.getValue('displayName') as string || '-';
+          const name = (row.getValue('displayName') as string) || '-';
           if (link) {
             return (
               <Link
@@ -94,9 +97,7 @@ export function EntitiesTrashTable() {
             );
           }
           return (
-            <span className="font-medium text-foreground block truncate max-w-[250px]">
-              {name}
-            </span>
+            <span className="font-medium text-foreground block truncate max-w-[250px]">{name}</span>
           );
         },
         meta: {
@@ -108,7 +109,9 @@ export function EntitiesTrashTable() {
         accessorKey: 'moduleSlug',
         enableColumnFilter: true,
         enableSorting: true,
-        header: ({ column }) => <DataTableColumnHeader column={column} label={t('trash.table.module')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} label={t('trash.table.module')} />
+        ),
         cell: ({ row }) => {
           const slug = row.getValue('moduleSlug') as string;
           if (!slug) return '-';
@@ -270,14 +273,16 @@ export function EntitiesTrashTable() {
                 icon: <RotateCcw className="h-4 w-4" />,
                 disabled: isPendingActions,
                 onClick: (rows) => handleRestore(rows),
+                className:
+                  'border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white gap-2',
               },
               {
                 label: t('trash.actions.deleteSelectedPermanent'),
                 icon: <Trash2 className="h-4 w-4" />,
-                variant: 'destructive',
                 disabled: isPendingActions,
                 onClick: (rows) => triggerDeleteConfirm(rows),
-                className: 'border-destructive text-destructive hover:bg-destructive hover:text-white',
+                className:
+                  'border-destructive text-destructive hover:bg-destructive hover:text-white',
               },
             ]}
           />
@@ -290,18 +295,14 @@ export function EntitiesTrashTable() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('trash.dialog.deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('trash.dialog.deleteDescription')}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t('trash.dialog.deleteDescription')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPendingActions}>
-              {t('common.cancel')}
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={isPendingActions}>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               disabled={isPendingActions}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              variant="destructive"
             >
               {t('trash.actions.deletePermanent')}
             </AlertDialogAction>
