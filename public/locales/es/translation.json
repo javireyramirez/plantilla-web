@@ -107,10 +107,11 @@
     "createDescription": "Introduce los datos para registrar la empresa.",
     "save": "Guardar",
     "saveAndClose": "Guardar y cerrar",
-    "delete": "Eliminar",
-    "detail": "Detalle",
-    "docs": "Documentación",
-    "audit": "Auditoría",
+    "tabs": {
+      "detail": "Detalle",
+      "docs": "Documentación",
+      "audit": "Auditoría"
+    },
     "auditContent": "Aquí va la auditoría...",
     "basicData": "Datos básicos",
     "identificationInfo": "Información principal de identificación.",
@@ -226,9 +227,13 @@
     "save": "Guardar",
     "saveAndClose": "Guardar y cerrar",
     "delete": "Eliminar",
-    "detail": "Detalle",
+    "tabs": {
+      "detail": "Detalle",
+      "teams": "Equipos",
+      "roles": "Roles",
+      "audit": "Auditoría"
+    },
     "docs": "Documentación",
-    "audit": "Auditoría",
     "auditContent": "Aquí va la auditoría...",
     "basicData": "Datos básicos",
     "identificationInfo": "Información principal de identificación.",
@@ -328,9 +333,13 @@
     "save": "Guardar",
     "saveAndClose": "Guardar y cerrar",
     "delete": "Eliminar",
-    "detail": "Detalle",
+    "tabs": {
+      "detail": "Detalle",
+      "permissions": "Permisos",
+      "users": "Usuarios",
+      "audit": "Auditoría"
+    },
     "docs": "Documentación",
-    "audit": "Auditoría",
     "auditContent": "Aquí va la auditoría...",
     "basicData": "Datos básicos",
     "identificationInfo": "Información principal de identificación.",
@@ -408,9 +417,13 @@
     "save": "Guardar",
     "saveAndClose": "Guardar y cerrar",
     "delete": "Eliminar",
-    "detail": "Detalle",
+    "tabs": {
+      "detail": "Detalle",
+      "members": "Miembros",
+      "roles": "Roles",
+      "audit": "Auditoría"
+    },
     "docs": "Documentación",
-    "audit": "Auditoría",
     "auditContent": "Aquí va la auditoría...",
     "basicData": "Datos básicos",
     "identificationInfo": "Información principal de identificación.",

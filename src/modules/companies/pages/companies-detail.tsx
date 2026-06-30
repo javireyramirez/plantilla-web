@@ -82,9 +82,9 @@ export default function CompanyDetail() {
   const isTrashed = data?.status === 'TRASHED';
 
   const tabs = [
-    { value: 'detail', label: t('companies.detail'), viewAtCreate: true },
-    { value: 'docs', label: t('companies.docs'), viewAtCreate: isEditing },
-    { value: 'audit', label: t('companies.audit'), viewAtCreate: isEditing },
+    { value: 'detail', label: t('companies.tabs.detail'), viewAtCreate: true },
+    { value: 'docs', label: t('companies.tabs.docs'), viewAtCreate: isEditing },
+    { value: 'audit', label: t('companies.tabs.audit'), viewAtCreate: isEditing },
   ];
 
   const currentTab = tabs.find((tab) => tab.value === activeTab);
