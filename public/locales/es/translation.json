@@ -542,6 +542,44 @@
       "LOGOUT": "Cerrar Sesión"
     }
   },
+  "trash": {
+    "title": "Papelera de reciclaje",
+    "subtitle": "Gestiona los elementos que han sido eliminados del sistema. Puedes restaurarlos o eliminarlos definitivamente.",
+    "subtitleDocuments": "Gestiona los documentos que han sido eliminados del sistema. Puedes restaurarlos, descargarlos o eliminarlos definitivamente.",
+    "tabs": {
+      "entities": "Entidades",
+      "documents": "Documentos"
+    },
+    "table": {
+      "selectTodo": "Seleccionar todos",
+      "selectFila": "Seleccionar fila",
+      "displayName": "Nombre",
+      "module": "Módulo",
+      "deletedAt": "Fecha de eliminación",
+      "deletedBy": "Eliminado por",
+      "expiresAt": "Fecha de expiración",
+      "expired": "expirado",
+      "today": "hoy",
+      "daysLeft": "días restantes",
+      "parentModule": "Módulo de la entidad",
+      "parentEntity": "Entidad"
+    },
+    "actions": {
+      "restoreSelected": "Restaurar seleccionados",
+      "deleteSelectedPermanent": "Eliminar permanentemente",
+      "deletePermanent": "Eliminar de forma permanente"
+    },
+    "dialog": {
+      "deleteTitle": "¿Eliminar permanentemente?",
+      "deleteDescription": "Esta acción es irreversible y eliminará de forma definitiva los elementos seleccionados. No se podrán recuperar de ninguna manera."
+    },
+    "toast": {
+      "restoreSuccess": "Elementos restaurados correctamente.",
+      "restoreError": "Error al restaurar los elementos.",
+      "deleteSuccess": "Elementos eliminados permanentemente.",
+      "deleteError": "Error al eliminar los elementos."
+    }
+  },
   "redirecting_message_one": "Redirigiendo al dashboard en {{count}} segundo...",
   "redirecting_message_other": "Redirigiendo al dashboard en {{count}} segundos...",
   "modules": {

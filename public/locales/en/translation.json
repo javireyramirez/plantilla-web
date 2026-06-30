@@ -531,6 +531,44 @@
       "LOGOUT": "Logout"
     }
   },
+  "trash": {
+    "title": "Recycle Bin",
+    "subtitle": "Manage items that have been deleted from the system. You can restore them or delete them permanently.",
+    "subtitleDocuments": "Manage documents that have been deleted from the system. You can restore them, download them or delete them permanently.",
+    "tabs": {
+      "entities": "Entities",
+      "documents": "Documents"
+    },
+    "table": {
+      "selectTodo": "Select all",
+      "selectFila": "Select row",
+      "displayName": "Name",
+      "module": "Module",
+      "deletedAt": "Deleted At",
+      "deletedBy": "Deleted By",
+      "expiresAt": "Expires At",
+      "expired": "expired",
+      "today": "today",
+      "daysLeft": "days left",
+      "parentModule": "Entity Module",
+      "parentEntity": "Entity"
+    },
+    "actions": {
+      "restoreSelected": "Restore selected",
+      "deleteSelectedPermanent": "Delete permanently",
+      "deletePermanent": "Delete permanently"
+    },
+    "dialog": {
+      "deleteTitle": "Permanently delete?",
+      "deleteDescription": "This action is irreversible and will permanently delete the selected items. They cannot be recovered in any way."
+    },
+    "toast": {
+      "restoreSuccess": "Items successfully restored.",
+      "restoreError": "Error restoring items.",
+      "deleteSuccess": "Items permanently deleted.",
+      "deleteError": "Error deleting items."
+    }
+  },
   "redirecting_message_one": "Redirecting to dashboard in {{count}} second...",
   "redirecting_message_other": "Redirecting to dashboard in {{count}} seconds...",
   "modules": {
