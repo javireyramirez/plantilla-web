@@ -19,13 +19,12 @@ export default function PublicLayout() {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="flex h-14 items-center justify-between px-6 border-b">
+    <div className="h-screen flex flex-col overflow-hidden">
+      <header className="flex h-14 items-center justify-between px-6 border-b shrink-0">
         <div className="flex items-center gap-2">
           <img src={logo} alt="logo" className="size-8 object-contain" />
           <span className="font-medium">Empresa Genérica</span>
         </div>
-
         {isMobile ? (
           // Móvil — todo en un dropdown
           <DropdownMenu>
@@ -53,8 +52,7 @@ export default function PublicLayout() {
           </div>
         )}
       </header>
-
-      <main>
+      <main className="flex-1 min-h-0 overflow-y-auto">
         <Outlet />
       </main>
     </div>

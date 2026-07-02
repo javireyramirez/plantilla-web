@@ -106,6 +106,7 @@
     "editDescription": "Datos de la empresa en el sistema.",
     "createDescription": "Introduce los datos para registrar la empresa.",
     "save": "Guardar",
+    "delete": "Eliminar",
     "saveAndClose": "Guardar y cerrar",
     "tabs": {
       "detail": "Detalle",

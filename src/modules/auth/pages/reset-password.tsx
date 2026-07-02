@@ -58,7 +58,7 @@ export default function ResetPassword() {
 
   if (isValidating) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -92,7 +92,7 @@ export default function ResetPassword() {
   const isSubmitting = useResetPasswordMutation.isPending;
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex h-full items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader className="flex flex-col items-center justify-center">
           <CardTitle className="flex flex-col flex-wrap items-center justify-center">

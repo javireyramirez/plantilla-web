@@ -64,7 +64,7 @@ export default function VerifyEmail() {
 
   if (status === 'loading' || isPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <LoaderCircle className="size-10 animate-spin" />
       </div>
     );
@@ -72,7 +72,7 @@ export default function VerifyEmail() {
 
   if (status === 'error') {
     return (
-      <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="flex h-full items-center justify-center p-4">
         <Card className="w-full max-w-sm">
           <CardHeader className="flex flex-col items-center justify-center gap-4">
             <Avatar className="size-14">
@@ -99,7 +99,7 @@ export default function VerifyEmail() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="flex h-full items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="flex flex-col items-center justify-center gap-4">
           <Avatar className="size-14">

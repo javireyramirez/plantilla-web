@@ -106,6 +106,7 @@
     "editDescription": "Company data in the system.",
     "createDescription": "Enter the details to register the company.",
     "save": "Save",
+    "delete": "Delete",
     "saveAndClose": "Save and close",
     "tabs": {
       "detail": "Detail",

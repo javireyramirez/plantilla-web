@@ -20,16 +20,16 @@ function GuestRoute({ redirectTo = '/home' }: GuestRouteProps) {
     return <Outlet />;
   }
 
-  if (isPending || isRefetching || (session === undefined && !error)) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">{t('nav.verifyingSession')}</p>
-        </div>
-      </div>
-    );
-  }
+  // if (isPending || isRefetching || (session === undefined && !error)) {
+  //   return (
+  //     <div className="flex min-h-screen items-center justify-center">
+  //       <div className="flex flex-col items-center gap-3">
+  //         <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+  //         <p className="text-sm text-muted-foreground">{t('nav.verifyingSession')}</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (session) {
     const destination = location.state?.from || redirectTo;

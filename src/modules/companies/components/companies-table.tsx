@@ -136,7 +136,7 @@ export function CompaniesTable() {
         enableColumnFilter: true,
         enableSorting: true,
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} label={t('companies.table.fecha')} />
+          <DataTableColumnHeader column={column} label={t('companies.table.creacion')} />
         ),
         cell: ({ row }) => (
           <span className="text-muted-foreground tabular-nums text-sm">
